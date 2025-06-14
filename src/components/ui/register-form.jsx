@@ -5,7 +5,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import Link from "next/link";
-import { useRegister } from "@/hooks/useRegister"; // Import custom hook
+import { useRegister } from "@/hooks/useRegister";
 
 export function RegisterForm({ className, ...props }) {
   const {

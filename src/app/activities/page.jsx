@@ -1,9 +1,9 @@
 "use client";
 
 import { useState } from "react";
-import { useBanner } from "@/hooks/useBanner";
-import { Card, CardBody, CardFooter } from "@heroui/card";
-import { useRouter } from "next/navigation";
+import { useActivity } from "@/hooks/useActivity"; // Asumsi path ini benar
+import { Card, CardBody, CardFooter } from "@heroui/card"; // Asumsi UI library Anda
+import { useRouter } from "next/navigation"; // Menggunakan useRouter dari Next.js
 import {
   Pagination,
   PaginationContent,
@@ -12,32 +12,32 @@ import {
   PaginationLink,
   PaginationNext,
   PaginationPrevious,
-} from "@/components/ui/pagination"; // Path to shadcn pagination component
+} from "@/components/ui/pagination"; // Path ke komponen pagination shadcn
 
-const ITEMS_PER_PAGE = 8; // Define the number of items per page
+const DEFAULT_ACTIVITY_IMAGE = '/assets/banner-authpage.png'; // Pastikan path ini benar
+const ITEMS_PER_PAGE = 8; // Tentukan jumlah item per halaman
 
-const BannerPage = () => {
-  const { banner, isLoading, error } = useBanner();
+const Activity = () => {
+  const { activity, isLoading, error } = useActivity();
   const router = useRouter();
   const [currentPage, setCurrentPage] = useState(1);
 
-  const handlePressBanner = (id) => {
+  const handlePressActivity = (id) => {
     setTimeout(() => {
-      router.push(`/banner/${id}`);
+      router.push(`/activities/${id}`);
     }, 1000);
   };
 
-  // Pagination calculations
+  // Kalkulasi untuk pagination
   const indexOfLastItem = currentPage * ITEMS_PER_PAGE;
   const indexOfFirstItem = indexOfLastItem - ITEMS_PER_PAGE;
-  // Add a check for null or undefined banner before slice and length
-  const currentBanners = banner ? banner.slice(indexOfFirstItem, indexOfLastItem) : [];
-  const totalPages = banner ? Math.ceil(banner.length / ITEMS_PER_PAGE) : 0;
+  // Tambahkan pengecekan jika activity null atau undefined sebelum slice
+  const currentActivities = activity ? activity.slice(indexOfFirstItem, indexOfLastItem) : [];
+  const totalPages = activity ? Math.ceil(activity.length / ITEMS_PER_PAGE) : 0;
 
   const handlePageChange = (pageNumber) => {
     setCurrentPage(pageNumber);
-    // Optional: scroll to the top of the page when changing pages
-    // window.scrollTo(0, 0);
+    // Opsional: window.scrollTo(0, 0);
   };
 
   const getPageNumbers = () => {
@@ -82,7 +82,7 @@ const BannerPage = () => {
   if (isLoading) {
     return (
       <div className="flex items-center justify-center h-screen">
-        <p className="text-2xl text-gray-700">Loading banners...</p>
+        <p className="text-2xl text-gray-700">Loading activities...</p>
       </div>
     );
   }
@@ -90,18 +90,18 @@ const BannerPage = () => {
   if (error) {
     return (
       <div className="flex items-center justify-center h-screen">
-        <p className="text-2xl text-red-500">Error loading banners: {error.message}</p>
+        <p className="text-2xl text-red-500">Error loading activities: {error.message}</p>
       </div>
     );
   }
 
-  if (!banner || banner.length === 0) {
+  if (!activity || activity.length === 0) {
     return (
       <div className="flex flex-col items-center justify-center px-4 py-8 mx-auto max-w-7xl sm:px-6 lg:px-8">
         <h1 className="mb-8 text-3xl font-bold text-center text-gray-900">
-          Banner Page
+          Activities Page
         </h1>
-        <p className="text-xl text-gray-600">No banners available at the moment.</p>
+        <p className="text-xl text-gray-600">No activities available at the moment.</p>
       </div>
     );
   }
@@ -109,23 +109,21 @@ const BannerPage = () => {
   return (
     <div className="flex flex-col max-w-6xl min-h-screen px-4 py-8 mx-auto sm:px-6 lg:px-8">
       <h1 className="mb-8 text-3xl font-bold text-center text-gray-900">
-        Banner Page
+        Activities Page
       </h1>
       <div className="grid flex-grow grid-cols-1 gap-x-6 gap-y-8 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
-        {currentBanners.map((item) => (
+        {currentActivities.map((item) => (
           <Card
             key={item.id}
             isPressable
-            onPress={() => handlePressBanner(item.id)}
+            onPress={() => handlePressActivity(item.id)}
             className="flex flex-col w-full overflow-hidden transition-shadow duration-300 ease-in-out bg-white shadow-lg h-80 rounded-xl hover:shadow-xl group"
           >
             <CardBody className="p-0">
               <img
-                alt={item.name}
-                className="object-cover w-full h-48 transition-transform duration-300 ease-in-out "
-                // FIX: Use `item.imageUrl || null` to prevent passing an empty string.
-                // If `item.imageUrl` is falsy (like "" or undefined), `null` will be used instead.
-                src={item.imageUrl || null}
+                alt={item.title || "Activity image"}
+                className="object-cover w-full h-48 transition-transform duration-300 ease-in-out"
+                src={item.imageUrls && item.imageUrls.length > 0 ? item.imageUrls[0] : DEFAULT_ACTIVITY_IMAGE}
                 width="100%"
               />
             </CardBody>
@@ -133,12 +131,14 @@ const BannerPage = () => {
               <div className="flex flex-col w-full">
                 <b
                   className="text-base font-semibold text-gray-800 truncate transition-colors group-hover:text-blue-600"
-                  title={item.name}
+                  title={item.title} // Judul tooltip adalah item.title
                 >
-                  {item.name}
+                  {/* Teks yang ditampilkan adalah item.description, pastikan ini sesuai */}
+                  {item.title || "Tidak ada judul"} {/* Menampilkan judul, atau fallback jika kosong */}
                 </b>
-                <p className="mt-1 text-sm text-gray-600 truncate">
-                  Lihat promo menarik!
+                <p className="mt-1 text-sm text-gray-600 truncate" title={item.description}>
+                  {/* Deskripsi singkat bisa dari item.description */}
+                  {item.description ? (item.description.length > 50 ? item.description.substring(0, 50) + "..." : item.description) : "Lihat detail aktivitas!"}
                 </p>
               </div>
             </CardFooter>
@@ -172,7 +172,7 @@ const BannerPage = () => {
                     href="#"
                     onClick={(e) => {
                       e.preventDefault();
-                      handlePageChange(page);
+                      handlePageChange(page); // PERBAIKAN: pager -> page
                     }}
                     isActive={currentPage === page}
                   >
@@ -202,4 +202,4 @@ const BannerPage = () => {
   );
 };
 
-export default BannerPage;
+export default Activity;

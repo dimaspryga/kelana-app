@@ -1,9 +1,9 @@
-// components/Navbar.jsx
 "use client";
 
 import React from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { useNavbar } from "@/hooks/useNavbar";
+import { useCart } from "@/hooks/useCart"; // <-- IMPORT useCart
 import { Button } from "../ui/button";
 import { Input } from "../ui/input";
 import {
@@ -35,6 +35,8 @@ const Navbar = () => {
     navItems,
     router,
   } = useNavbar();
+
+  const { cartCount } = useCart(); // <-- GUNAKAN hook useCart
 
   const searchInputVariants = {
     hidden: { opacity: 0, width: "0px", x: "100%" },
@@ -114,10 +116,10 @@ const Navbar = () => {
     <>
       {/* Navbar Utama untuk Desktop */}
       <nav
-        className="sticky top-0 z-30 bg-white shadow-md hidden md:flex"
+        className="sticky top-0 z-30 hidden bg-white shadow-md md:flex"
         style={{ height: `${MOBILE_HEADER_HEIGHT_PX}px` }}
       >
-        <div className="container mx-auto px-4 h-full flex justify-between items-center">
+        <div className="container flex items-center justify-between h-full px-4 mx-auto">
           <div className="flex-shrink-0">
             <a
               href="/"
@@ -127,10 +129,10 @@ const Navbar = () => {
               }}
               className="text-2xl font-bold text-gray-800 cursor-pointer"
             >
-              <img src="/assets/kelana.webp" width={150} height={38} />
+              <img src="/assets/kelana.webp" width={150} height={38} alt="Kelana Logo"/>
             </a>
           </div>
-          <div className="flex flex-grow justify-center space-x-8">
+          <div className="flex justify-center flex-grow space-x-8">
             {navItems.map((item) => (
               <a
                 key={item.label}
@@ -139,7 +141,7 @@ const Navbar = () => {
                   e.preventDefault();
                   router.push(item.path);
                 }}
-                className="text-gray-600 hover:text-gray-900 font-medium transition duration-300"
+                className="font-medium text-gray-600 transition duration-300 hover:text-gray-900"
               >
                 {item.label}
               </a>
@@ -174,7 +176,7 @@ const Navbar = () => {
                 aria-label="Toggle Search"
               >
                 <svg
-                  className="h-6 w-6"
+                  className="w-6 h-6"
                   fill="none"
                   stroke="currentColor"
                   viewBox="0 0 24 24"
@@ -188,21 +190,33 @@ const Navbar = () => {
                 </svg>
               </Button>
             </div>
-            <Button variant="ghost" size="icon" aria-label="Shopping Cart">
-              <svg
-                className="h-6 w-6"
-                fill="none"
-                stroke="currentColor"
-                viewBox="0 0 24 24"
-              >
-                <path
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  strokeWidth="2"
-                  d="M3 3h2l.4 2M7 13h10l4-8H5.4M7 13L5.4 5M7 13l-2.293 2.293c-.63.63-.184 1.707.707 1.707H17m0 0a2 2 0 100 4 2 2 0 000-4zm-8 2a2 2 0 11-4 0 2 2 0 014 0z"
-                ></path>
-              </svg>
-            </Button>
+            
+            {/* --- AREA KERANJANG --- */}
+            <div className="relative">
+              <Button variant="ghost" size="icon" aria-label="Shopping Cart" onClick={() => router.push('/cart')}>
+                <svg
+                  className="w-6 h-6"
+                  fill="none"
+                  stroke="currentColor"
+                  viewBox="0 0 24 24"
+                >
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    strokeWidth="2"
+                    d="M3 3h2l.4 2M7 13h10l4-8H5.4M7 13L5.4 5M7 13l-2.293 2.293c-.63.63-.184 1.707.707 1.707H17m0 0a2 2 0 100 4 2 2 0 000-4zm-8 2a2 2 0 11-4 0 2 2 0 014 0z"
+                  ></path>
+                </svg>
+              </Button>
+              {hasMounted && isLoggedIn && cartCount > 0 && (
+                <span className="absolute top-0 right-0 flex items-center justify-center w-5 h-5 text-xs font-bold text-white transform translate-x-1/2 -translate-y-1/2 bg-red-600 rounded-full">
+                  {cartCount}
+                </span>
+              )}
+            </div>
+            {/* --- AKHIR AREA KERANJANG --- */}
+
+
             {!hasMounted ? (
               <div className="space-x-2">
                 {" "}
@@ -218,15 +232,14 @@ const Navbar = () => {
                 <DropdownMenuTrigger asChild>
                   <Button
                     variant="ghost"
-                    className="relative h-9 w-auto px-2 rounded-full flex items-center"
+                    className="relative flex items-center w-auto px-2 rounded-full h-9"
                   >
                     <img
                       src={profilePictureUrl}
                       alt="User Avatar"
-                      className="w-8 h-8 rounded-full border-2 border-blue-500"
+                      className="w-8 h-8 border-2 border-blue-500 rounded-full"
                     />
                   </Button>
-
                 </DropdownMenuTrigger>
                 <DropdownMenuContent className="w-48" align="end" forceMount>
                   <DropdownMenuLabel className="truncate">
@@ -241,10 +254,10 @@ const Navbar = () => {
                   </DropdownMenuItem>
                   <DropdownMenuItem
                     onClick={() => {
-                      router.push("/profile/edit");
+                      router.push("/transaction");
                     }}
                   >
-                    Edit Profile
+                    Transaction
                   </DropdownMenuItem>
                   {userRole === "admin" && (
                     <>
@@ -300,7 +313,7 @@ const Navbar = () => {
             {isMobileMenuOpen ? (
               <motion.svg
                 key="x-icon"
-                className="h-6 w-6"
+                className="w-6 h-6"
                 fill="none"
                 stroke="currentColor"
                 viewBox="0 0 24 24"
@@ -319,7 +332,7 @@ const Navbar = () => {
             ) : (
               <motion.svg
                 key="hamburger-icon"
-                className="h-6 w-6"
+                className="w-6 h-6"
                 fill="none"
                 stroke="currentColor"
                 viewBox="0 0 24 24"
@@ -343,7 +356,7 @@ const Navbar = () => {
       <AnimatePresence>
         {isMobileMenuOpen && (
           <motion.div
-            className="fixed inset-0 bg-black/30 backdrop-blur-sm z-40 md:hidden"
+            className="fixed inset-0 z-40 bg-black/30 backdrop-blur-sm md:hidden"
             variants={overlayVariants}
             initial="hidden"
             animate="visible"
@@ -368,7 +381,7 @@ const Navbar = () => {
             animate="visible"
             exit="exit"
           >
-            <div className="flex-grow overflow-y-auto px-4 py-4 space-y-2">
+            <div className="flex-grow px-4 py-4 space-y-2 overflow-y-auto">
               <div className="mb-4">
                 <Input type="text" placeholder="Search..." className="w-full" />
               </div>
@@ -406,7 +419,7 @@ const Navbar = () => {
                           <img
                             src={profilePictureUrl}
                             alt="User Avatar"
-                            className="w-8 h-8 rounded-full border-2 border-blue-500 mr-2"
+                            className="w-8 h-8 mr-2 border-2 border-blue-500 rounded-full"
                           />
                           {userName && (
                             <span className="font-medium truncate">

@@ -1,6 +1,7 @@
 @import "tailwindcss";
 @import "tw-animate-css";
 
+
 @custom-variant dark (&:is(.dark *));
 
 @theme inline {
@@ -113,11 +114,27 @@
   --sidebar-ring: oklch(0.556 0 0);
 }
 
+
+
+
 @layer base {
   * {
     @apply border-border outline-ring/50;
   }
   body {
     @apply bg-background text-foreground;
+  }
+}
+
+/* --- TAMBAHKAN BLOK INI (ATAU TAMBAHKAN ISINYA JIKA @layer components SUDAH ADA) --- */
+@layer components {
+  /* Varian untuk status LUNAS/SUCCESS (Hijau) */
+  .badge.variant-success {
+  
+  }
+  
+  /* Varian untuk status PENDING (Oranye) */
+  .badge.variant-warning {
+
   }
 }

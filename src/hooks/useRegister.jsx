@@ -1,4 +1,3 @@
-// hooks/useRegister.js
 import { useState } from "react";
 import axios from "axios";
 import { toast } from "sonner";
@@ -57,7 +56,7 @@ export function useRegister() {
         response.data.message || "Register successful! Redirecting..."
       );
       setTimeout(() => {
-        router.push("/");
+        router.push("/login");
       }, 3000);
     } catch (error) {
       const errorMessage =

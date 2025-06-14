@@ -1,9 +1,9 @@
 "use client";
 
 import { useState } from "react";
-import { useBanner } from "@/hooks/useBanner";
-import { Card, CardBody, CardFooter } from "@heroui/card";
-import { useRouter } from "next/navigation";
+import { useCategory } from "@/hooks/useCategory"; // Asumsi path ini benar
+import { Card, CardBody, CardFooter } from "@heroui/card"; // Asumsi ini adalah UI library yang Anda gunakan
+import { useRouter } from "next/navigation"; // Menggunakan useRouter dari Next.js
 import {
   Pagination,
   PaginationContent,
@@ -12,31 +12,30 @@ import {
   PaginationLink,
   PaginationNext,
   PaginationPrevious,
-} from "@/components/ui/pagination"; // Path to shadcn pagination component
+} from "@/components/ui/pagination"; // Path ke komponen pagination shadcn
 
-const ITEMS_PER_PAGE = 8; // Define the number of items per page
+const ITEMS_PER_PAGE = 8; // Tentukan jumlah item per halaman
 
-const BannerPage = () => {
-  const { banner, isLoading, error } = useBanner();
+const CategoryPage = () => {
+  const { category, isLoading, error } = useCategory(); // Asumsi useCategory mengembalikan isLoading dan error
   const router = useRouter();
   const [currentPage, setCurrentPage] = useState(1);
 
-  const handlePressBanner = (id) => {
+  const handlePressCategory = (id) => { // Sesuaikan tipe id jika perlu
     setTimeout(() => {
-      router.push(`/banner/${id}`);
-    }, 1000);
+      router.push(`/category/${id}`);
+    }, 1000); // Timeout dipertahankan jika memang ada kebutuhan spesifik
   };
 
-  // Pagination calculations
+  // Kalkulasi untuk pagination
   const indexOfLastItem = currentPage * ITEMS_PER_PAGE;
   const indexOfFirstItem = indexOfLastItem - ITEMS_PER_PAGE;
-  // Add a check for null or undefined banner before slice and length
-  const currentBanners = banner ? banner.slice(indexOfFirstItem, indexOfLastItem) : [];
-  const totalPages = banner ? Math.ceil(banner.length / ITEMS_PER_PAGE) : 0;
+  const currentCategories = category ? category.slice(indexOfFirstItem, indexOfLastItem) : []; // Tambahkan pengecekan category
+  const totalPages = category ? Math.ceil(category.length / ITEMS_PER_PAGE) : 0; // Tambahkan pengecekan category
 
   const handlePageChange = (pageNumber) => {
     setCurrentPage(pageNumber);
-    // Optional: scroll to the top of the page when changing pages
+    // Opsional: scroll ke atas halaman saat berganti halaman
     // window.scrollTo(0, 0);
   };
 
@@ -82,7 +81,7 @@ const BannerPage = () => {
   if (isLoading) {
     return (
       <div className="flex items-center justify-center h-screen">
-        <p className="text-2xl text-gray-700">Loading banners...</p>
+        <p className="text-2xl text-gray-700">Loading categories...</p>
       </div>
     );
   }
@@ -90,18 +89,18 @@ const BannerPage = () => {
   if (error) {
     return (
       <div className="flex items-center justify-center h-screen">
-        <p className="text-2xl text-red-500">Error loading banners: {error.message}</p>
+        <p className="text-2xl text-red-500">Error loading categories: {error.message}</p>
       </div>
     );
   }
 
-  if (!banner || banner.length === 0) {
+  if (!category || category.length === 0) {
     return (
       <div className="flex flex-col items-center justify-center px-4 py-8 mx-auto max-w-7xl sm:px-6 lg:px-8">
         <h1 className="mb-8 text-3xl font-bold text-center text-gray-900">
-          Banner Page
+          Category Page
         </h1>
-        <p className="text-xl text-gray-600">No banners available at the moment.</p>
+        <p className="text-xl text-gray-600">No categories available at the moment.</p>
       </div>
     );
   }
@@ -109,23 +108,27 @@ const BannerPage = () => {
   return (
     <div className="flex flex-col max-w-6xl min-h-screen px-4 py-8 mx-auto sm:px-6 lg:px-8">
       <h1 className="mb-8 text-3xl font-bold text-center text-gray-900">
-        Banner Page
+        Category Page
       </h1>
       <div className="grid flex-grow grid-cols-1 gap-x-6 gap-y-8 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
-        {currentBanners.map((item) => (
+        {currentCategories.map((item) => (
           <Card
             key={item.id}
             isPressable
-            onPress={() => handlePressBanner(item.id)}
+            onPress={() => handlePressCategory(item.id)}
+            // --- AWAL PERUBAHAN ---
             className="flex flex-col w-full overflow-hidden transition-shadow duration-300 ease-in-out bg-white shadow-lg h-80 rounded-xl hover:shadow-xl group"
+            // Ganti w-64 (256px) dan h-80 (320px) sesuai kebutuhan Anda
+            // Contoh lain: w-72 (288px) h-96 (384px)
+            // --- AKHIR PERUBAHAN ---
           >
             <CardBody className="p-0">
               <img
                 alt={item.name}
-                className="object-cover w-full h-48 transition-transform duration-300 ease-in-out "
-                // FIX: Use `item.imageUrl || null` to prevent passing an empty string.
-                // If `item.imageUrl` is falsy (like "" or undefined), `null` will be used instead.
-                src={item.imageUrl || null}
+                // Tinggi gambar sudah ditentukan (h-48), pastikan ini sesuai dengan desain Anda
+                // dan konsisten dengan tinggi total kartu yang baru.
+                className="object-cover w-full h-48 transition-transform duration-300 ease-in-out"
+                src={item.imageUrl}
                 width="100%"
               />
             </CardBody>
@@ -139,6 +142,7 @@ const BannerPage = () => {
                 </b>
                 <p className="mt-1 text-sm text-gray-600 truncate">
                   Lihat promo menarik!
+                  {/* Anda mungkin ingin teks ini lebih spesifik untuk kategori */}
                 </p>
               </div>
             </CardFooter>
@@ -202,4 +206,4 @@ const BannerPage = () => {
   );
 };
 
-export default BannerPage;
+export default CategoryPage;
