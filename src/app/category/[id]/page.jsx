@@ -55,6 +55,10 @@ const DetailCategory = ({ params }) => {
               <img
                 src={detailCategory.imageUrl}
                 alt={detailCategory.name || "Category image"}
+                onError={(e) => {
+                  e.currentTarget.onerror = null;
+                  e.currentTarget.src = "/assets/error.png";
+                }}
                 className="object-cover w-full h-full"
               />
             </div>
@@ -156,6 +160,10 @@ const DetailCategory = ({ params }) => {
                       <div className="relative w-full h-40">
                         <img
                           src={rec.imageUrls?.[0] || DEFAULT_ACTIVITY_IMAGE}
+                          onError={(e) => {
+                            e.currentTarget.onerror = null;
+                            e.currentTarget.src = "/assets/error.png";
+                          }}
                           alt={rec.title || "Activity"}
                           className="absolute inset-0 object-cover w-full h-full"
                         />

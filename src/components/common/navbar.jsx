@@ -1,11 +1,17 @@
-"use client";
+'use client';
 
-import React from "react";
-import { motion, AnimatePresence } from "framer-motion";
+import React, { useState, useEffect } from "react";
+import Link from "next/link";
+import { usePathname, useRouter } from "next/navigation";
 import { useNavbar } from "@/hooks/useNavbar";
-import { useCart } from "@/hooks/useCart"; // <-- IMPORT useCart
+import { useCart } from "@/hooks/useCart"; // Mengambil data dari CartContext via hook ini
+import { motion, AnimatePresence } from "framer-motion";
+import { cn } from "@/lib/utils";
+
+// UI Components
 import { Button } from "../ui/button";
-import { Input } from "../ui/input";
+import { Skeleton } from "../ui/skeleton";
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -14,8 +20,42 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "../ui/dropdown-menu";
+import {
+  HoverCard,
+  HoverCardContent,
+  HoverCardTrigger,
+} from "@/components/ui/hover-card";
 
-const MOBILE_HEADER_HEIGHT_PX = 70;
+// Icons
+import { ShoppingCart, X, Menu, User, LogOut, LayoutDashboard, Ticket, Loader2 } from "lucide-react";
+
+// Helper function
+const formatCurrency = (amount) => new Intl.NumberFormat("id-ID", { style: "currency", currency: "IDR", minimumFractionDigits: 0 }).format(amount);
+
+// Komponen NavLink dengan efek "active"
+const NavLink = ({ href, children }) => {
+    const pathname = usePathname();
+    const isActive = pathname === href || (href !== "/" && pathname.startsWith(href));
+
+    return (
+        <Link 
+            href={href} 
+            className={cn(
+                "relative px-3 py-2 text-sm font-medium transition-colors duration-300",
+                isActive ? "text-blue-600" : "text-gray-600 hover:text-blue-600"
+            )}
+        >
+            {children}
+            {isActive && (
+                <motion.span 
+                    layoutId="underline"
+                    className="absolute bottom-[-2px] left-0 block w-full h-0.5 bg-blue-600 rounded-full"
+                />
+            )}
+        </Link>
+    );
+};
+
 
 const Navbar = () => {
   const {
@@ -25,479 +65,136 @@ const Navbar = () => {
     profilePictureUrl,
     hasMounted,
     isMobileMenuOpen,
-    isSearchOpen,
-    searchInputRef,
-    searchContainerRef,
     handleLogout,
-    handleMobileLinkClick,
     handleToggleMobileMenu,
-    handleToggleSearch,
+    handleMobileLinkClick,
     navItems,
-    router,
   } = useNavbar();
+  
+  // Data diambil dari CartContext melalui hook useCart
+  const { cartItems, cartCount, isLoading: isCartLoading } = useCart();
+  const router = useRouter();
 
-  const { cartCount } = useCart(); // <-- GUNAKAN hook useCart
+  const [isScrolled, setIsScrolled] = useState(false);
 
-  const searchInputVariants = {
-    hidden: { opacity: 0, width: "0px", x: "100%" },
-    visible: {
-      opacity: 1,
-      width: "256px",
-      x: "0%",
-      transition: { duration: 0.3, ease: "easeOut" },
-    },
-    exit: {
-      opacity: 0,
-      width: "0px",
-      x: "100%",
-      transition: { duration: 0.2, ease: "easeIn" },
-    },
+  useEffect(() => {
+    const handleScroll = () => {
+      setIsScrolled(window.scrollY > 20);
+    };
+    window.addEventListener("scroll", handleScroll);
+    return () => window.removeEventListener("scroll", handleScroll);
+  }, []);
+
+  const mobileMenuVariants = {
+    hidden: { x: '100%' },
+    visible: { x: '0%', transition: { type: 'spring', stiffness: 300, damping: 30 } },
+    exit: { x: '100%', transition: { type: 'easeOut', duration: 0.3 } },
   };
 
-  const mobileMenuDropdownVariants = {
-    hidden: { opacity: 0, scale: 0.95 },
-    visible: {
-      opacity: 1,
-      scale: 1,
-      transition: { duration: 0.2, ease: "easeOut" },
-    },
-    exit: {
-      opacity: 0,
-      scale: 0.95,
-      transition: { duration: 0.15, ease: "easeIn" },
-    },
-  };
-
-  const overlayVariants = {
-    hidden: { opacity: 0 },
-    visible: { opacity: 1, transition: { duration: 0.3 } },
-    exit: { opacity: 0, transition: { duration: 0.3 } },
-  };
-
-  const iconVariants = {
-    initial: { opacity: 0, scale: 0.85 },
-    animate: {
-      opacity: 1,
-      scale: 1,
-      transition: { duration: 0.15, ease: "easeInOut" },
-    },
-    exit: {
-      opacity: 0,
-      scale: 0.85,
-      transition: { duration: 0.15, ease: "easeInOut" },
-    },
-  };
-
-  const AuthButtons = ({ isMobile = false }) => (
-    <div className={isMobile ? "w-full space-y-2" : "space-x-2"}>
-      <Button
-        variant="outline"
-        className={isMobile ? "w-full justify-start py-2.5" : ""}
-        onClick={() => {
-          isMobile ? handleMobileLinkClick("/login") : router.push("/login");
-        }}
-      >
-        Login
-      </Button>
-      <Button
-        className={isMobile ? "w-full justify-start py-2.5" : ""}
-        onClick={() => {
-          isMobile
-            ? handleMobileLinkClick("/register")
-            : router.push("/register");
-        }}
-      >
-        Register
-      </Button>
-    </div>
+  const MobileMenu = () => (
+    <AnimatePresence>
+        {isMobileMenuOpen && (
+            <>
+                <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} onClick={handleToggleMobileMenu} className="fixed inset-0 z-40 bg-black/50 backdrop-blur-sm md:hidden" />
+                <motion.div variants={mobileMenuVariants} initial="hidden" animate="visible" exit="exit" className="fixed top-0 right-0 z-50 w-4/5 h-full max-w-xs bg-white shadow-lg md:hidden">
+                    <div className="flex items-center justify-between p-4 border-b"><span className="text-lg font-bold">Menu</span><Button variant="ghost" size="icon" onClick={handleToggleMobileMenu}><X className="w-5 h-5"/></Button></div>
+                    <div className="p-4 flex flex-col h-[calc(100%-65px)]">
+                        <nav className="flex flex-col gap-2">{navItems.map(item => (<Link key={item.label} href={item.path} onClick={() => handleMobileLinkClick(item.path)} className="p-3 text-base font-medium text-gray-700 rounded-md hover:bg-gray-100">{item.label}</Link>))}</nav>
+                        <div className="pt-4 mt-auto border-t">
+                            {!isLoggedIn ? (
+                                <div className="space-y-2">
+                                    <Button className="w-full bg-blue-600 hover:bg-blue-700" onClick={() => handleMobileLinkClick('/login')}>Login</Button>
+                                    <Button variant="outline" className="w-full" onClick={() => handleMobileLinkClick('/register')}>Register</Button>
+                                </div>
+                            ) : (
+                                <>
+                                    <div className="flex items-center p-2 mb-4"><Avatar className="w-10 h-10 mr-3"><AvatarImage src={profilePictureUrl} alt={userName} /><AvatarFallback>{userName.charAt(0)}</AvatarFallback></Avatar><p className="font-semibold truncate">{userName}</p></div>
+                                    <Button variant="ghost" className="justify-start w-full text-red-600 hover:bg-red-50 hover:text-red-700" onClick={handleLogout}><LogOut className="w-4 h-4 mr-2"/> Logout</Button>
+                                </>
+                            )}
+                        </div>
+                    </div>
+                </motion.div>
+            </>
+        )}
+    </AnimatePresence>
   );
 
   return (
     <>
-      {/* Navbar Utama untuk Desktop */}
-      <nav
-        className="sticky top-0 z-30 hidden bg-white shadow-md md:flex"
-        style={{ height: `${MOBILE_HEADER_HEIGHT_PX}px` }}
-      >
-        <div className="container flex items-center justify-between h-full px-4 mx-auto">
-          <div className="flex-shrink-0">
-            <a
-              href="/"
-              onClick={(e) => {
-                e.preventDefault();
-                router.push("/");
-              }}
-              className="text-2xl font-bold text-gray-800 cursor-pointer"
-            >
-              <img src="/assets/kelana.webp" width={150} height={38} alt="Kelana Logo"/>
-            </a>
-          </div>
-          <div className="flex justify-center flex-grow space-x-8">
-            {navItems.map((item) => (
-              <a
-                key={item.label}
-                href={item.path}
-                onClick={(e) => {
-                  e.preventDefault();
-                  router.push(item.path);
-                }}
-                className="font-medium text-gray-600 transition duration-300 hover:text-gray-900"
-              >
-                {item.label}
-              </a>
-            ))}
-          </div>
-          <div className="flex items-center space-x-2 sm:space-x-4">
-            <div
-              className="relative flex items-center"
-              ref={searchContainerRef}
-            >
-              <AnimatePresence initial={false}>
-                {isSearchOpen && (
-                  <motion.div
-                    variants={searchInputVariants}
-                    initial="hidden"
-                    animate="visible"
-                    exit="exit"
-                  >
-                    <Input
-                      type="text"
-                      ref={searchInputRef}
-                      placeholder="Search..."
-                      className="mr-2"
-                    />
-                  </motion.div>
-                )}
-              </AnimatePresence>
-              <Button
-                variant="ghost"
-                size="icon"
-                onClick={handleToggleSearch}
-                aria-label="Toggle Search"
-              >
-                <svg
-                  className="w-6 h-6"
-                  fill="none"
-                  stroke="currentColor"
-                  viewBox="0 0 24 24"
-                >
-                  <path
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    strokeWidth="2"
-                    d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"
-                  ></path>
-                </svg>
-              </Button>
+      <header className={cn( "fixed top-0 z-30 w-full transition-all duration-300", isScrolled ? "bg-white/80 backdrop-blur-lg shadow-sm" : "bg-white/50" )}>
+        <div className="container px-4 mx-auto sm:px-6 lg:px-8">
+          <div className="flex items-center justify-between h-20">
+            <div className="flex-shrink-0">
+              <Link href="/" className="text-2xl font-bold text-gray-800"><img src="/assets/kelana.webp" width={140} height={32} alt="Kelana Logo"/></Link>
             </div>
-            
-            {/* --- AREA KERANJANG --- */}
-            <div className="relative">
-              <Button variant="ghost" size="icon" aria-label="Shopping Cart" onClick={() => router.push('/cart')}>
-                <svg
-                  className="w-6 h-6"
-                  fill="none"
-                  stroke="currentColor"
-                  viewBox="0 0 24 24"
-                >
-                  <path
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    strokeWidth="2"
-                    d="M3 3h2l.4 2M7 13h10l4-8H5.4M7 13L5.4 5M7 13l-2.293 2.293c-.63.63-.184 1.707.707 1.707H17m0 0a2 2 0 100 4 2 2 0 000-4zm-8 2a2 2 0 11-4 0 2 2 0 014 0z"
-                  ></path>
-                </svg>
-              </Button>
-              {hasMounted && isLoggedIn && cartCount > 0 && (
-                <span className="absolute top-0 right-0 flex items-center justify-center w-5 h-5 text-xs font-bold text-white transform translate-x-1/2 -translate-y-1/2 bg-red-600 rounded-full">
-                  {cartCount}
-                </span>
-              )}
-            </div>
-            {/* --- AKHIR AREA KERANJANG --- */}
-
-
-            {!hasMounted ? (
-              <div className="space-x-2">
-                {" "}
-                <Button variant="outline" disabled>
-                  Login
-                </Button>{" "}
-                <Button disabled>Register</Button>{" "}
-              </div>
-            ) : !isLoggedIn ? (
-              <AuthButtons />
-            ) : (
-              <DropdownMenu>
-                <DropdownMenuTrigger asChild>
-                  <Button
-                    variant="ghost"
-                    className="relative flex items-center w-auto px-2 rounded-full h-9"
-                  >
-                    <img
-                      src={profilePictureUrl}
-                      alt="User Avatar"
-                      className="w-8 h-8 border-2 border-blue-500 rounded-full"
-                    />
-                  </Button>
-                </DropdownMenuTrigger>
-                <DropdownMenuContent className="w-48" align="end" forceMount>
-                  <DropdownMenuLabel className="truncate">
-                    {userName || "User"}
-                  </DropdownMenuLabel>
-                  <DropdownMenuItem
-                    onClick={() => {
-                      router.push("/profile");
-                    }}
-                  >
-                    My Profile
-                  </DropdownMenuItem>
-                  <DropdownMenuItem
-                    onClick={() => {
-                      router.push("/transaction");
-                    }}
-                  >
-                    Transaction
-                  </DropdownMenuItem>
-                  {userRole === "admin" && (
-                    <>
-                      {" "}
-                      <DropdownMenuSeparator />{" "}
-                      <DropdownMenuItem
-                        className="font-bold"
-                        onClick={() => router.push("/admin/dashboard")}
-                      >
-                        Dashboard
-                      </DropdownMenuItem>{" "}
-                    </>
-                  )}
-                  <DropdownMenuSeparator />
-                  <DropdownMenuItem
-                    className="text-red-600 focus:bg-red-50 focus:text-red-700"
-                    onClick={handleLogout}
-                  >
-                    Logout
-                  </DropdownMenuItem>
-                </DropdownMenuContent>
-              </DropdownMenu>
-            )}
-          </div>
-        </div>
-      </nav>
-
-      <div
-        className="md:hidden fixed top-0 left-0 right-0 bg-white shadow-md z-[60] flex items-center justify-between px-4"
-        style={{ height: `${MOBILE_HEADER_HEIGHT_PX}px` }}
-      >
-        <div className="flex-shrink-0">
-          <a
-            href="/"
-            onClick={(e) => {
-              e.preventDefault();
-              router.push("/");
-            }}
-            className="text-2xl font-bold text-gray-800 cursor-pointer"
-          >
-            <img src="/assets/kelana.webp" width={130} height={28} />
-          </a>
-        </div>
-        <Button
-          variant="ghost"
-          size="icon"
-          onClick={handleToggleMobileMenu}
-          aria-label={
-            isMobileMenuOpen ? "Close mobile menu" : "Open mobile menu"
-          }
-        >
-          <AnimatePresence initial={false} mode="wait">
-            {isMobileMenuOpen ? (
-              <motion.svg
-                key="x-icon"
-                className="w-6 h-6"
-                fill="none"
-                stroke="currentColor"
-                viewBox="0 0 24 24"
-                variants={iconVariants}
-                initial="initial"
-                animate="animate"
-                exit="exit"
-              >
-                <path
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  strokeWidth="2"
-                  d="M6 18L18 6M6 6l12 12"
-                ></path>
-              </motion.svg>
-            ) : (
-              <motion.svg
-                key="hamburger-icon"
-                className="w-6 h-6"
-                fill="none"
-                stroke="currentColor"
-                viewBox="0 0 24 24"
-                variants={iconVariants}
-                initial="initial"
-                animate="animate"
-                exit="exit"
-              >
-                <path
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  strokeWidth="2"
-                  d="M4 6h16M4 12h16M4 18h16"
-                ></path>
-              </motion.svg>
-            )}
-          </AnimatePresence>
-        </Button>
-      </div>
-
-      <AnimatePresence>
-        {isMobileMenuOpen && (
-          <motion.div
-            className="fixed inset-0 z-40 bg-black/30 backdrop-blur-sm md:hidden"
-            variants={overlayVariants}
-            initial="hidden"
-            animate="visible"
-            exit="exit"
-            onClick={handleToggleMobileMenu}
-          />
-        )}
-      </AnimatePresence>
-
-      <AnimatePresence>
-        {isMobileMenuOpen && (
-          <motion.div
-            className="fixed left-0 w-screen bg-white shadow-xl z-[55] md:hidden flex flex-col"
-            style={{
-              originX: 1,
-              originY: 0,
-              top: `${MOBILE_HEADER_HEIGHT_PX}px`,
-              height: `calc(100vh - ${MOBILE_HEADER_HEIGHT_PX}px)`,
-            }}
-            variants={mobileMenuDropdownVariants}
-            initial="hidden"
-            animate="visible"
-            exit="exit"
-          >
-            <div className="flex-grow px-4 py-4 space-y-2 overflow-y-auto">
-              <div className="mb-4">
-                <Input type="text" placeholder="Search..." className="w-full" />
-              </div>
-              <hr className="my-2" />
-
-              {navItems.map((item) => (
-                <a
-                  key={item.label}
-                  href={item.path}
-                  onClick={(e) => {
-                    e.preventDefault();
-                    handleMobileLinkClick(item.path);
-                  }}
-                  className="block py-2.5 text-gray-700 hover:bg-gray-100 active:bg-gray-200 px-2 rounded-md transition-colors duration-150"
-                >
-                  {item.label}
-                </a>
-              ))}
-
-              <hr className="my-2" />
-              {!hasMounted ? (
-                <AuthButtons isMobile={true} />
-              ) : !isLoggedIn ? (
-                <AuthButtons isMobile={true} />
-              ) : (
-                <div className="mt-2">
-                  {" "}
-                  <DropdownMenu>
-                    <DropdownMenuTrigger asChild>
-                      <Button
-                        variant="ghost"
-                        className="w-full flex justify-between items-center text-left py-2.5 px-2 rounded-md group"
-                      >
-                        <div className="flex items-center">
-                          <img
-                            src={profilePictureUrl}
-                            alt="User Avatar"
-                            className="w-8 h-8 mr-2 border-2 border-blue-500 rounded-full"
-                          />
-                          {userName && (
-                            <span className="font-medium truncate">
-                              {userName}
+            <nav className="items-center hidden px-4 py-2 space-x-2 rounded-full shadow-inner md:flex bg-white/60 backdrop-blur-sm">
+                {navItems.map((item) => (<NavLink key={item.label} href={item.path}>{item.label}</NavLink>))}
+            </nav>
+            <div className="flex items-center gap-2">
+                
+                <HoverCard openDelay={200} closeDelay={100}>
+                  <HoverCardTrigger asChild>
+                    <div className="relative">
+                        <Button variant="ghost" size="icon" className="rounded-full" onClick={() => router.push('/cart')}>
+                            <ShoppingCart className="w-5 h-5"/>
+                        </Button>
+                        {hasMounted && isLoggedIn && cartCount > 0 && (
+                            <span className="absolute flex items-center justify-center w-5 h-5 text-xs text-white bg-blue-600 rounded-full -top-1 -right-1 ring-2 ring-white">
+                                {cartCount}
                             </span>
-                          )}
+                        )}
+                    </div>
+                  </HoverCardTrigger>
+                  {hasMounted && isLoggedIn && (
+                    <HoverCardContent className="p-4 w-80" align="end">
+                        <div className="space-y-4">
+                            <div className="flex items-center justify-between">
+                                <h4 className="font-semibold">Shopping cart</h4>
+                                <p className="text-sm text-muted-foreground">{cartCount} Item</p>
+                            </div>
+                            <div className="pr-2 space-y-3 overflow-y-auto max-h-60">
+                                {isCartLoading ? (
+                                    <div className="flex items-center justify-center p-4"><Loader2 className="w-5 h-5 animate-spin"/></div>
+                                ) : cartItems.length > 0 ? (
+                                    cartItems.slice(0, 5).map(item => (
+                                        <div key={item.id} className="flex items-center gap-3">
+                                            <img src={item.activity?.imageUrls[0]} alt={item.activity?.title} className="object-cover w-12 h-12 rounded-md"/>
+                                            <div className="flex-grow overflow-hidden">
+                                                <p className="text-sm font-medium truncate">{item.activity?.title}</p>
+                                                <p className="text-xs text-muted-foreground">{item.quantity} x {formatCurrency(item.activity?.price)}</p>
+                                            </div>
+                                            <p className="text-sm font-semibold">{formatCurrency(item.activity?.price * item.quantity)}</p>
+                                        </div>
+                                    ))
+                                ) : (
+                                    <p className="py-4 text-sm text-center text-muted-foreground">Your cart is empty.</p>
+                                )}
+                            </div>
+                            {cartItems.length > 0 && (
+                                <Button className="w-full bg-blue-600 hover:bg-blue-700" onClick={() => router.push('/cart')}>View Cart</Button>
+                            )}
                         </div>
-                        <svg
-                          className="h-4 w-4 shrink-0 opacity-50 transition-transform duration-200 group-data-[state=open]:rotate-180"
-                          fill="none"
-                          stroke="currentColor"
-                          viewBox="0 0 24 24"
-                        >
-                          <path
-                            strokeLinecap="round"
-                            strokeLinejoin="round"
-                            strokeWidth="2"
-                            d="M19 9l-7 7-7-7"
-                          ></path>
-                        </svg>
-                      </Button>
-                    </DropdownMenuTrigger>
-                    <DropdownMenuContent
-                      className="rounded-md shadow-lg bg-popover text-popover-foreground z-[70] data-[state=open]:animate-in data-[state=closed]:animate-out data-[state=closed]:fade-out-0 data-[state=open]:fade-in-0 data-[state=closed]:zoom-out-95 data-[state=open]:zoom-in-95 data-[side=bottom]:slide-in-from-top-2 data-[side=left]:slide-in-from-right-2 data-[side=right]:slide-in-from-left-2 data-[side=top]:slide-in-from-bottom-2 p-1.5 min-w-[var(--radix-dropdown-menu-trigger-width)]"
-                      side="bottom"
-                      align="stretch"
-                      sideOffset={6}
-                      collisionPadding={10}
-                      forceMount
-                    >
-                      <DropdownMenuLabel className="font-semibold px-2 py-1.5 border-b border-border mb-1 truncate">
-                        {userName || "User"}
-                      </DropdownMenuLabel>
-                      <DropdownMenuItem
-                        className="px-2 py-1.5"
-                        onClick={() => {
-                          handleMobileLinkClick("/profile");
-                        }}
-                      >
-                        My Profile
-                      </DropdownMenuItem>
-                      <DropdownMenuItem
-                        className="px-2 py-1.5"
-                        onClick={() => {
-                          handleMobileLinkClick("/profile/edit");
-                        }}
-                      >
-                        Edit Profile
-                      </DropdownMenuItem>
-                      {userRole === "admin" && (
-                        <>
-                          {" "}
-                          <DropdownMenuSeparator />{" "}
-                          <DropdownMenuItem
-                            className="font-bold px-2 py-1.5"
-                            onClick={() => {
-                              handleMobileLinkClick("/admin/dashboard");
-                            }}
-                          >
-                            Dashboard
-                          </DropdownMenuItem>{" "}
-                        </>
-                      )}
-                      <DropdownMenuSeparator />
-                      <DropdownMenuItem
-                        className="px-2 py-1.5 text-red-600 focus:bg-red-50 focus:text-red-700"
-                        onClick={handleLogout}
-                      >
-                        Logout
-                      </DropdownMenuItem>
-                    </DropdownMenuContent>
-                  </DropdownMenu>
+                    </HoverCardContent>
+                  )}
+                </HoverCard>
+
+                <div className="md:hidden"><Button variant="ghost" size="icon" className="rounded-full" onClick={handleToggleMobileMenu}><Menu className="w-6 h-6"/></Button></div>
+                <div className="items-center hidden gap-2 pl-2 md:flex">
+                    {!hasMounted ? (<div className="flex gap-2"><Skeleton className="w-20 h-10"/><Skeleton className="w-24 h-10"/></div>
+                    ) : !isLoggedIn ? (<><Button variant="outline" onClick={() => router.push('/login')}>Login</Button><Button className="bg-blue-600 hover:bg-blue-700" onClick={() => router.push('/register')}>Register</Button></>
+                    ) : (
+                        <DropdownMenu>
+                            <DropdownMenuTrigger asChild><Button variant="ghost" className="relative rounded-full h-11 w-11"><Avatar className="border-2 border-blue-500 h-11 w-11"><AvatarImage src={profilePictureUrl} alt={userName} /><AvatarFallback>{userName.charAt(0)}</AvatarFallback></Avatar></Button></DropdownMenuTrigger>
+                            <DropdownMenuContent className="w-56" align="end" forceMount><DropdownMenuLabel className="font-normal"><div className="flex flex-col space-y-1"><p className="text-sm font-medium leading-none">Signed in as</p><p className="text-xs leading-none truncate text-muted-foreground">{userName}</p></div></DropdownMenuLabel><DropdownMenuSeparator /><DropdownMenuItem onClick={() => router.push('/profile')}><User className="w-4 h-4 mr-2"/> My Profile</DropdownMenuItem><DropdownMenuItem onClick={() => router.push('/transaction')}><Ticket className="w-4 h-4 mr-2"/> My Transactions</DropdownMenuItem>{userRole === 'admin' && (<DropdownMenuItem onClick={() => router.push('/admin/dashboard')}><LayoutDashboard className="w-4 h-4 mr-2"/> Dashboard</DropdownMenuItem>)}<DropdownMenuSeparator /><DropdownMenuItem onClick={handleLogout} className="text-red-600 focus:bg-red-50 focus:text-red-700"><LogOut className="w-4 h-4 mr-2"/> Logout</DropdownMenuItem></DropdownMenuContent>
+                        </DropdownMenu>
+                    )}
                 </div>
-              )}
             </div>
-          </motion.div>
-        )}
-      </AnimatePresence>
+          </div>
+        </div>
+      </header>
+      <MobileMenu />
     </>
   );
 };

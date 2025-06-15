@@ -10,12 +10,8 @@ import {
   CarouselNext,
   CarouselPrevious,
 } from "@/components/ui/carousel";
-import { AlertCircleIcon} from "lucide-react"
-import {
-  Alert,
-  AlertDescription,
-  AlertTitle,
-} from "@/components/ui/alert"
+import { AlertCircleIcon } from "lucide-react";
+import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 
 const DEFAULT_ACTIVITY_IMAGE = "/assets/banner-authpage.png";
 
@@ -162,6 +158,10 @@ const DetailBanner = ({ params }) => {
                         <img
                           src={rec.imageUrls || DEFAULT_ACTIVITY_IMAGE}
                           fallbacksrc={DEFAULT_ACTIVITY_IMAGE}
+                          onError={(e) => {
+                            e.currentTarget.onerror = null;
+                            e.currentTarget.src = "/assets/error.png";
+                          }}
                           alt={rec.name || "Activity"}
                           className="absolute inset-0 object-cover w-full h-full"
                         />

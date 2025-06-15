@@ -21,7 +21,8 @@ const CategoryPage = () => {
   const router = useRouter();
   const [currentPage, setCurrentPage] = useState(1);
 
-  const handlePressCategory = (id) => { // Sesuaikan tipe id jika perlu
+  const handlePressCategory = (id) => {
+    // Sesuaikan tipe id jika perlu
     setTimeout(() => {
       router.push(`/category/${id}`);
     }, 1000); // Timeout dipertahankan jika memang ada kebutuhan spesifik
@@ -30,7 +31,9 @@ const CategoryPage = () => {
   // Kalkulasi untuk pagination
   const indexOfLastItem = currentPage * ITEMS_PER_PAGE;
   const indexOfFirstItem = indexOfLastItem - ITEMS_PER_PAGE;
-  const currentCategories = category ? category.slice(indexOfFirstItem, indexOfLastItem) : []; // Tambahkan pengecekan category
+  const currentCategories = category
+    ? category.slice(indexOfFirstItem, indexOfLastItem)
+    : []; // Tambahkan pengecekan category
   const totalPages = category ? Math.ceil(category.length / ITEMS_PER_PAGE) : 0; // Tambahkan pengecekan category
 
   const handlePageChange = (pageNumber) => {
@@ -89,7 +92,9 @@ const CategoryPage = () => {
   if (error) {
     return (
       <div className="flex items-center justify-center h-screen">
-        <p className="text-2xl text-red-500">Error loading categories: {error.message}</p>
+        <p className="text-2xl text-red-500">
+          Error loading categories: {error.message}
+        </p>
       </div>
     );
   }
@@ -100,7 +105,9 @@ const CategoryPage = () => {
         <h1 className="mb-8 text-3xl font-bold text-center text-gray-900">
           Category Page
         </h1>
-        <p className="text-xl text-gray-600">No categories available at the moment.</p>
+        <p className="text-xl text-gray-600">
+          No categories available at the moment.
+        </p>
       </div>
     );
   }
@@ -129,6 +136,10 @@ const CategoryPage = () => {
                 // dan konsisten dengan tinggi total kartu yang baru.
                 className="object-cover w-full h-48 transition-transform duration-300 ease-in-out"
                 src={item.imageUrl}
+                onError={(e) => {
+                  e.currentTarget.onerror = null;
+                  e.currentTarget.src = "/assets/error.png";
+                }}
                 width="100%"
               />
             </CardBody>
@@ -163,12 +174,22 @@ const CategoryPage = () => {
                   }
                 }}
                 aria-disabled={currentPage === 1}
-                className={currentPage === 1 ? "pointer-events-none opacity-50" : undefined}
+                className={
+                  currentPage === 1
+                    ? "pointer-events-none opacity-50"
+                    : undefined
+                }
               />
             </PaginationItem>
 
             {getPageNumbers().map((page, index) => (
-              <PaginationItem key={typeof page === 'number' ? `page-${page}` : `ellipsis-${index}`}>
+              <PaginationItem
+                key={
+                  typeof page === "number"
+                    ? `page-${page}`
+                    : `ellipsis-${index}`
+                }
+              >
                 {page === "..." ? (
                   <PaginationEllipsis />
                 ) : (
@@ -196,7 +217,11 @@ const CategoryPage = () => {
                   }
                 }}
                 aria-disabled={currentPage === totalPages}
-                className={currentPage === totalPages ? "pointer-events-none opacity-50" : undefined}
+                className={
+                  currentPage === totalPages
+                    ? "pointer-events-none opacity-50"
+                    : undefined
+                }
               />
             </PaginationItem>
           </PaginationContent>

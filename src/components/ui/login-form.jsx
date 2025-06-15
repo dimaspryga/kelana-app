@@ -21,7 +21,7 @@ export function LoginForm({ className, ...props }) {
     <form className={cn("flex flex-col gap-6", className)} {...props}>
       <div className="flex flex-col items-center gap-2 text-center">
         <h1 className="text-2xl font-bold">Login to your account</h1>
-        <p className="text-muted-foreground text-sm text-balance">
+        <p className="text-sm text-muted-foreground text-balance">
           Enter your email below to login to your account
         </p>
       </div>
@@ -65,15 +65,15 @@ export function LoginForm({ className, ...props }) {
         </Button>
         
       </div>
-      <div className="text-center text-sm">
+      <div className="text-sm text-center">
         Don&apos;t have an account?{" "}
         <Link href="/register" className="underline underline-offset-4">
           Sign up
         </Link>
       </div>
 
-      <div className="text-center text-sm">
-        <p className="text-center text-sm text-muted-foreground">
+      <div className="text-sm text-center">
+        <p className="text-sm text-center text-muted-foreground">
           By signing in, you agree to our{" "}
           <a href="/terms" className="underline underline-offset-4">
             Terms of Service

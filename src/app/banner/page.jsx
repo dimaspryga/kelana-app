@@ -31,7 +31,9 @@ const BannerPage = () => {
   const indexOfLastItem = currentPage * ITEMS_PER_PAGE;
   const indexOfFirstItem = indexOfLastItem - ITEMS_PER_PAGE;
   // Add a check for null or undefined banner before slice and length
-  const currentBanners = banner ? banner.slice(indexOfFirstItem, indexOfLastItem) : [];
+  const currentBanners = banner
+    ? banner.slice(indexOfFirstItem, indexOfLastItem)
+    : [];
   const totalPages = banner ? Math.ceil(banner.length / ITEMS_PER_PAGE) : 0;
 
   const handlePageChange = (pageNumber) => {
@@ -90,7 +92,9 @@ const BannerPage = () => {
   if (error) {
     return (
       <div className="flex items-center justify-center h-screen">
-        <p className="text-2xl text-red-500">Error loading banners: {error.message}</p>
+        <p className="text-2xl text-red-500">
+          Error loading banners: {error.message}
+        </p>
       </div>
     );
   }
@@ -101,7 +105,9 @@ const BannerPage = () => {
         <h1 className="mb-8 text-3xl font-bold text-center text-gray-900">
           Banner Page
         </h1>
-        <p className="text-xl text-gray-600">No banners available at the moment.</p>
+        <p className="text-xl text-gray-600">
+          No banners available at the moment.
+        </p>
       </div>
     );
   }
@@ -126,6 +132,10 @@ const BannerPage = () => {
                 // FIX: Use `item.imageUrl || null` to prevent passing an empty string.
                 // If `item.imageUrl` is falsy (like "" or undefined), `null` will be used instead.
                 src={item.imageUrl || null}
+                onError={(e) => {
+                  e.currentTarget.onerror = null;
+                  e.currentTarget.src = "/assets/error.png";
+                }}
                 width="100%"
               />
             </CardBody>
@@ -159,12 +169,22 @@ const BannerPage = () => {
                   }
                 }}
                 aria-disabled={currentPage === 1}
-                className={currentPage === 1 ? "pointer-events-none opacity-50" : undefined}
+                className={
+                  currentPage === 1
+                    ? "pointer-events-none opacity-50"
+                    : undefined
+                }
               />
             </PaginationItem>
 
             {getPageNumbers().map((page, index) => (
-              <PaginationItem key={typeof page === 'number' ? `page-${page}` : `ellipsis-${index}`}>
+              <PaginationItem
+                key={
+                  typeof page === "number"
+                    ? `page-${page}`
+                    : `ellipsis-${index}`
+                }
+              >
                 {page === "..." ? (
                   <PaginationEllipsis />
                 ) : (
@@ -192,7 +212,11 @@ const BannerPage = () => {
                   }
                 }}
                 aria-disabled={currentPage === totalPages}
-                className={currentPage === totalPages ? "pointer-events-none opacity-50" : undefined}
+                className={
+                  currentPage === totalPages
+                    ? "pointer-events-none opacity-50"
+                    : undefined
+                }
               />
             </PaginationItem>
           </PaginationContent>
