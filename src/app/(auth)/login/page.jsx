@@ -1,9 +1,35 @@
+"use client";
+
+import { useState } from 'react';
+import { useAuth } from '@/context/AuthContext';
+import { toast } from "sonner";
+import { Loader2 } from 'lucide-react';
 import Image from "next/image";
-import { LoginForm } from "@/components/ui/login-form";
+import { LoginForm } from "@/components/forms/login-form";
 
-export default function LoginPage() {
+const LoginPage = () => {
+  const [email, setEmail] = useState('');
+  const [password, setPassword] = useState('');
+  const { login, loading } = useAuth(); // Ambil fungsi login dan state loading dari context
 
-  return (
+  const handleLogin = async (e) => {
+    e.preventDefault();
+    if (!email || !password) {
+        toast.error("Please enter both email and password.");
+        return;
+    }
+
+    const result = await login(email, password);
+
+    if (result.success) {
+      toast.success("Login successful! Redirecting...");
+      // Pengalihan sudah diurus oleh context
+    } else {
+      toast.error(result.message || "Failed to log in.");
+    }
+  };
+
+ return (
     <div className="relative grid min-h-svh lg:grid-cols-2">
       <div className="flex flex-col gap-4 p-6 md:p-10">
         <div className="flex justify-center gap-2 md:justify-start">
@@ -18,13 +44,13 @@ export default function LoginPage() {
             />
           </a>
         </div>
-        <div className="flex flex-1 items-center justify-center">
+        <div className="flex items-center justify-center flex-1">
           <div className="w-full max-w-xs">
             <LoginForm />
           </div>
         </div>
       </div>
-      <div className="bg-muted relative hidden lg:block">
+      <div className="relative hidden bg-muted lg:block">
         <img
           src="/assets/banner-authpage.png"
           alt="Image"
@@ -37,8 +63,8 @@ export default function LoginPage() {
         alt="vector"
         className="absolute bottom-0 left-0 z-[-100] w-48 h-24 sm:w-40 sm:h-20 md:w-48 md:h-24 lg:w-74 lg:h-32 hidden lg:block"
       />
-
     </div>
-    
   );
-}
+};
+
+export default LoginPage;

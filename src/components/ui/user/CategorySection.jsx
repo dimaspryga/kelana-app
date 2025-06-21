@@ -6,15 +6,16 @@ import { useCategory } from "@/hooks/useCategory";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Carousel, CarouselContent, CarouselItem, CarouselNext, CarouselPrevious } from "@/components/ui/carousel";
 import { Button } from '@/components/ui/button';
-import { ArrowRight, Bookmark } from 'lucide-react';
+import { cn } from '@/lib/utils'; // Impor cn
 
-const CategorySection = () => {
+// Komponen sekarang menerima `className` sebagai prop
+const CategorySection = ({ className }) => {
   const { category, isLoading } = useCategory();
 
   return (
-    <div className="bg-white">
+    // Gunakan cn untuk menggabungkan kelas default dengan prop className
+    <div className={cn("bg-white", className)}>
       <div className="px-4 py-16 mx-auto max-w-7xl sm:px-6 lg:px-8">
-        {/* --- FIX: The <Carousel> component now wraps everything --- */}
         <Carousel
           opts={{
             align: "start",
@@ -25,7 +26,7 @@ const CategorySection = () => {
           {/* Header with title and navigation buttons */}
           <div className="flex items-center justify-between mb-8">
             <div>
-              <h2 className="text-3xl font-bold text-gray-900">Explore Categories</h2>
+              <h2 className="text-3xl font-bold text-gray-900">Explore <span className="text-blue-600">Categories</span></h2>
               <p className="mt-2 text-lg text-gray-600">Find amazing experiences and activities by category.</p>
             </div>
             <div className="items-center hidden gap-2 sm:flex">

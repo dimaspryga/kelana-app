@@ -1,109 +1,10 @@
+"use client";
+
 import { useState, useRef, useEffect, useCallback } from "react";
-import { useRouter, usePathname } from "next/navigation";
-import axios from "axios";
-import { toast } from "sonner";
-import { getCookie, deleteCookie } from "cookies-next";
+import { useRouter } from "next/navigation";
+import { useAuth } from "@/context/AuthContext";
 
-const TOKEN_KEY = "token";
-const API_BASE_URL = "https://travel-journal-api-bootcamp.do.dibimbing.id/api/v1";
-const API_KEY = "24405e01-fbc1-45a5-9f5a-be13afcd757c";
-
-const useAuthInfo = () => {
-  const router = useRouter();
-  const pathname = usePathname();
-  const [authInfo, setAuthInfo] = useState({
-    isLoggedIn: false,
-    userRole: null,
-    userName: null,
-    profilePictureUrl: null,
-  });
-  const [hasMounted, setHasMounted] = useState(false);
-
-  const getUserInfoFromToken = useCallback(async () => {
-    const token = getCookie(TOKEN_KEY);
-    if (!token) {
-      return {
-        isLoggedIn: false,
-        userRole: null,
-        userName: null,
-        profilePictureUrl: null,
-      };
-    }
-
-    try {
-      const response = await axios.get(`${API_BASE_URL}/user`, {
-        headers: {
-          apiKey: API_KEY,
-          Authorization: `Bearer ${token}`,
-        },
-      });
-
-      const userData = response.data.data;
-      return {
-        isLoggedIn: true,
-        userRole: userData.role || "user",
-        userName: userData.name || userData.email || "Pengguna",
-        profilePictureUrl: userData.profilePictureUrl || "/Assets/avatar.png",
-      };
-    } catch (error) {
-      console.error("Error fetching user info:", error);
-      deleteCookie(TOKEN_KEY);
-      return {
-        isLoggedIn: false,
-        userRole: null,
-        userName: null,
-        profilePictureUrl: null,
-      };
-    }
-  }, []);
-
-  const handleLogout = useCallback(async () => {
-    try {
-      await axios.get(`${API_BASE_URL}/logout`, {
-        headers: {
-          Authorization: `Bearer ${getCookie("token")}`,
-          apiKey: API_KEY,
-        },
-      });
-
-      deleteCookie("token");
-      toast.success("Logout berhasil!");
-
-      setTimeout(() => {
-        router.push("/");
-      }, 2000);
-
-      setAuthInfo({
-        isLoggedIn: false,
-        userRole: null,
-        userName: null,
-        profilePictureUrl: null,
-      });
-    } catch (error) {
-      toast.error("Logout gagal. Coba lagi.");
-    }
-  }, [router]);
-
-  useEffect(() => {
-    setHasMounted(true);
-    const fetchAndSetUserInfo = async () => {
-      setAuthInfo(await getUserInfoFromToken());
-    };
-    fetchAndSetUserInfo();
-  }, [getUserInfoFromToken]);
-
-  useEffect(() => {
-    if (hasMounted) {
-      const fetchAndSetUserInfo = async () => {
-        setAuthInfo(await getUserInfoFromToken());
-      };
-      fetchAndSetUserInfo();
-    }
-  }, [pathname, hasMounted, getUserInfoFromToken]);
-
-  return { authInfo, handleLogout, hasMounted };
-};
-
+// Helper hook untuk mengelola menu mobile
 const useMobileMenu = () => {
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
 
@@ -125,6 +26,7 @@ const useMobileMenu = () => {
   return { isMobileMenuOpen, toggleMobileMenu, setIsMobileMenuOpen };
 };
 
+// Helper hook untuk mengelola fungsi pencarian
 const useSearch = () => {
   const [isSearchOpen, setIsSearchOpen] = useState(false);
   const searchInputRef = useRef(null);
@@ -161,7 +63,9 @@ const useSearch = () => {
 
 export const useNavbar = () => {
   const router = useRouter();
-  const { authInfo, handleLogout, hasMounted } = useAuthInfo();
+  // Gunakan useAuth untuk mendapatkan semua data dan fungsi
+  const { user, logout, loading } = useAuth();
+  
   const { isMobileMenuOpen, toggleMobileMenu, setIsMobileMenuOpen } = useMobileMenu();
   const { isSearchOpen, toggleSearch, searchInputRef, searchContainerRef, setIsSearchOpen } = useSearch();
 
@@ -196,25 +100,28 @@ export const useNavbar = () => {
 
   const navItems = [
     { label: "Home", path: "/" },
-    { label: "Banner", path: "/banner" },
     { label: "Category", path: "/category" },
     { label: "Activities", path: "/activities" },
     { label: "Promo", path: "/promo" },
   ];
 
-  const { isLoggedIn, userRole, userName, profilePictureUrl } = authInfo;
+  // Ambil data langsung dari state `user` di AuthContext
+  const isLoggedIn = !!user;
+  const userRole = user?.role || null;
+  const userName = user?.name || null;
+  const profilePictureUrl = user?.profilePictureUrl || "/Assets/avatar.png";
 
   return {
     isLoggedIn,
     userRole,
     userName,
     profilePictureUrl,
-    hasMounted,
+    hasMounted: !loading,
     isMobileMenuOpen,
     isSearchOpen,
     searchInputRef,
     searchContainerRef,
-    handleLogout,
+    handleLogout: logout,
     handleMobileLinkClick,
     handleToggleMobileMenu,
     handleToggleSearch,

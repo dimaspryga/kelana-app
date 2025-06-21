@@ -28,7 +28,7 @@ export async function POST(req) {
     return NextResponse.json(data, { status: 200 });
   } catch (error) {
     const errorMessage =
-      error.response?.data?.message || "Terjadi kesalahan saat login";
+      error.response?.data?.message || "An error occurred while logging in";
     return NextResponse.json({ message: errorMessage }, { status: 400 });
   }
 }

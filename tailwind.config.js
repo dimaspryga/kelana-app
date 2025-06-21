@@ -27,5 +27,5 @@ module.exports = {
     },
   },
   darkMode: "class",
-  plugins: [require("@heroui/react")], // Gunakan require untuk plugin
+  plugins: [require("@heroui/react")],
 };

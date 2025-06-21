@@ -2,14 +2,9 @@
 
 import React, { createContext, useState, useEffect, useCallback } from "react";
 import { getCookie } from "cookies-next";
-import { toast } from "sonner"; // --- PERBAIKAN: Impor toast dari sonner
+import { toast } from "sonner";
 
-// PENTING:
-// File ini adalah Context Provider dan tidak merender UI.
-// Pastikan Anda telah menambahkan komponen <Toaster /> di file layout utama Anda
-// (misal: app/layout.tsx) agar notifikasi toast ini dapat ditampilkan.
-
-// Definisikan konstanta API
+// Define API constants
 const API_BASE_URL = "https://travel-journal-api-bootcamp.do.dibimbing.id";
 const API_KEY = "24405e01-fbc1-45a5-9f5a-be13afcd757c";
 
@@ -22,7 +17,7 @@ export const CartProvider = ({ children }) => {
 
   const token = getCookie("token");
 
-  // Fungsi standar untuk mengambil data keranjang dari server
+  // Standard function to fetch cart data from the server
   const fetchCart = useCallback(async () => {
     if (!token) {
       setIsLoading(false);
@@ -37,12 +32,12 @@ export const CartProvider = ({ children }) => {
       });
       const result = await response.json();
       if (!response.ok)
-        throw new Error(result.message || "Gagal mengambil data keranjang.");
+        throw new Error(result.message || "Failed to fetch cart data.");
       setCartItems(result.data || []);
     } catch (err) {
       setError(err.message);
-      // Notifikasi toast untuk error saat fetch data awal
-      toast.error(err.message || "Gagal mengambil data keranjang.");
+      // Toast notification for error during initial fetch
+      toast.error(err.message || "Failed to fetch cart data.");
     } finally {
       setIsLoading(false);
     }
@@ -52,10 +47,10 @@ export const CartProvider = ({ children }) => {
     fetchCart();
   }, [fetchCart]);
 
-  // --- PERBAIKAN: Menggunakan toast.promise untuk addToCart ---
+  // Using toast.promise for addToCart
   const addToCart = async (activityId, quantity) => {
     const promise = new Promise(async (resolve, reject) => {
-      // API ini mengabaikan 'quantity', jadi kita panggil berulang
+      // This API ignores 'quantity', so we call it repeatedly
       for (let i = 0; i < quantity; i++) {
         const response = await fetch(`${API_BASE_URL}/api/v1/add-cart`, {
           method: "POST",
@@ -68,43 +63,43 @@ export const CartProvider = ({ children }) => {
         });
         if (!response.ok) {
           const errorData = await response.json();
-          // Hentikan proses dan tolak promise jika ada satu yang gagal
+          // Stop the process and reject the promise if one fails
           return reject(
             new Error(
-              errorData.message || `Gagal menambahkan item ke-${i + 1}.`
+              errorData.message || `Failed to add item #${i + 1}.`
             )
           );
         }
       }
-      // Selesaikan promise jika semua berhasil
+      // Resolve the promise if all succeed
       return resolve({ quantity });
     });
 
-    // Tampilkan toast berdasarkan status promise
+    // Display toast based on promise status
     toast.promise(promise, {
-      loading: `Menambahkan ${quantity} item ke keranjang...`,
+      loading: `Adding ${quantity} item(s) to the cart...`,
       success: (data) => {
-        fetchCart(); // Ambil data keranjang terbaru setelah berhasil
-        return `${data.quantity} item berhasil ditambahkan ke keranjang!`;
+        fetchCart(); // Fetch the latest cart data after success
+        return `${data.quantity} item(s) successfully added to the cart!`;
       },
       error: (err) => {
-        fetchCart(); // Tetap refresh untuk sinkronisasi
-        return err.message || "Terjadi kesalahan saat menambahkan item.";
+        fetchCart(); // Still refresh for synchronization
+        return err.message || "An error occurred while adding the item.";
       },
     });
   };
 
-  // --- PERBAIKAN: Menggunakan toast untuk konfirmasi dan notifikasi error ---
+  // Using toast for confirmation and error notifications
   const updateItemQuantity = async (cartItemId, newQuantity) => {
-    // Jika kuantitas baru kurang dari 1, tampilkan konfirmasi untuk menghapus
+    // If the new quantity is less than 1, show a confirmation to delete
     if (newQuantity < 1) {
-      toast.warning("Kuantitas akan menjadi 0. Hapus item ini?", {
+      toast.warning("Quantity will be 0. Delete this item?", {
         action: {
-          label: "Hapus",
+          label: "Delete",
           onClick: () => removeFromCart(cartItemId),
         },
         cancel: {
-          label: "Batal",
+          label: "Cancel",
         },
       });
       return;
@@ -126,18 +121,18 @@ export const CartProvider = ({ children }) => {
 
       if (!response.ok) {
         const errData = await response.json();
-        throw new Error(errData.message || "Gagal mengubah kuantitas.");
+        throw new Error(errData.message || "Failed to update quantity.");
       }
 
-      toast.success("Kuantitas berhasil diperbarui.");
-      await fetchCart(); // Fetch ulang untuk sinkronisasi
+      toast.success("Quantity updated successfully.");
+      await fetchCart(); // Re-fetch for synchronization
     } catch (err) {
       toast.error(err.message);
       console.error("Failed to update quantity:", err);
     }
   };
 
-  // --- PERBAIKAN: Menggunakan toast untuk notifikasi error ---
+  // Using toast for error notifications
   const removeFromCart = async (cartItemId) => {
     try {
       const response = await fetch(
@@ -149,13 +144,13 @@ export const CartProvider = ({ children }) => {
       );
       if (!response.ok) {
         const errData = await response.json();
-        throw new Error(errData.message || "Gagal menghapus item.");
+        throw new Error(errData.message || "Failed to remove item.");
       }
-      // Biarkan komponen pemanggil yang memberikan notifikasi sukses jika perlu
-      // agar tidak ada notifikasi ganda
+      // Let the calling component provide the success notification if needed
+      // to avoid double notifications
       await fetchCart();
     } catch (err) {
-      toast.error(err.message || "Gagal menghapus item.");
+      toast.error(err.message || "Failed to remove item.");
       console.error("Failed to remove item:", err);
     }
   };

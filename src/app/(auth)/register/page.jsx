@@ -1,5 +1,5 @@
 import Image from "next/image";
-import { RegisterForm } from "@/components/ui/register-form";
+import { RegisterForm } from "@/components/forms/register-form";
 
 export default function RegisterPage() {
   return (
@@ -17,14 +17,14 @@ export default function RegisterPage() {
             />
           </a>
         </div>
-        <div className="flex flex-1 items-center justify-center">
+        <div className="flex items-center justify-center flex-1">
           <div className="w-full max-w-xs">
             <RegisterForm />
 
           </div>
         </div>
       </div>
-      <div className="bg-muted relative hidden lg:block">
+      <div className="relative hidden bg-muted lg:block">
         <img
           src="/assets/banner-authpage.png"
           alt="Image"

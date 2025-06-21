@@ -24,7 +24,7 @@ const PromoSection = () => {
     <div className="py-16 bg-white">
       <div className="px-4 mx-auto max-w-7xl sm:px-6 lg:px-8">
         <div className="mb-12 text-center">
-            <h2 className="text-3xl font-bold text-gray-900">Don't Miss Our Special Promos</h2>
+            <h2 className="text-3xl font-bold text-gray-900">Don't Miss Our <span className="text-blue-600">Special Promos</span></h2>
             <p className="mt-3 text-lg text-gray-600">Enjoy discounts and other attractive offers!</p>
         </div>
         <div className="grid grid-cols-1 gap-8 md:grid-cols-2 lg:grid-cols-3">

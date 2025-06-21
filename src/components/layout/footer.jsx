@@ -15,7 +15,7 @@ const footerLinks = [
       { name: "Home", href: "/" },
       { name: "Banner", href: "/banner" },
       { name: "Category", href: "/category" },
-      { name: "Activity", href: "/activity" },
+      { name: "Activity", href: "/activities" },
       { name: "Promo", href: "/promo" },
     ],
   },
