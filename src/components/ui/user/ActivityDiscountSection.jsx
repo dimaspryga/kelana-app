@@ -41,10 +41,8 @@ const itemVariants = {
   visible: { y: 0, opacity: 1 },
 };
 
-// Sub-component for a cleaner structure
+// Sub-component for a cleaner, more modern card design
 const ActivityCard = ({ activityItem, handleAddToCart, addingItemId }) => {
-  const displayPrice = activityItem.price_discount; // Selalu tampilkan harga diskon
-
   return (
     <motion.div variants={itemVariants} className="h-full">
       <div className="flex flex-col h-full overflow-hidden transition-all duration-300 bg-white rounded-lg shadow-md group hover:shadow-xl hover:-translate-y-1">
@@ -61,12 +59,12 @@ const ActivityCard = ({ activityItem, handleAddToCart, addingItemId }) => {
             />
             <div className="absolute top-2 left-2 bg-red-500 text-white rounded-md px-2 py-0.5 text-xs font-bold flex items-center gap-1">
               <Percent size={12} />
-              <span>Discount</span>
+              <span>HOT</span>
             </div>
           </div>
-          <div className="p-4">
+          <div className="flex flex-col flex-grow p-4">
             <h3
-              className="h-8 text-base font-bold leading-tight text-gray-800 truncate line-clamp-2 group-hover:text-blue-600"
+              className="h-12 text-base font-bold leading-tight text-gray-800 line-clamp-2 group-hover:text-blue-600"
               title={activityItem.title}
             >
               {activityItem.title}
@@ -83,31 +81,33 @@ const ActivityCard = ({ activityItem, handleAddToCart, addingItemId }) => {
                 ({activityItem.total_reviews} reviews)
               </span>
             </div>
+            {/* Spacer to push price to the bottom */}
+            <div className="flex-grow"></div>
+            <div className="flex items-end justify-between mt-4">
+              <div>
+                <p className="text-xs text-red-500 line-through">
+                  {formatCurrency(activityItem.price)}
+                </p>
+                <p className="text-lg font-bold text-blue-600">
+                  {formatCurrency(activityItem.price_discount)}
+                </p>
+              </div>
+              <Button
+                size="icon"
+                variant="outline"
+                className="text-blue-600 transition-colors duration-300 border-blue-200 hover:bg-blue-600 hover:text-white"
+                onClick={(e) => handleAddToCart(e, activityItem)}
+                disabled={addingItemId === activityItem.id}
+              >
+                {addingItemId === activityItem.id ? (
+                  <Loader2 className="w-4 h-4 animate-spin" />
+                ) : (
+                  <ShoppingCart className="w-4 h-4" />
+                )}
+              </Button>
+            </div>
           </div>
         </Link>
-        <div className="flex items-end justify-between p-4 pt-2 mt-auto border-t">
-          <div>
-            <p className="text-xs text-red-500 line-through">
-              {formatCurrency(activityItem.price)}
-            </p>
-            <p className="text-lg font-bold text-blue-600">
-              {formatCurrency(displayPrice)}
-            </p>
-          </div>
-          <Button
-            size="icon"
-            variant="outline"
-            className="text-blue-600 transition-colors duration-300 border-blue-200 hover:bg-blue-600 hover:text-white"
-            onClick={(e) => handleAddToCart(e, activityItem)}
-            disabled={addingItemId === activityItem.id}
-          >
-            {addingItemId === activityItem.id ? (
-              <Loader2 className="w-4 h-4 animate-spin" />
-            ) : (
-              <ShoppingCart className="w-4 h-4" />
-            )}
-          </Button>
-        </div>
       </div>
     </motion.div>
   );
@@ -145,7 +145,7 @@ const ActivityDiscountSection = () => {
 
   const isLoading = isActivityLoading || isAuthLoading;
 
-  // Saring untuk mendapatkan aktivitas yang memiliki diskon
+  // Filter for discounted activities
   const discountedActivities = useMemo(() => {
     if (!activity) return [];
     return activity.filter(
@@ -174,7 +174,6 @@ const ActivityDiscountSection = () => {
     );
   }
 
-  // Jangan render section sama sekali jika tidak ada aktivitas diskon
   if (discountedActivities.length === 0) {
     return null;
   }
@@ -185,7 +184,8 @@ const ActivityDiscountSection = () => {
         <div className="flex items-center justify-between mb-8">
           <div>
             <h2 className="text-3xl font-bold">
-              <span className="text-red-500">Hot Deals</span> & <span className="text-blue-500">Discounts</span>
+              <span className="text-red-500">Hot Deals</span> &{" "}
+              <span className="text-blue-500">Discounts</span>
             </h2>
             <p className="mt-2 text-lg text-gray-600">
               Special prices for your next great adventure!

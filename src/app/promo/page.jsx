@@ -1,4 +1,4 @@
-"use client";
+'use client';
 
 import React, { useState, useMemo } from "react";
 import { useRouter } from "next/navigation";
@@ -68,13 +68,30 @@ const PromoPage = () => {
   if (isLoading) {
     return (
       <div className="bg-gray-50">
-        <Skeleton className="w-full h-[400px]" />
+        {/* Skeleton for BannerSection */}
+        <Skeleton className="w-full h-[40vh]" /> 
         <div className="px-4 py-12 mx-auto max-w-7xl sm:px-6 lg:px-8">
+          {/* Skeleton for Header and Search */}
           <Skeleton className="w-1/2 h-10 mx-auto mb-4" />
-          <Skeleton className="w-2/3 h-8 mx-auto mb-12" />
+          <Skeleton className="w-2/3 h-8 mx-auto mb-10" />
+          <Skeleton className="w-full h-16 max-w-lg mx-auto mb-12 rounded-full" />
+
+          {/* Skeleton for Promo Cards */}
           <div className="grid grid-cols-1 gap-6 md:grid-cols-2 lg:grid-cols-3">
             {Array.from({ length: 6 }).map((_, index) => (
-              <Skeleton key={index} className="h-44 rounded-2xl" />
+              <div key={index} className="flex p-4 bg-gray-200 h-44 rounded-2xl animate-pulse">
+                <div className="flex flex-col items-center justify-center w-1/3 pr-4 border-r-2 border-gray-300 border-dashed">
+                    <Skeleton className="w-8 h-8 rounded-full"/>
+                    <Skeleton className="w-16 h-5 mt-2"/>
+                </div>
+                <div className="flex flex-col justify-between w-2/3 pl-4">
+                    <div className="space-y-2">
+                        <Skeleton className="w-full h-8"/>
+                        <Skeleton className="w-full h-12"/>
+                    </div>
+                    <Skeleton className="w-full h-10 mt-2"/>
+                </div>
+              </div>
             ))}
           </div>
         </div>
@@ -150,7 +167,7 @@ const PromoPage = () => {
 
                 return (
                     <motion.div variants={cardVariants} key={item.id} className="h-full">
-                    <div className="relative flex flex-col h-full overflow-hidden text-white transition-transform duration-300 transform shadow-lg bg-gradient-to-r from-blue-500 to-blue-600 rounded-2xl hover:-translate-y-1">
+                    <div className="relative flex flex-col h-full overflow-hidden text-white transition-transform duration-300 transform shadow-lg bg-gradient-to-r from-blue-600 to-cyan-600 rounded-2xl hover:-translate-y-1 group">
                         <div className="flex w-full">
                         <div className="absolute w-6 h-6 -translate-y-1/2 rounded-full top-1/2 -left-3 bg-gray-50"></div>
                         <div className="absolute w-6 h-6 -translate-y-1/2 rounded-full top-1/2 -right-3 bg-gray-50"></div>
@@ -197,7 +214,7 @@ const PromoPage = () => {
                         </div>
                         <Button
                             onClick={() => handleViewDetail(item.id)}
-                            className="text-xs font-bold text-white bg-slate-800 hover:bg-slate-600 shrink-0"
+                            className="text-xs font-bold text-white transition-colors duration-200 bg-blue-700 hover:bg-blue-800 shrink-0"
                         >
                             View Details
                         </Button>

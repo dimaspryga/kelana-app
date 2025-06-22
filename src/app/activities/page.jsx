@@ -224,12 +224,15 @@ const Activity = () => {
                           </div>
                           <span className="text-gray-500">({item.total_reviews} reviews)</span>
                         </div>
-                        <h3 className="h-12 mt-1 text-base font-bold text-gray-900 line-clamp-2 group-hover:text-blue-600" title={item.title}>
+                        <h3 className="h-8 mt-1 text-base font-bold text-gray-900 line-clamp-2 group-hover:text-blue-600" title={item.title}>
                           {item.title || "No title"}
                         </h3>
                         <div className="flex items-center mt-1 text-xs text-gray-500">
                           <MapPin size={14} className="mr-1.5 flex-shrink-0" />
                           <p className="truncate">{item.address}</p>
+                        </div>
+                        <div className="flex items-center mt-2 text-xs text-gray-500">
+                          <p className="truncate">{item.description}</p>
                         </div>
                       </CardBody>
                     </Link>

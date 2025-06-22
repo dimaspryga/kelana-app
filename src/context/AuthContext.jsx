@@ -118,7 +118,7 @@ export const AuthProvider = ({ children }) => {
       deleteCookie("token");
       setUser(null);
       toast.success("Logout successful!");
-      router.push('/login');
+      router.push('/');
     }
   };
 

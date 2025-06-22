@@ -48,27 +48,46 @@ const formatCurrency = (amount) =>
 
 // --- Sub-components for better organization ---
 
-// 1. NavLink Component
+// 1. NavLink Component (Diperbarui dengan animasi "pill" yang lebih modern)
 const NavLink = ({ href, children }) => {
   const pathname = usePathname();
   const isActive =
     pathname === href || (href !== "/" && pathname.startsWith(href));
+  const [isHovered, setIsHovered] = useState(false);
 
   return (
     <Link
       href={href}
+      onMouseEnter={() => setIsHovered(true)}
+      onMouseLeave={() => setIsHovered(false)}
       className={cn(
-        "relative px-3 py-2 text-sm font-medium transition-colors duration-300",
-        isActive ? "text-blue-600" : "text-gray-600 hover:text-blue-600"
+        "relative px-4 py-2 text-sm font-medium rounded-full",
+        isActive ? "text-blue-600" : "text-gray-500"
       )}
     >
-      {children}
+      <span className="relative z-10 transition-colors duration-200">
+        {children}
+      </span>
       {isActive && (
-        <motion.span
-          layoutId="underline"
-          className="absolute bottom-[-2px] left-0 block w-full h-0.5 bg-blue-600 rounded-full"
+        <motion.div
+          layoutId="active-nav-pill"
+          className="absolute inset-0 bg-blue-100 rounded-full"
+          style={{ zIndex: 0 }}
+          transition={{ type: "spring", stiffness: 350, damping: 30 }}
         />
       )}
+      <AnimatePresence>
+        {!isActive && isHovered && (
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            transition={{ duration: 0.2 }}
+            className="absolute inset-0 bg-gray-100 rounded-full"
+            style={{ zIndex: 0 }}
+          />
+        )}
+      </AnimatePresence>
     </Link>
   );
 };
@@ -224,7 +243,7 @@ const AuthButtons = () => {
 
 // --- Main Navbar Component ---
 const Navbar = () => {
-  const { user, loading } = useAuth();
+  const { user, loading, logout } = useAuth();
   const router = useRouter();
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const [isScrolled, setIsScrolled] = useState(false);
@@ -304,6 +323,34 @@ const Navbar = () => {
                   </Link>
                 ))}
               </nav>
+              {/* Profile Links for Mobile */}
+              {user && (
+                <div className="pt-4 mt-4 border-t">
+                  <Button
+                    variant="ghost"
+                    className="justify-start w-full"
+                    onClick={() => handleMobileLinkClick("/profile")}
+                  >
+                    <User className="w-4 h-4 mr-2" /> My Profile
+                  </Button>
+                  <Button
+                    variant="ghost"
+                    className="justify-start w-full"
+                    onClick={() => handleMobileLinkClick("/transaction")}
+                  >
+                    <Ticket className="w-4 h-4 mr-2" /> My Transactions
+                  </Button>
+                  {user.role === "admin" && (
+                    <Button
+                      variant="ghost"
+                      className="justify-start w-full"
+                      onClick={() => handleMobileLinkClick("/dashboard")}
+                    >
+                      <LayoutDashboard className="w-4 h-4 mr-2" /> Dashboard
+                    </Button>
+                  )}
+                </div>
+              )}
               <div className="pt-4 mt-auto border-t">
                 {isLoading ? (
                   <div className="space-y-2">
@@ -379,13 +426,13 @@ const Navbar = () => {
                 </Link>
               )}
             </div>
-            <nav className="items-center hidden px-4 py-2 space-x-2 rounded-full shadow-inner md:flex bg-white/60 backdrop-blur-sm">
+            <nav className="items-center hidden px-2 py-2 space-x-1 rounded-full shadow-inner bg-white/60 backdrop-blur-sm md:flex">
               {isLoading ? (
                 <>
-                  <Skeleton className="w-16 h-5" />
-                  <Skeleton className="w-24 h-5" />
-                  <Skeleton className="w-20 h-5" />
-                  <Skeleton className="w-16 h-5" />
+                  <Skeleton className="w-20 rounded-full h-9" />
+                  <Skeleton className="w-24 rounded-full h-9" />
+                  <Skeleton className="w-24 rounded-full h-9" />
+                  <Skeleton className="w-20 rounded-full h-9" />
                 </>
               ) : (
                 navItems.map((item) => (
@@ -442,7 +489,7 @@ const Navbar = () => {
           </div>
         </div>
       </header>
-      {!isLoading && <MobileMenu />}
+      <MobileMenu />
     </>
   );
 };
