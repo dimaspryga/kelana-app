@@ -89,7 +89,7 @@ const getDisplayStatus = (transaction) => {
   if (status === "pending") {
     if (hasProof)
       return { label: "Waiting for Confirmation", Icon: FileCheck2 };
-    return { label: "Waiting for Payment", Icon: Clock };
+    return { label: "Waiting for Payment Proof", Icon: Clock };
   }
   if (status === "paid" || status === "success")
     return { label: "Success", Icon: CheckCircle2 };
@@ -461,7 +461,7 @@ const TransactionPage = () => {
             </Badge>
           </TabsTrigger>
           <TabsTrigger value="unpaid">
-            Unpaid{" "}
+            Pending{" "}
             <Badge variant="secondary" className="ml-2">
               {transactionCounts.unpaid}
             </Badge>

@@ -15,7 +15,6 @@ export const useActivityByCategory = (id) => {
           },
         }
       );
-      console.log("API Response:", response.data.data); // debug
       setActivityByCategory(response.data.data || []);
     } catch (error) {
       console.error("API Error:", error);

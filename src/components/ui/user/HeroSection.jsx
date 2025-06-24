@@ -58,8 +58,7 @@ const HeroSection = () => {
     isCategoryLoading || isBannerLoading || isActivityLoading || isPromoLoading;
 
   const heroBanner =
-    banners?.find((b) => b.id === "6494fb6d-2348-4a73-967a-692576163faa") ||
-    banners?.[0];
+    banners?.find((b) => b.id === "b1ddff4e-0a33-4842-9e2f-dbcac93d6faf") || "src/assets/header.png";
 
   // --- LOGIKA PENCARIAN DINAMIS ---
   const filteredResults = useMemo(() => {

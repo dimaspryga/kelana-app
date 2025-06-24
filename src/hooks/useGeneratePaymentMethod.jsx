@@ -23,7 +23,7 @@ export const useGeneratePaymentMethod = () => {
       // - Parameter kedua adalah 'payload' (body dari request)
       // - Parameter ketiga adalah objek konfigurasi yang berisi 'headers'
       const response = await axios.post(
-        "https://travel-journal-api-bootcamp.do.dibimbing.id/api/v1/generate-payment-methods", // Endpoint ini lebih mungkin untuk membuat booking/transaksi
+        "https://travel-journal-api-bootcamp.do.dibimbing.id/api/v1/generate-payment-methods", 
         payload, // Body request berisi detail booking
         {
           headers: {

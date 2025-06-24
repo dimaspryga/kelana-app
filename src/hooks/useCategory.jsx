@@ -1,9 +1,14 @@
 import axios from "axios";
-import { useEffect, useState } from "react";
+import { useEffect, useState, useCallback } from "react";
 
 export const useCategory = () => {
   const [category, setCategory] = useState([]);
-  const getCatergory = async () => {
+  const [isLoading, setIsLoading] = useState(true);
+  const [error, setError] = useState(null);
+
+  const fetchCategories = useCallback(async () => {
+    setIsLoading(true);
+    setError(null);
     try {
       const response = await axios.get(
         "https://travel-journal-api-bootcamp.do.dibimbing.id/api/v1/categories",
@@ -14,19 +19,23 @@ export const useCategory = () => {
           },
         }
       );
-      console.log(response.data);
-      setCategory(response.data.data);
-    } catch (error) {
-      console.error(error);
+      setCategory(response.data.data || []);
+    } catch (err) {
+      console.error("Failed to fetch categories:", err);
+      setError(err);
+    } finally {
+      setIsLoading(false);
     }
-  };
+  }, []);
 
   useEffect(() => {
-    getCatergory();
-  }, []);
+    fetchCategories();
+  }, [fetchCategories]);
 
   return {
     category,
-    getCatergory,
+    isLoading,
+    error,
+    refetch: fetchCategories, 
   };
 };

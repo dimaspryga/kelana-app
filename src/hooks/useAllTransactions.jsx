@@ -22,17 +22,16 @@ api.interceptors.request.use((config) => {
 
 const fetcher = (url) => api.get(url).then((res) => res.data);
 
-// Mengganti usePromo lama dengan usePromos berbasis SWR
-export const usePromo = () => {
-  // Endpoint untuk mengambil semua promo
-  const { data, error, isLoading, mutate } = useSWR("/promos", fetcher, {
+// Hook untuk mengambil semua data transaksi
+export const useAllTransactions = () => {
+  const { data, error, isLoading, mutate } = useSWR("/all-transactions", fetcher, {
     revalidateOnFocus: false,
   });
 
   return {
-    promo: data?.data || [],
+    transactions: data?.data || [],
     isLoading,
     error,
-    mutate, // Ini akan menggantikan 'refetch'
+    mutate,
   };
 };

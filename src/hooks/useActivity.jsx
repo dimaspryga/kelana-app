@@ -1,10 +1,15 @@
 import axios from "axios";
-import { useState, useEffect } from "react";
+import { useState, useEffect, useCallback } from "react";
 
 export const useActivity = () => {
   const [activity, setActivity] = useState([]);
+  const [isLoading, setIsLoading] = useState(true);
+  const [error, setError] = useState(null);
 
-  const getActivity = async () => {
+
+  const fetchActivities = useCallback(async () => {
+    setIsLoading(true);
+    setError(null);
     try {
       const response = await axios.get(
         "https://travel-journal-api-bootcamp.do.dibimbing.id/api/v1/activities",
@@ -15,19 +20,27 @@ export const useActivity = () => {
           },
         }
       );
-      console.log(response.data);
-      setActivity(response.data.data);
-    } catch (error) {
-      console.error(error);
+
+      setActivity(response.data.data || []);
+    } catch (err) {
+      console.error("Error fetching activities:", err);
+
+      setError(err);
+    } finally {
+      setIsLoading(false);
     }
-  };
+  }, []);
+
 
   useEffect(() => {
-    getActivity();
-  }, []);
+    fetchActivities();
+  }, [fetchActivities]);
+
 
   return {
     activity,
-    getActivity,
+    isLoading,
+    error,
+    refetch: fetchActivities,
   };
 };

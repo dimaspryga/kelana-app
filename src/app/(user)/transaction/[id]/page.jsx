@@ -35,7 +35,7 @@ const getDisplayStatus = (transaction) => {
 
   if (status === 'pending') {
     if (hasProof) return { label: 'Waiting for Confirmation', Icon: FileCheck2 };
-    return { label: 'Waiting for Payment', Icon: Clock };
+    return { label: 'Waiting for Payment Proof', Icon: Clock };
   }
   if (status === 'paid' || status === 'success') return { label: 'Payment Successful', Icon: CheckCircle2 };
   if (status === 'cancelled') return { label: 'Transaction Cancelled', Icon: XCircle };

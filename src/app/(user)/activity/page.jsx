@@ -204,7 +204,7 @@ const Activity = () => {
               {currentActivities.map((item) => (
                 <motion.div variants={cardVariants} key={item.id}>
                   <Card className="flex flex-col w-full h-full overflow-hidden transition-all duration-300 bg-white shadow-md rounded-xl hover:shadow-2xl hover:-translate-y-1 group">
-                    <Link href={`/activities/${item.id}`} className="block">
+                    <Link href={`/activity/${item.id}`} className="block">
                       <div className="relative overflow-hidden">
                         <img
                           alt={item.title || "Activity image"}

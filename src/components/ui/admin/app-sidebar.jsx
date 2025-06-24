@@ -1,28 +1,23 @@
-"use client"
+"use client";
 
-import * as React from "react"
+import * as React from "react";
 import {
   IconCamera,
-  IconChartBar,
+  IconCategory,
   IconDashboard,
-  IconDatabase,
   IconFileAi,
   IconFileDescription,
-  IconFileWord,
   IconFolder,
-  IconHelp,
   IconInnerShadowTop,
   IconListDetails,
   IconReport,
-  IconSearch,
-  IconSettings,
+  IconTicket,
   IconUsers,
-} from "@tabler/icons-react"
+} from "@tabler/icons-react";
 
-import { NavDocuments } from "@/components/ui/admin/nav-documents"
-import { NavMain } from "@/components/ui/admin/nav-main"
-import { NavSecondary } from "@/components/ui/admin/nav-secondary"
-import { NavUser } from "@/components/ui/admin/nav-user"
+import { NavDocuments } from "@/components/ui/admin/nav-documents";
+import { NavMain } from "@/components/ui/admin/nav-main";
+import { NavUser } from "@/components/ui/admin/nav-user";
 import {
   Sidebar,
   SidebarContent,
@@ -31,7 +26,7 @@ import {
   SidebarMenu,
   SidebarMenuButton,
   SidebarMenuItem,
-} from "@/components/ui/sidebar"
+} from "@/components/ui/sidebar";
 
 const data = {
   user: {
@@ -42,28 +37,33 @@ const data = {
   navMain: [
     {
       title: "Dashboard",
-      url: "#",
+      url: "/dashboard",
       icon: IconDashboard,
     },
     {
+      title: "Users Management",
+      url: "/users",
+      icon: IconUsers,
+    },
+    {
       title: "Banners",
-      url: "#",
+      url: "/banners",
       icon: IconListDetails,
     },
     {
       title: "Categories",
-      url: "#",
-      icon: IconChartBar,
+      url: "/categories",
+      icon: IconCategory,
     },
     {
       title: "Activities",
-      url: "#",
+      url: "/activities",
       icon: IconFolder,
     },
     {
       title: "Promos",
-      url: "#",
-      icon: IconUsers,
+      url: "/promos",
+      icon: IconTicket,
     },
   ],
   navClouds: [
@@ -114,46 +114,25 @@ const data = {
       ],
     },
   ],
-  navSecondary: [
-    {
-      title: "Settings",
-      url: "#",
-      icon: IconSettings,
-    },
-    {
-      title: "Get Help",
-      url: "#",
-      icon: IconHelp,
-    },
-    {
-      title: "Search",
-      url: "#",
-      icon: IconSearch,
-    },
-  ],
   documents: [
     {
-      name: "Users Management",
-      url: "#",
-      icon: IconDatabase,
-    },
-    {
       name: "Data Order",
-      url: "#",
+      url: "/transactions",
       icon: IconReport,
     },
   ],
-}
+};
 
-export function AppSidebar({
-  ...props
-}) {
+export function AppSidebar({ ...props }) {
   return (
     <Sidebar collapsible="offcanvas" {...props}>
       <SidebarHeader>
         <SidebarMenu>
           <SidebarMenuItem>
-            <SidebarMenuButton asChild className="data-[slot=sidebar-menu-button]:!p-1.5">
+            <SidebarMenuButton
+              asChild
+              className="data-[slot=sidebar-menu-button]:!p-1.5"
+            >
               <a href="#">
                 <IconInnerShadowTop className="!size-5" />
                 <span className="text-base font-semibold">Acme Inc.</span>
@@ -165,7 +144,6 @@ export function AppSidebar({
       <SidebarContent>
         <NavMain items={data.navMain} />
         <NavDocuments items={data.documents} />
-        <NavSecondary items={data.navSecondary} className="mt-auto" />
       </SidebarContent>
       <SidebarFooter>
         <NavUser user={data.user} />

@@ -1,5 +1,13 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useCallback } from "react";
 import axios from "axios";
+
+const api = axios.create({
+  baseURL: "https://travel-journal-api-bootcamp.do.dibimbing.id/api/v1",
+  headers: {
+    apiKey: "24405e01-fbc1-45a5-9f5a-be13afcd757c",
+    "Content-Type": "application/json",
+  },
+});
 
 export const useBanner = () => {
   const [banner, setBanner] = useState([]);
@@ -7,29 +15,24 @@ export const useBanner = () => {
   const [isError, setIsError] = useState(false);
   const [error, setError] = useState(null);
 
-  const getBanner = async () => {
+  const getBanner = useCallback(async () => {
+    setLoading(true);
     try {
-      const response = await axios.get(
-        "https://travel-journal-api-bootcamp.do.dibimbing.id/api/v1/banners",
-        {
-          headers: {
-            "Content-Type": "application/json",
-            apiKey: "24405e01-fbc1-45a5-9f5a-be13afcd757c",
-          },
-        }
-      );
-      console.log(response.data);
-      setBanner(response.data.data);
+      const response = await api.get("/banners");
+      setBanner(response.data.data || []);
+      setIsError(false);
     } catch (error) {
-      console.error(error);
+      console.error("Gagal mengambil data banner:", error);
       setIsError(true);
       setError(error);
+    } finally {
+      setLoading(false);
     }
-  };
+  }, []);
 
   useEffect(() => {
     getBanner();
-  }, []);
+  }, [getBanner]);
 
   return {
     banner,
