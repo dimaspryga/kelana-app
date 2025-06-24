@@ -49,7 +49,7 @@ const ActivityCard = ({ activityItem, handleAddToCart, addingItemId }) => {
   return (
     <motion.div variants={itemVariants} className="h-full">
       <div className="flex flex-col h-full overflow-hidden transition-all duration-300 bg-white rounded-lg shadow-md group hover:shadow-xl hover:-translate-y-1">
-        <Link href={`/activities/${activityItem.id}`} className="flex flex-col flex-grow">
+        <Link href={`/activity/${activityItem.id}`} className="flex flex-col flex-grow">
           <div className="relative overflow-hidden">
             <img
               src={activityItem.imageUrls[0]}
@@ -187,7 +187,7 @@ const ActivitySection = () => {
             </p>
           </div>
           <Button asChild variant="outline" className="hidden sm:flex">
-            <Link href="/activities">View All</Link>
+            <Link href="/activity">View All</Link>
           </Button>
         </div>
 

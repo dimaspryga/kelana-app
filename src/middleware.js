@@ -13,7 +13,7 @@ export async function middleware(request) {
 
     // Grup rute
     const adminOnlyRoutes = ['/dashboard', '/admin'];
-    const userRoutesThatRequireLogin = ['/cart', '/transaction', '/profile'];
+    const userRoutesThatRequireLogin = ['/cart', '/transactions', '/profile, /activities, /promos, /banners, /categories, /dashboard, /users'];
     const adminForbiddenRoutes = ['/', '/banner', '/category', '/activity', '/promo', '/cart', '/transaction', '/profile'];
     const authRoutes = ['/login', '/register'];
 

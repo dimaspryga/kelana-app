@@ -192,7 +192,7 @@ const DetailPromo = ({ params }) => {
                 </div>
 
                 <Button asChild className="w-full py-3 mt-6 text-lg font-bold text-white transition duration-300 bg-blue-500 rounded-lg shadow-md hover:bg-blue-600 focus:outline-none focus:ring-2 focus:ring-orange-500 focus:ring-opacity-50">
-                    <Link href="/activities">View Activities</Link>
+                    <Link href="/activity">View Activities</Link>
                 </Button>
               </div>
             </div>
@@ -220,7 +220,7 @@ const DetailPromo = ({ params }) => {
                     >
                     <motion.div variants={cardVariants}>
                         <Link
-                            href={`/activities/${rec.id}`}
+                            href={`/activity/${rec.id}`}
                             className="block h-full p-1 transition-transform duration-300 ease-in-out cursor-pointer hover:-translate-y-2"
                         >
                             <div className="flex flex-col h-full overflow-hidden transition-shadow bg-white rounded-lg shadow-md hover:shadow-xl">

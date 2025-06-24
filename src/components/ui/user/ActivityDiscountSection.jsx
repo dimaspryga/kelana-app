@@ -46,7 +46,7 @@ const ActivityCard = ({ activityItem, handleAddToCart, addingItemId }) => {
   return (
     <motion.div variants={itemVariants} className="h-full">
       <div className="flex flex-col h-full overflow-hidden transition-all duration-300 bg-white rounded-lg shadow-md group hover:shadow-xl hover:-translate-y-1">
-        <Link href={`/activities/${activityItem.id}`} className="block">
+        <Link href={`/activity/${activityItem.id}`} className="block">
           <div className="relative overflow-hidden">
             <img
               src={activityItem.imageUrls[0]}

@@ -181,7 +181,7 @@ const DetailCategory = ({ params }) => {
                   Explore all the exciting activities available in the '{detailCategory.name}' category.
                 </p>
                 <Button asChild className="w-full py-3 mt-6 text-lg font-bold text-white transition duration-300 bg-blue-500 rounded-lg shadow-md hover:bg-blue-600">
-                  <Link href="/activities">View All Activities</Link>
+                  <Link href="/activity">View All Activities</Link>
                 </Button>
               </div>
             </div>
@@ -199,7 +199,7 @@ const DetailCategory = ({ params }) => {
                     {activityByCategory.map((rec) => (
                     <CarouselItem key={rec.id} className="pl-2 md:pl-4 basis-full sm:basis-1/2 lg:basis-1/3 xl:basis-1/4">
                         <motion.div variants={cardVariants}>
-                            <Link href={`/activities/${rec.id}`} className="block h-full group">
+                            <Link href={`/activity/${rec.id}`} className="block h-full group">
                                 <div className="flex flex-col h-full overflow-hidden transition-shadow bg-white rounded-lg shadow-md hover:shadow-xl">
                                     <div className="relative w-full h-40">
                                         <img

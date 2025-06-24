@@ -179,7 +179,7 @@ const DetailActivity = ({ params }) => {
                 <BreadcrumbSeparator><ChevronRight /></BreadcrumbSeparator>
                 <BreadcrumbItem>
                     <BreadcrumbLink asChild>
-                        <Link href="/activities">Activities</Link>
+                        <Link href="/activity">Activities</Link>
                     </BreadcrumbLink>
                 </BreadcrumbItem>
                 <BreadcrumbSeparator><ChevronRight /></BreadcrumbSeparator>
@@ -340,7 +340,7 @@ const DetailActivity = ({ params }) => {
                     {activityByCategory.map((rec) => (
                         <CarouselItem key={rec.id} className="pl-2 md:pl-4 basis-full sm:basis-1/2 lg:basis-1/3 xl:basis-1/4">
                             <motion.div variants={itemVariants}>
-                                <Link href={`/activities/${rec.id}`} className="block h-full group">
+                                <Link href={`/activitiy/${rec.id}`} className="block h-full group">
                                     <div className="flex flex-col h-full overflow-hidden transition-shadow bg-white rounded-lg shadow-md hover:shadow-xl">
                                         <div className="relative w-full h-40">
                                             <img src={rec.imageUrls?.[0] || DEFAULT_ACTIVITY_IMAGE} alt={rec.title || "Activity"} className="absolute inset-0 object-cover w-full h-full" onError={(e) => { e.currentTarget.onerror = null; e.currentTarget.src = "/assets/error.png"; }} />

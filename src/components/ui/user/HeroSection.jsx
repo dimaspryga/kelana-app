@@ -58,7 +58,7 @@ const HeroSection = () => {
     isCategoryLoading || isBannerLoading || isActivityLoading || isPromoLoading;
 
   const heroBanner =
-    banners?.find((b) => b.id === "b1ddff4e-0a33-4842-9e2f-dbcac93d6faf") || "src/assets/header.png";
+    banners?.find((b) => b.id === "9b0f60df-4e08-421e-b2b5-10c2aa516a97") || "src/assets/header.png";
 
   // --- LOGIKA PENCARIAN DINAMIS ---
   const filteredResults = useMemo(() => {
@@ -192,7 +192,7 @@ const HeroSection = () => {
                             className="flex items-center gap-2 p-2 rounded-md cursor-pointer text-foreground hover:bg-blue-50"
                             key={activity.id}
                             onSelect={() =>
-                              handleSelect(`/activities/${activity.id}`)
+                              handleSelect(`/activity/${activity.id}`)
                             }
                           >
                             <Plane className="w-4 h-4 text-gray-500" />

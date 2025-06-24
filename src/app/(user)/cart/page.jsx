@@ -255,7 +255,7 @@ const CartPage = () => {
       <div className="flex flex-col items-center justify-center min-h-[80vh]">
         <ShoppingCart className="w-24 h-24 text-gray-300" />
         <h1 className="mt-6 text-3xl font-bold">Your Cart is Empty</h1>
-        <Button className="mt-4" onClick={() => router.push("/activities")}>
+        <Button className="mt-4" onClick={() => router.push("/activity")}>
           Find Activities
         </Button>
       </div>

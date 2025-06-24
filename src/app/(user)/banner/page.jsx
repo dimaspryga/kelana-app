@@ -147,9 +147,6 @@ const BannerPage = () => {
                 >
                   {item.name}
                 </b>
-                <p className="mt-1 text-sm text-gray-600 truncate">
-                  Lihat promo menarik!
-                </p>
               </div>
             </CardFooter>
           </Card>
