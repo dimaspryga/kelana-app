@@ -1,93 +1,24 @@
-"use client"
+"use client";
 
-import {
-  IconCreditCard,
-  IconDotsVertical,
-  IconLogout,
-  IconUserCircle,
-} from "@tabler/icons-react"
+import React from 'react';
+import { LogOut } from 'lucide-react';
 
-import {
-  Avatar,
-  AvatarFallback,
-  AvatarImage,
-} from "@/components/ui/avatar"
-import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuGroup,
-  DropdownMenuItem,
-  DropdownMenuLabel,
-  DropdownMenuSeparator,
-  DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu"
-import {
-  SidebarMenu,
-  SidebarMenuButton,
-  SidebarMenuItem,
-  useSidebar,
-} from "@/components/ui/sidebar"
+export function NavUser({ user }) {
+    // Diasumsikan `user` adalah prop yang berisi { name, email, avatar }
+    if (!user) return null;
 
-export function NavUser({
-  user
-}) {
-  const { isMobile } = useSidebar()
-
-  return (
-    <SidebarMenu>
-      <SidebarMenuItem>
-        <DropdownMenu>
-          <DropdownMenuTrigger asChild>
-            <SidebarMenuButton
-              size="lg"
-              className="data-[state=open]:bg-sidebar-accent data-[state=open]:text-sidebar-accent-foreground">
-              <Avatar className="w-8 h-8 rounded-lg grayscale">
-                <AvatarImage src={user.avatar} alt={user.name} />
-                <AvatarFallback className="rounded-lg">CN</AvatarFallback>
-              </Avatar>
-              <div className="grid flex-1 text-sm leading-tight text-left">
-                <span className="font-medium truncate">{user.name}</span>
-                <span className="text-xs truncate text-muted-foreground">
-                  {user.email}
-                </span>
-              </div>
-              <IconDotsVertical className="ml-auto size-4" />
-            </SidebarMenuButton>
-          </DropdownMenuTrigger>
-          <DropdownMenuContent
-            className="w-(--radix-dropdown-menu-trigger-width) min-w-56 rounded-lg"
-            side={isMobile ? "bottom" : "right"}
-            align="end"
-            sideOffset={4}>
-            <DropdownMenuLabel className="p-0 font-normal">
-              <div className="flex items-center gap-2 px-1 py-1.5 text-left text-sm">
-                <Avatar className="w-8 h-8 rounded-lg">
-                  <AvatarImage src={user.avatar} alt={user.name} />
-                  <AvatarFallback className="rounded-lg">CN</AvatarFallback>
-                </Avatar>
-                <div className="grid flex-1 text-sm leading-tight text-left">
-                  <span className="font-medium truncate">{user.name}</span>
-                  <span className="text-xs truncate text-muted-foreground">
-                    {user.email}
-                  </span>
+    return (
+        <div className="flex items-center justify-between p-2.5 bg-gray-100 rounded-lg dark:bg-gray-800">
+            <div className="flex items-center gap-3 text-sm text-gray-700 dark:text-gray-200">
+                <img className="object-cover w-8 h-8 rounded-full" src={user.avatar} alt="User Avatar" />
+                <div>
+                    <p className="font-semibold">{user.name}</p>
+                    <p className="text-xs text-gray-500 dark:text-gray-400">{user.email}</p>
                 </div>
-              </div>
-            </DropdownMenuLabel>
-            <DropdownMenuSeparator />
-            <DropdownMenuGroup>
-              <DropdownMenuItem>
-                <IconUserCircle />
-                Account
-              </DropdownMenuItem>
-            </DropdownMenuGroup>
-            <DropdownMenuSeparator />
-            <DropdownMenuItem>
-              <IconLogout />
-              Log out
-            </DropdownMenuItem>
-          </DropdownMenuContent>
-        </DropdownMenu>
-      </SidebarMenuItem>
-    </SidebarMenu>
-  );
-}
+            </div>
+            <button className="p-1 rounded-full hover:bg-gray-200 dark:hover:bg-gray-700">
+                <LogOut className="w-5 h-5 text-gray-500 dark:text-gray-400"/>
+            </button>
+        </div>
+    );
+};

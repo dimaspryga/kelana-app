@@ -158,7 +158,7 @@ const UserManagementPage = () => {
 
         <div className="overflow-hidden bg-white border rounded-lg">
           <Table>
-            <TableHeader className="bg-blue-100">
+            <TableHeader className="bg-slate-100">
               <TableRow>
                 {/* Kolom Avatar dan Nama digabung menjadi "User" */}
                 <TableHead className="px-6">User</TableHead>

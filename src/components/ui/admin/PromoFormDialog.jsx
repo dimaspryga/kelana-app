@@ -1,6 +1,8 @@
 "use client";
 
 import React, { useState, useEffect, useRef } from "react";
+// Import the image upload hook
+import { useUploadImage } from "@/hooks/useUploadImage";
 import { usePromoActions } from "@/hooks/usePromoActions";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -8,10 +10,16 @@ import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { Loader2, ImagePlus } from "lucide-react";
+import { toast } from "sonner";
 
 export const PromoFormDialog = ({ promo, isOpen, setIsOpen, onSuccess }) => {
-    const { createPromo, updatePromo, isLoading } = usePromoActions();
+    // Get the image upload function and its loading state
+    const { uploadImage, isLoading: isUploading } = useUploadImage();
+    const { createPromo, updatePromo, isMutating: isSubmitting } = usePromoActions();
     
+    // Combine loading states for the button
+    const isLoading = isUploading || isSubmitting;
+
     const [formState, setFormState] = useState({
         title: '',
         description: '',
@@ -59,17 +67,48 @@ export const PromoFormDialog = ({ promo, isOpen, setIsOpen, onSuccess }) => {
     };
 
     const handleSubmit = async () => {
-        const data = { ...formState, imageFile };
+        // Validation for required fields
+        if (!isEditMode && !imageFile) {
+            toast.error("A promo image is required.");
+            return;
+        }
+        if (!formState.title.trim()) {
+            toast.error("The title field is required.");
+            return;
+        }
+        
         try {
+            let finalImageUrl = isEditMode ? promo.imageUrl : '';
+
+            // Step 1: Upload image first IF a new file is selected
+            if (imageFile) {
+                finalImageUrl = await uploadImage(imageFile);
+            }
+
+            // If for some reason the image upload returns no URL
+            if (!finalImageUrl) {
+                toast.error("Failed to upload image. Cannot proceed.");
+                return;
+            }
+
+            // Step 2: Prepare the final data payload
+            const data = { 
+                ...formState,
+                imageUrl: finalImageUrl,
+            };
+            
+            // Step 3: Call the appropriate action (create or update)
             if (isEditMode) {
                 await updatePromo(promo.id, data);
             } else {
                 await createPromo(data);
             }
-            onSuccess();
+
+            onSuccess(); // This calls mutate() from the parent page
             setIsOpen(false);
         } catch (error) {
             console.error("Form submission failed", error);
+            // Error is already toasted inside the action hook, so no need to toast again here.
         }
     };
 
@@ -78,25 +117,28 @@ export const PromoFormDialog = ({ promo, isOpen, setIsOpen, onSuccess }) => {
             <DialogContent className="sm:max-w-[600px] max-h-[90vh] overflow-y-auto">
                 <DialogHeader>
                     <DialogTitle>{isEditMode ? 'Edit Promo' : 'Create New Promo'}</DialogTitle>
-                    <DialogDescription>{isEditMode ? 'Update details for this promo.' : 'Fill in the details for a new promo.'}</DialogDescription>
+                    <DialogDescription>{isEditMode ? 'Update the details for this promo.' : 'Fill in the details for the new promo.'}</DialogDescription>
                 </DialogHeader>
                 <div className="grid gap-4 py-4">
                     <div className="relative flex items-center justify-center w-full h-40 border-2 border-dashed rounded-lg cursor-pointer bg-gray-50 hover:bg-gray-100" onClick={() => fileInputRef.current?.click()}>
                         {previewUrl ? <img src={previewUrl} alt="Preview" className="object-cover w-full h-full rounded-md" /> : <div className="text-center text-gray-500"><ImagePlus className="w-8 h-8 mx-auto" /><p className="mt-2 text-sm">Upload Image</p></div>}
                         <Input ref={fileInputRef} type="file" className="hidden" accept="image/*" onChange={handleFileChange} />
                     </div>
-                    <div className="space-y-2"><Label>Title</Label><Input id="title" value={formState.title} onChange={handleInputChange} /></div>
-                    <div className="space-y-2"><Label>Description</Label><Textarea id="description" value={formState.description} onChange={handleInputChange} /></div>
-                    <div className="space-y-2"><Label>Terms & Conditions</Label><Textarea id="terms_condition" value={formState.terms_condition} onChange={handleInputChange} /></div>
+                    <div className="space-y-2"><Label htmlFor="title">Title</Label><Input id="title" value={formState.title} onChange={handleInputChange} /></div>
+                    <div className="space-y-2"><Label htmlFor="description">Description</Label><Textarea id="description" value={formState.description} onChange={handleInputChange} /></div>
+                    <div className="space-y-2"><Label htmlFor="terms_condition">Terms & Conditions</Label><Textarea id="terms_condition" value={formState.terms_condition} onChange={handleInputChange} /></div>
                     <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
-                        <div className="space-y-2"><Label>Promo Code</Label><Input id="promo_code" value={formState.promo_code} onChange={handleInputChange} /></div>
-                        <div className="space-y-2"><Label>Discount Price (IDR)</Label><Input id="promo_discount_price" type="number" value={formState.promo_discount_price} onChange={handleInputChange} /></div>
+                        <div className="space-y-2"><Label htmlFor="promo_code">Promo Code</Label><Input id="promo_code" value={formState.promo_code} onChange={handleInputChange} /></div>
+                        <div className="space-y-2"><Label htmlFor="promo_discount_price">Discount Price (IDR)</Label><Input id="promo_discount_price" type="number" value={formState.promo_discount_price} onChange={handleInputChange} /></div>
                     </div>
-                    <div className="space-y-2"><Label>Minimum Claim Price (IDR)</Label><Input id="minimum_claim_price" type="number" value={formState.minimum_claim_price} onChange={handleInputChange} /></div>
+                    <div className="space-y-2"><Label htmlFor="minimum_claim_price">Minimum Claim Price (IDR)</Label><Input id="minimum_claim_price" type="number" value={formState.minimum_claim_price} onChange={handleInputChange} /></div>
                 </div>
                 <DialogFooter>
                     <Button variant="outline" onClick={() => setIsOpen(false)}>Cancel</Button>
-                    <Button onClick={handleSubmit} disabled={isLoading} className="bg-blue-600 hover:bg-blue-700">{isLoading && <Loader2 className="w-4 h-4 mr-2 animate-spin" />}{isEditMode ? 'Save Changes' : 'Create Promo'}</Button>
+                    <Button onClick={handleSubmit} disabled={isLoading} className="bg-blue-600 hover:bg-blue-700">
+                        {isLoading ? <Loader2 className="w-4 h-4 mr-2 animate-spin"/> : null}
+                        {isEditMode ? 'Save Changes' : 'Create Promo'}
+                    </Button>
                 </DialogFooter>
             </DialogContent>
         </Dialog>

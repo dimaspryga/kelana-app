@@ -25,7 +25,7 @@ import {
 } from "@/components/ui/pagination";
 import { Badge } from "@/components/ui/badge";
 import { Frown, PlusCircle, Edit, Trash2, Search, Loader2 } from "lucide-react";
-import { PromoFormDialog } from "@/components/ui/admin/EditPromoDialog";
+import { PromoFormDialog } from "@/components/ui/admin/PromoFormDialog";
 import {
   AlertDialog,
   AlertDialogAction,
@@ -149,7 +149,7 @@ const PromoManagementPage = () => {
             <AlertDialogAction
               onClick={confirmDelete}
               disabled={isDeleting}
-              className="bg-red-600 hover:bg-red-700"
+              className="bg-red-600 cursor-pointer hover:bg-red-700"
             >
               {isDeleting && <Loader2 className="w-4 h-4 mr-2 animate-spin" />}
               Delete
@@ -172,7 +172,7 @@ const PromoManagementPage = () => {
           </div>
           <Button
             onClick={handleCreateClick}
-            className="bg-blue-600 hover:bg-blue-700"
+            className="bg-blue-600 cursor-pointer hover:bg-blue-700"
           >
             <PlusCircle className="w-4 h-4 mr-2" />
             Create Promo
@@ -260,6 +260,7 @@ const PromoManagementPage = () => {
                           variant="outline"
                           size="icon"
                           onClick={() => handleEditClick(promo)}
+                          className="text-white bg-blue-600 cursor-pointer hover:bg-blue-700 hover:text-slate-50"
                         >
                           <Edit className="w-4 h-4" />
                         </Button>
@@ -267,6 +268,7 @@ const PromoManagementPage = () => {
                           variant="destructive"
                           size="icon"
                           onClick={() => handleDeleteClick(promo)}
+                          className="cursor-pointer"
                         >
                           <Trash2 className="w-4 h-4" />
                         </Button>

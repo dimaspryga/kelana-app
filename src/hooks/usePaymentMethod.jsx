@@ -3,25 +3,18 @@ import { useState, useEffect, useCallback } from "react";
 
 export const usePaymentMethod = () => {
     const [paymentMethod, setPaymentMethod] = useState([]);
-    const [isLoading, setIsLoading] = useState(true); // FIX: Add isLoading state
+    const [isLoading, setIsLoading] = useState(true); 
 
     const getPaymentMethod = useCallback(async () => {
-        setIsLoading(true); // Set loading to true before fetching
+        setIsLoading(true);
         try {
-            const response = await axios.get(
-                "https://travel-journal-api-bootcamp.do.dibimbing.id/api/v1/payment-methods",
-                {
-                    headers: {
-                        "Content-Type": "application/json",
-                        "apiKey": "24405e01-fbc1-45a5-9f5a-be13afcd757c",
-                    },
-                }
-            );
+            // Panggil API route lokal
+            const response = await axios.get("/api/payment-methods");
             setPaymentMethod(response.data.data || []);
         } catch (error) {
             console.error(error);
         } finally {
-            setIsLoading(false); // Set loading to false after fetching
+            setIsLoading(false); 
         }
     }, []);
 
@@ -31,7 +24,7 @@ export const usePaymentMethod = () => {
 
     return {
         paymentMethod,
-        isLoading, // FIX: Export isLoading state
+        isLoading,
         getPaymentMethod,
     };
 };

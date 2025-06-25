@@ -1,12 +1,10 @@
 "use client";
 
 import React, { createContext, useState, useEffect, useCallback } from "react";
-import { getCookie } from "cookies-next";
 import { toast } from "sonner";
+import axios from "axios"; // Gunakan axios untuk konsistensi
 
-// Define API constants
-const API_BASE_URL = "https://travel-journal-api-bootcamp.do.dibimbing.id";
-const API_KEY = "24405e01-fbc1-45a5-9f5a-be13afcd757c";
+const API_BASE_URL = "/api"; // Gunakan path API lokal
 
 export const CartContext = createContext(null);
 
@@ -15,143 +13,81 @@ export const CartProvider = ({ children }) => {
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState(null);
 
-  const token = getCookie("token");
-
-  // Standard function to fetch cart data from the server
   const fetchCart = useCallback(async () => {
-    if (!token) {
-      setIsLoading(false);
-      setCartItems([]);
-      return;
-    }
     setIsLoading(true);
     try {
-      const response = await fetch(`${API_BASE_URL}/api/v1/carts`, {
-        method: "GET",
-        headers: { apiKey: API_KEY, Authorization: `Bearer ${token}` },
-      });
-      const result = await response.json();
-      if (!response.ok)
-        throw new Error(result.message || "Failed to fetch cart data.");
-      setCartItems(result.data || []);
+      const response = await axios.get(`${API_BASE_URL}/carts`);
+      setCartItems(response.data.data || []);
     } catch (err) {
-      setError(err.message);
-      // Toast notification for error during initial fetch
-      toast.error(err.message || "Failed to fetch cart data.");
+      const errorMessage = err.response?.data?.message || "Failed to fetch cart data.";
+      setError(errorMessage);
+      // Hanya tampilkan toast jika bukan error 401 (not authenticated)
+      if (err.response?.status !== 401) {
+          toast.error(errorMessage);
+      }
     } finally {
       setIsLoading(false);
     }
-  }, [token]);
+  }, []);
 
   useEffect(() => {
     fetchCart();
   }, [fetchCart]);
 
-  // Using toast.promise for addToCart
   const addToCart = async (activityId, quantity) => {
     const promise = new Promise(async (resolve, reject) => {
-      // This API ignores 'quantity', so we call it repeatedly
       for (let i = 0; i < quantity; i++) {
-        const response = await fetch(`${API_BASE_URL}/api/v1/add-cart`, {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-            apiKey: API_KEY,
-            Authorization: `Bearer ${token}`,
-          },
-          body: JSON.stringify({ activityId }),
-        });
-        if (!response.ok) {
-          const errorData = await response.json();
-          // Stop the process and reject the promise if one fails
-          return reject(
-            new Error(
-              errorData.message || `Failed to add item #${i + 1}.`
-            )
-          );
+        try {
+            await axios.post(`${API_BASE_URL}/add-cart`, { activityId });
+        } catch (err) {
+             const errorData = err.response?.data;
+             return reject(
+                new Error(errorData?.message || `Failed to add item #${i + 1}.`)
+             );
         }
       }
-      // Resolve the promise if all succeed
       return resolve({ quantity });
     });
 
-    // Display toast based on promise status
     toast.promise(promise, {
-      loading: `Adding ${quantity} item(s) to the cart...`,
+      loading: `Adding ${quantity} item to cart...`,
       success: (data) => {
-        fetchCart(); // Fetch the latest cart data after success
-        return `${data.quantity} item(s) successfully added to the cart!`;
+        fetchCart();
+        return `${data.quantity} Item successfully added!`;
       },
       error: (err) => {
-        fetchCart(); // Still refresh for synchronization
-        return err.message || "An error occurred while adding the item.";
+        fetchCart();
+        return err.message || "Failed to add item.";
       },
     });
   };
 
-  // Using toast for confirmation and error notifications
   const updateItemQuantity = async (cartItemId, newQuantity) => {
-    // If the new quantity is less than 1, show a confirmation to delete
     if (newQuantity < 1) {
-      toast.warning("Quantity will be 0. Delete this item?", {
-        action: {
-          label: "Delete",
-          onClick: () => removeFromCart(cartItemId),
-        },
-        cancel: {
-          label: "Cancel",
-        },
-      });
+      removeFromCart(cartItemId);
       return;
     }
-
+    
+    const toastId = toast.loading("Updating quantity...");
     try {
-      const response = await fetch(
-        `${API_BASE_URL}/api/v1/update-cart/${cartItemId}`,
-        {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-            apiKey: API_KEY,
-            Authorization: `Bearer ${token}`,
-          },
-          body: JSON.stringify({ quantity: newQuantity }),
-        }
-      );
-
-      if (!response.ok) {
-        const errData = await response.json();
-        throw new Error(errData.message || "Failed to update quantity.");
-      }
-
-      toast.success("Quantity updated successfully.");
-      await fetchCart(); // Re-fetch for synchronization
+      await axios.post(`${API_BASE_URL}/update-cart/${cartItemId}`, { quantity: newQuantity });
+      toast.success("Quantity updated successfully.", { id: toastId });
+      await fetchCart();
     } catch (err) {
-      toast.error(err.message);
-      console.error("Failed to update quantity:", err);
+      const errorMessage = err.response?.data?.message || "Failed to update quantity.";
+      toast.error(errorMessage, { id: toastId });
     }
   };
 
-  // Using toast for error notifications
   const removeFromCart = async (cartItemId) => {
+    const toastId = toast.loading("Deleting item...");
     try {
-      const response = await fetch(
-        `${API_BASE_URL}/api/v1/delete-cart/${cartItemId}`,
-        {
-          method: "DELETE",
-          headers: { apiKey: API_KEY, Authorization: `Bearer ${token}` },
-        }
-      );
-      if (!response.ok) {
-        const errData = await response.json();
-        throw new Error(errData.message || "Failed to remove item.");
-      }
-      // Let the calling component provide the success notification if needed
-      // to avoid double notifications
+      await axios.delete(`${API_BASE_URL}/delete-cart/${cartItemId}`);
+      toast.success("Item deleted successfully.", { id: toastId });
       await fetchCart();
     } catch (err) {
-      toast.error(err.message || "Failed to remove item.");
-      console.error("Failed to remove item:", err);
+       const errorMessage = err.response?.data?.message || "Failed to delete item.";
+       toast.error(errorMessage, { id: toastId });
     }
   };
 

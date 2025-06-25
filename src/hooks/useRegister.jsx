@@ -60,7 +60,7 @@ export function useRegister() {
       }, 3000);
     } catch (error) {
       const errorMessage =
-        error.response?.data?.message || "Terjadi kesalahan saat register";
+        error.response?.data?.message || "Registration failed. Please try again.";
       toast.error(errorMessage);
     } finally {
       setLoading(false);

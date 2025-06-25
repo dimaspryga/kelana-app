@@ -229,7 +229,7 @@ const Activity = () => {
                         </h3>
                         <div className="flex items-center mt-1 text-xs text-gray-500">
                           <MapPin size={14} className="mr-1.5 flex-shrink-0" />
-                          <p className="truncate">{item.address}</p>
+                          <p className="truncate">{item.address} || {item.city}</p>
                         </div>
                         <div className="flex items-center mt-2 text-xs text-gray-500">
                           <p className="truncate">{item.description}</p>

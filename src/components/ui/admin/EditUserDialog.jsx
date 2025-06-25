@@ -1,8 +1,8 @@
 "use client";
 
 import React, { useState, useEffect } from "react";
-import { useUpdateProfile } from "@/hooks/useUpdateProfile"; // Menggunakan hook yang sudah ada
-import { useUpdateUserRole } from "@/hooks/useUpdateUserRole"; // Menggunakan hook yang sudah ada
+import { useUpdateProfile } from "@/hooks/useUpdateProfile";
+import { useUpdateUserRole } from "@/hooks/useUpdateUserRole";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";

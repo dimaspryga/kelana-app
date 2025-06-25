@@ -19,7 +19,7 @@ import { MapPin, Star, ShoppingCart, Loader2, Percent } from "lucide-react";
 import { toast } from "sonner";
 import { motion } from "framer-motion";
 
-// Helper function
+// Helper function to format currency
 const formatCurrency = (amount) =>
   new Intl.NumberFormat("id-ID", {
     style: "currency",
@@ -27,7 +27,7 @@ const formatCurrency = (amount) =>
     minimumFractionDigits: 0,
   }).format(amount);
 
-// Variants for Framer Motion
+// Animation variants for Framer Motion
 const containerVariants = {
   hidden: { opacity: 0 },
   visible: {
@@ -42,14 +42,14 @@ const itemVariants = {
 };
 
 // Sub-component for a cleaner, more modern card design
-const ActivityCard = ({ activityItem, handleAddToCart, addingItemId }) => {
+const ActivityCard = ({ activityItem, onAddToCart, isAdding }) => {
   return (
     <motion.div variants={itemVariants} className="h-full">
       <div className="flex flex-col h-full overflow-hidden transition-all duration-300 bg-white rounded-lg shadow-md group hover:shadow-xl hover:-translate-y-1">
         <Link href={`/activity/${activityItem.id}`} className="block">
           <div className="relative overflow-hidden">
             <img
-              src={activityItem.imageUrls[0]}
+              src={activityItem.imageUrls?.[0] || '/assets/error.png'}
               alt={activityItem.title}
               className="object-cover w-full h-40 transition-transform duration-300 group-hover:scale-105"
               onError={(e) => {
@@ -57,7 +57,7 @@ const ActivityCard = ({ activityItem, handleAddToCart, addingItemId }) => {
                 e.currentTarget.src = "/assets/error.png";
               }}
             />
-            <div className="absolute top-2 left-2 bg-red-500 text-white rounded-md px-2 py-0.5 text-xs font-bold flex items-center gap-1">
+            <div className="absolute flex items-center gap-1 px-2 py-0.5 text-xs font-bold text-white bg-red-500 rounded-md top-2 left-2">
               <Percent size={12} />
               <span>HOT</span>
             </div>
@@ -96,10 +96,10 @@ const ActivityCard = ({ activityItem, handleAddToCart, addingItemId }) => {
                 size="icon"
                 variant="outline"
                 className="text-blue-600 transition-colors duration-300 border-blue-200 hover:bg-blue-600 hover:text-white"
-                onClick={(e) => handleAddToCart(e, activityItem)}
-                disabled={addingItemId === activityItem.id}
+                onClick={(e) => onAddToCart(e, activityItem)}
+                disabled={isAdding}
               >
-                {addingItemId === activityItem.id ? (
+                {isAdding ? (
                   <Loader2 className="w-4 h-4 animate-spin" />
                 ) : (
                   <ShoppingCart className="w-4 h-4" />
@@ -145,7 +145,6 @@ const ActivityDiscountSection = () => {
 
   const isLoading = isActivityLoading || isAuthLoading;
 
-  // Filter for discounted activities
   const discountedActivities = useMemo(() => {
     if (!activity) return [];
     return activity.filter(
@@ -165,7 +164,10 @@ const ActivityDiscountSection = () => {
                 <Skeleton className="w-full h-40 rounded-lg" />
                 <Skeleton className="w-5/6 h-6" />
                 <Skeleton className="w-3/4 h-5" />
-                <Skeleton className="w-full h-10 mt-2" />
+                <div className="flex justify-between">
+                    <Skeleton className="w-1/3 h-8" />
+                    <Skeleton className="w-10 h-10" />
+                </div>
               </div>
             ))}
           </div>
@@ -201,12 +203,12 @@ const ActivityDiscountSection = () => {
             {discountedActivities.map((activityItem) => (
               <CarouselItem
                 key={activityItem.id}
-                className="pl-4 basis-full sm:basis-1/2 lg:basis-1/3"
+                className="pl-4 basis-full sm:basis-1/2 md:basis-1/3 lg:basis-1/4"
               >
                 <ActivityCard
                   activityItem={activityItem}
-                  handleAddToCart={handleAddToCart}
-                  addingItemId={addingItemId}
+                  onAddToCart={handleAddToCart}
+                  isAdding={addingItemId === activityItem.id}
                 />
               </CarouselItem>
             ))}

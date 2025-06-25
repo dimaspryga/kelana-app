@@ -10,18 +10,10 @@ export const useCategory = () => {
     setIsLoading(true);
     setError(null);
     try {
-      const response = await axios.get(
-        "https://travel-journal-api-bootcamp.do.dibimbing.id/api/v1/categories",
-        {
-          headers: {
-            "Content-Type": "application/json",
-            apiKey: "24405e01-fbc1-45a5-9f5a-be13afcd757c",
-          },
-        }
-      );
+      const response = await axios.get("/api/categories");
       setCategory(response.data.data || []);
     } catch (err) {
-      console.error("Failed to fetch categories:", err);
+      console.error("Gagal mengambil data kategori:", err);
       setError(err);
     } finally {
       setIsLoading(false);

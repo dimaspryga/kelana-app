@@ -1,32 +1,25 @@
 "use client";
 
 import React from "react";
-import { AppSidebar } from "@/components/ui/admin/app-sidebar";
-import { SiteHeader } from "@/components/ui/admin/site-header";
-import { SidebarInset, SidebarProvider } from "@/components/ui/sidebar";
-
-
-// Anda bisa membuat AdminSidebar atau komponen layout admin lainnya di sini
+import { usePathname } from "next/navigation";
+import { DashboardSidebar } from "@/components/ui/admin/dashboard-sidebar"; // Komponen sidebar baru
+import { DashboardHeader } from "@/components/ui/admin/dashboard-header"; // Komponen header baru
 
 export default function AdminLayout({ children }) {
+  // Mengambil path URL saat ini untuk menentukan item sidebar yang aktif
+  const pathname = usePathname();
+
   return (
-    <SidebarProvider
-      style={{
-        "--sidebar-width": "calc(var(--spacing) * 72)",
-        "--header-height": "calc(var(--spacing) * 12)",
-      }}
-    >
-      <AppSidebar variant="inset" />
-      <SidebarInset>
-        <SiteHeader />
-        <div className="flex flex-col flex-1">
-          <div className="@container/main flex flex-1 flex-col gap-2">
-            <div className="flex flex-col gap-4 py-4 md:gap-6 md:py-6">
-              {children}
-            </div>
-          </div>
-        </div>
-      </SidebarInset>
-    </SidebarProvider>
+    <div className="grid min-h-screen w-full md:grid-cols-[220px_1fr] lg:grid-cols-[280px_1fr]">
+      {/* Sidebar sekarang menerima path aktif */}
+      <DashboardSidebar activePath={pathname} />
+      <div className="flex flex-col">
+        {/* Header sekarang menerima path aktif untuk breadcrumbs */}
+        <DashboardHeader activePath={pathname} />
+        <main className="flex flex-col flex-1 gap-4 p-4 lg:gap-6 lg:p-6">
+          {children}
+        </main>
+      </div>
+    </div>
   );
 }

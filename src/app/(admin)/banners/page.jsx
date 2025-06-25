@@ -1,8 +1,6 @@
-// File: pages/admin/BannerManagementPage.js (sesuaikan path jika perlu)
-
 "use client";
 
-import React, { useState, useMemo } from "react";
+import React, { useState, useMemo, useEffect } from "react";
 import { useBanner } from "@/hooks/useBanner";
 import { useBannerActions } from "@/hooks/useBannerActions";
 import { motion } from "framer-motion";
@@ -24,7 +22,6 @@ import {
 import { toast } from "sonner";
 
 const BannerManagementPage = () => {
-  // FIX UTAMA: Gunakan nama variabel yang BENAR dari hook useBanner
   const {
     banner: banners,
     loading: isBannerLoading,
@@ -65,15 +62,15 @@ const BannerManagementPage = () => {
     if (!bannerToDelete) return;
 
     const loadingToastId = toast.loading(
-      `Menghapus "${bannerToDelete.name}"...`
+      `Deleting "${bannerToDelete.name}"...`
     );
     try {
       await deleteBanner(bannerToDelete.id);
-      toast.success("Banner berhasil dihapus.", { id: loadingToastId });
+      toast.success("Banner deleted successfully.", { id: loadingToastId });
       refetchBanners();
     } catch (error) {
       const errorMessage =
-        error.response?.data?.message || "Gagal menghapus banner.";
+        error.response?.data?.message || "Failed to delete banner.";
       toast.error(errorMessage, { id: loadingToastId });
     } finally {
       setIsDeleteDialogOpen(false);
@@ -85,10 +82,10 @@ const BannerManagementPage = () => {
     return (
       <div className="flex flex-col items-center justify-center h-full p-8 text-center">
         <Frown className="w-16 h-16 text-red-500" />
-        <h2 className="mt-4 text-2xl font-bold">Gagal Memuat Banner</h2>
+        <h2 className="mt-4 text-2xl font-bold">Failed to Load Banners</h2>
         <p className="mt-2 text-muted-foreground">{error.message}</p>
         <Button onClick={() => refetchBanners()} className="mt-4">
-          Coba Lagi
+          Try Again
         </Button>
       </div>
     );
@@ -100,7 +97,7 @@ const BannerManagementPage = () => {
         banner={selectedBanner}
         isOpen={isFormDialogOpen}
         setIsOpen={setIsFormDialogOpen}
-        onSuccess={refetchBanners} // Prop ini sekarang menerima fungsi yang valid
+        onSuccess={refetchBanners}
       />
       <AlertDialog
         open={isDeleteDialogOpen}
@@ -108,21 +105,21 @@ const BannerManagementPage = () => {
       >
         <AlertDialogContent>
           <AlertDialogHeader>
-            <AlertDialogTitle>Apakah Anda benar-benar yakin?</AlertDialogTitle>
+            <AlertDialogTitle>Are you absolutely sure?</AlertDialogTitle>
             <AlertDialogDescription>
-              Tindakan ini tidak dapat dibatalkan. Ini akan menghapus banner
-              secara permanen "{bannerToDelete?.name}".
+              This action cannot be undone. This will permanently delete the banner
+              "{bannerToDelete?.name}".
             </AlertDialogDescription>
           </AlertDialogHeader>
           <AlertDialogFooter>
-            <AlertDialogCancel disabled={isDeleting}>Batal</AlertDialogCancel>
+            <AlertDialogCancel disabled={isDeleting}>Cancel</AlertDialogCancel>
             <AlertDialogAction
               onClick={confirmDelete}
               disabled={isDeleting}
               className="bg-red-600 hover:bg-red-700"
             >
               {isDeleting && <Loader2 className="w-4 h-4 mr-2 animate-spin" />}
-              Ya, hapus
+              Yes, delete
             </AlertDialogAction>
           </AlertDialogFooter>
         </AlertDialogContent>
@@ -135,17 +132,17 @@ const BannerManagementPage = () => {
       >
         <div className="flex flex-col items-start justify-between gap-4 md:flex-row md:items-center">
           <div>
-            <h1 className="text-3xl font-bold">Manajemen Banner</h1>
+            <h1 className="text-3xl font-bold">Banner Management</h1>
             <p className="text-muted-foreground">
-              Buat, edit, dan kelola semua banner promosi.
+              Create, edit, and manage all promotional banners.
             </p>
           </div>
           <Button
             onClick={handleCreateClick}
-            className="bg-blue-600 hover:bg-blue-700"
+            className="bg-blue-600 cursor-pointer hover:bg-blue-700"
           >
             <ImagePlus className="w-4 h-4 mr-2" />
-            Buat Banner
+            Create Banner
           </Button>
         </div>
 
@@ -155,7 +152,7 @@ const BannerManagementPage = () => {
             size={20}
           />
           <Input
-            placeholder="Cari banner berdasarkan nama..."
+            placeholder="Search banners by name..."
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
             className="pl-10 h-11"
@@ -191,7 +188,7 @@ const BannerManagementPage = () => {
                   <Button
                     size="icon"
                     variant="outline"
-                    className="w-8 h-8"
+                    className="w-8 h-8 cursor-pointer"
                     onClick={(e) => {
                       e.stopPropagation();
                       handleEditClick(banner);
@@ -202,7 +199,7 @@ const BannerManagementPage = () => {
                   <Button
                     size="icon"
                     variant="destructive"
-                    className="w-8 h-8"
+                    className="w-8 h-8 cursor-pointer"
                     onClick={(e) => {
                       e.stopPropagation();
                       handleDeleteClick(banner);
@@ -215,18 +212,18 @@ const BannerManagementPage = () => {
             ))
           ) : (
             <div className="flex flex-col items-center justify-center py-16 text-center border-2 border-dashed rounded-lg bg-gray-50 col-span-full">
-              <h3 className="text-xl font-semibold">Tidak Ada Banner</h3>
+              <h3 className="text-xl font-semibold">No Banners Found</h3>
               <p className="mt-2 text-muted-foreground">
                 {searchQuery
-                  ? `Tidak ada hasil untuk "${searchQuery}".`
-                  : "Mulai dengan membuat banner baru."}
+                  ? `No results for "${searchQuery}".`
+                  : "Get started by creating a new banner."}
               </p>
               <Button
                 onClick={handleCreateClick}
                 className="mt-4 bg-blue-600 hover:bg-blue-700"
               >
                 <ImagePlus className="w-4 h-4 mr-2" />
-                Buat Banner Pertama
+                Create First Banner
               </Button>
             </div>
           )}

@@ -5,7 +5,10 @@ import { cookies } from "next/headers";
 // Menambahkan baris ini untuk memaksa rute menjadi dinamis
 export const dynamic = 'force-dynamic';
 
-export async function GET() {
+// FIX: Menambahkan parameter 'request' ke fungsi GET.
+// Ini adalah cara yang direkomendasikan untuk memberi sinyal pada Next.js
+// bahwa ini adalah rute dinamis yang menggunakan cookies, untuk mencegah masalah caching.
+export async function GET(request) {
     const cookieStore = cookies();
     const token = cookieStore.get("token")?.value;
 

@@ -16,7 +16,7 @@ module.exports = {
         // 2. Ganti 'inter' menjadi 'sans'
         // Ini akan menimpa font sans-serif default dengan variabel --font-inter (yaitu Inter)
         // dan menyertakan font sistem sebagai cadangan.
-        inter: ["var(--font-inter)", ...fontFamily.inter],
+        sans: ["var(--font-inter)", ...fontFamily.sans],
       },
       colors: {
         destructive: {

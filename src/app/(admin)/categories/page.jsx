@@ -124,7 +124,7 @@ const CategoryManagementPage = () => {
             <AlertDialogAction
               onClick={confirmDelete}
               disabled={isMutating}
-              className="bg-red-600 hover:bg-red-700"
+              className="bg-red-600 cursor-pointer hover:bg-red-700"
             >
               {isMutating && <Loader2 className="w-4 h-4 mr-2 animate-spin" />}
               Yes, delete
@@ -147,7 +147,7 @@ const CategoryManagementPage = () => {
           </div>
           <Button
             onClick={handleCreateClick}
-            className="bg-blue-600 hover:bg-blue-700"
+            className="bg-blue-600 cursor-pointer hover:bg-blue-700"
           >
             <ImagePlus className="w-4 h-4 mr-2" />
             Create Category
@@ -195,18 +195,20 @@ const CategoryManagementPage = () => {
                     {category.name}
                   </h3>
                 </div>
-                <div className="absolute flex gap-2 transition-opacity duration-300 opacity-0 top-2 right-2 group-hover:opacity-100">
+                <div className="absolute flex gap-2 transition-opacity duration-300 opacity-0 cursor-pointer top-2 right-2 group-hover:opacity-100">
                   <Button
                     size="icon"
                     variant="secondary"
                     onClick={() => handleEditClick(category)}
+                    className="cursor-pointer"
                   >
-                    <Edit className="w-4 h-4" />
+                    <Edit className="w-4 h-4 " />
                   </Button>
                   <Button
                     size="icon"
                     variant="destructive"
                     onClick={() => handleDeleteClick(category)}
+                    className="cursor-pointer"
                   >
                     <Trash2 className="w-4 h-4" />
                   </Button>

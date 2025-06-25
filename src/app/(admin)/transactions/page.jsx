@@ -280,7 +280,7 @@ const TransactionManagementPage = () => {
             <AlertDialogAction
               onClick={handleConfirmCancel}
               disabled={isMutating}
-              className="bg-red-600 hover:bg-red-700"
+              className="bg-red-600 cursor-pointer hover:bg-red-700"
             >
               {isMutating && <Loader2 className="w-4 h-4 mr-2 animate-spin" />}
               Yes, Cancel
@@ -352,7 +352,6 @@ const TransactionManagementPage = () => {
           </div>
         </div>
 
-        {/* Transaction Table */}
         <div className="overflow-hidden bg-white border rounded-lg">
           <Table>
             <TableHeader className="bg-gray-50">
@@ -453,17 +452,13 @@ const TransactionManagementPage = () => {
                       <TableCell className="px-6 py-3 font-mono text-xs text-gray-600">
                         {t.invoiceId || "N/A"}
                       </TableCell>
-
-                      {/* === MODIFIED TITLE COLUMN === */}
                       <TableCell className="hidden px-6 py-3 font-medium lg:table-cell">
                         <div className="flex items-center gap-3">
-                          {/* Activity Image */}
-                          {items[0]?.imageUrls?.[0] ? ( // Correct access to imageUrls array
+                          {items[0]?.imageUrls?.[0] ? (
                             <img
-                              src={items[0].imageUrls[0]} // Using the first URL from the array
+                              src={items[0].imageUrls[0]}
                               alt={firstItemTitle}
                               className="object-cover w-12 h-12 rounded-md bg-gray-50"
-                              // Image fallback in case of error
                               onError={(e) => {
                                 e.currentTarget.onerror = null;
                                 e.currentTarget.src =
@@ -475,7 +470,6 @@ const TransactionManagementPage = () => {
                               <ImageIcon className="w-6 h-6 text-muted-foreground" />
                             </div>
                           )}
-                          {/* Title Text */}
                           <div>
                             {itemCount > 1 ? (
                               <span>
@@ -491,11 +485,8 @@ const TransactionManagementPage = () => {
                           </div>
                         </div>
                       </TableCell>
-
-                      {/* === MODIFIED PAYMENT METHOD COLUMN === */}
                       <TableCell className="hidden px-6 py-3 md:table-cell">
                         <div className="flex items-center gap-2">
-                          {/* Payment Method Image/Logo */}
                           {t.payment_method?.imageUrl ? (
                             <img
                               src={t.payment_method.imageUrl}
@@ -513,12 +504,9 @@ const TransactionManagementPage = () => {
                               <ImageIcon className="w-4 h-4 text-muted-foreground" />
                             </div>
                           )}
-                          {/* Payment Method Text */}
                           <span>{t.payment_method?.name || "N/A"}</span>
                         </div>
                       </TableCell>
-
-                      {/* Total Amount Column (using calculated total) */}
                       <TableCell className="hidden px-6 py-3 font-medium md:table-cell">
                         {new Intl.NumberFormat("id-ID", {
                           style: "currency",
@@ -526,11 +514,9 @@ const TransactionManagementPage = () => {
                           minimumFractionDigits: 0,
                         }).format(t.calculatedTotalAmount)}
                       </TableCell>
-                      {/* Order Date Column */}
                       <TableCell className="hidden px-6 py-3 text-sm text-gray-600 lg:table-cell">
                         {new Date(t.orderDate).toLocaleDateString("en-GB")}
                       </TableCell>
-                      {/* Status Column (with visual badge) */}
                       <TableCell className="px-6 py-3">
                         <Badge
                           variant="outline"
@@ -542,12 +528,10 @@ const TransactionManagementPage = () => {
                           {currentStatus.label}
                         </Badge>
                       </TableCell>
-                      {/* Actions Column */}
                       <TableCell className="px-6 py-3 text-right">
-                        <Button asChild variant="outline" size="icon">
-                          {/* Using Link component from next/link */}
+                        <Button asChild variant="outline" size="icon" className="text-white bg-blue-500 cursor-pointer hover:bg-blue-600 hover:text-slate-50">
                           <Link href={`/transactions/${t.id}`}>
-                            <Edit className="w-4 h-4" />
+                            <Edit className="w-4 h-4 " />
                           </Link>
                         </Button>
                       </TableCell>
@@ -555,7 +539,6 @@ const TransactionManagementPage = () => {
                   );
                 })
               ) : (
-                // Display message if no transactions are found
                 <TableRow>
                   <TableCell colSpan={7} className="h-24 text-center">
                     No transactions found.
