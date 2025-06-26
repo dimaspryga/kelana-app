@@ -17,6 +17,15 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
+import {
+  Pagination,
+  PaginationContent,
+  PaginationEllipsis,
+  PaginationItem,
+  PaginationLink,
+  PaginationNext,
+  PaginationPrevious,
+} from "@/components/ui/pagination";
 import { Badge } from "@/components/ui/badge";
 import {
   Frown,
@@ -31,7 +40,6 @@ import {
   ImageIcon,
   XCircle,
   Wallet,
-  CheckCircle2,
 } from "lucide-react";
 import {
   AlertDialog,
@@ -45,6 +53,8 @@ import {
 } from "@/components/ui/alert-dialog";
 import { toast } from "sonner";
 import clsx from "clsx";
+
+const ITEMS_PER_PAGE = 10;
 
 const statusConfig = {
   UNPAID: {
@@ -100,6 +110,7 @@ const TransactionManagementPage = () => {
     key: "orderDate",
     direction: "desc",
   });
+  const [currentPage, setCurrentPage] = useState(1);
 
   const isLoading = isTransactionsLoading || isAuthLoading;
 
@@ -112,7 +123,7 @@ const TransactionManagementPage = () => {
     }
     return apiStatus;
   };
-
+  
   const processedTransactions = useMemo(() => {
     if (isLoading || !Array.isArray(transactions)) return [];
 
@@ -188,6 +199,38 @@ const TransactionManagementPage = () => {
     return counts;
   }, [transactions]);
 
+  useEffect(() => {
+    setCurrentPage(1);
+  }, [statusFilter, searchFilter]);
+
+  const totalPages = Math.ceil(processedTransactions.length / ITEMS_PER_PAGE);
+  const paginatedTransactions = useMemo(() => {
+    const startIndex = (currentPage - 1) * ITEMS_PER_PAGE;
+    return processedTransactions.slice(startIndex, startIndex + ITEMS_PER_PAGE);
+  }, [processedTransactions, currentPage]);
+
+  const handlePageChange = (page) => {
+    if (page >= 1 && page <= totalPages) {
+        setCurrentPage(page);
+    }
+  };
+
+  const getPageNumbers = () => {
+    const pageNumbers = [];
+    if (totalPages <= 7) {
+        for (let i = 1; i <= totalPages; i++) pageNumbers.push(i);
+    } else {
+        pageNumbers.push(1);
+        if (currentPage > 4) pageNumbers.push("...");
+        const start = Math.max(2, currentPage - 2);
+        const end = Math.min(totalPages - 1, currentPage + 2);
+        for (let i = start; i <= end; i++) pageNumbers.push(i);
+        if (currentPage < totalPages - 3) pageNumbers.push("...");
+        pageNumbers.push(totalPages);
+    }
+    return pageNumbers;
+  };
+
   const handleSort = (key) => {
     let direction = "asc";
     if (sortConfig.key === key && sortConfig.direction === "asc") {
@@ -199,7 +242,6 @@ const TransactionManagementPage = () => {
 
   const handleConfirmCancel = async () => {
     if (!transactionToCancel) return;
-
     const loadingToastId = toast.loading(`Cancelling transaction...`);
     try {
       await cancelTransaction(transactionToCancel.id);
@@ -323,40 +365,20 @@ const TransactionManagementPage = () => {
             <TableHeader className="bg-gray-50">
               <TableRow>
                 <TableHead className="px-6">Invoice ID</TableHead>
-                <TableHead className="hidden px-6 lg:table-cell">
-                  Title
-                </TableHead>
+                <TableHead className="hidden px-6 lg:table-cell">Title</TableHead>
+                <TableHead className="hidden px-6 md:table-cell">Payment Method</TableHead>
                 <TableHead className="hidden px-6 md:table-cell">
-                  Payment Method
-                </TableHead>
-                <TableHead className="hidden px-6 md:table-cell">
-                  <Button
-                    variant="ghost"
-                    className="px-0 hover:bg-transparent"
-                    onClick={() => handleSort("totalAmount")}
-                  >
+                  <Button variant="ghost" className="px-0 hover:bg-transparent" onClick={() => handleSort("totalAmount")}>
                     Total Amount
                     {sortConfig.key === "calculatedTotalAmount" &&
-                      (sortConfig.direction === "asc" ? (
-                        <ArrowUp className="w-4 h-4 ml-2" />
-                      ) : (
-                        <ArrowDown className="w-4 h-4 ml-2" />
-                      ))}
+                      (sortConfig.direction === "asc" ? <ArrowUp className="w-4 h-4 ml-2" /> : <ArrowDown className="w-4 h-4 ml-2" />)}
                   </Button>
                 </TableHead>
                 <TableHead className="hidden px-6 lg:table-cell">
-                  <Button
-                    variant="ghost"
-                    className="px-0 hover:bg-transparent"
-                    onClick={() => handleSort("orderDate")}
-                  >
+                  <Button variant="ghost" className="px-0 hover:bg-transparent" onClick={() => handleSort("orderDate")}>
                     Order Date
                     {sortConfig.key === "orderDate" &&
-                      (sortConfig.direction === "asc" ? (
-                        <ArrowUp className="w-4 h-4 ml-2" />
-                      ) : (
-                        <ArrowDown className="w-4 h-4 ml-2" />
-                      ))}
+                      (sortConfig.direction === "asc" ? <ArrowUp className="w-4 h-4 ml-2" /> : <ArrowDown className="w-4 h-4 ml-2" />)}
                   </Button>
                 </TableHead>
                 <TableHead className="px-6">Status</TableHead>
@@ -365,151 +387,85 @@ const TransactionManagementPage = () => {
             </TableHeader>
             <TableBody>
               {isLoading ? (
-                Array.from({ length: 8 }).map((_, index) => (
+                Array.from({ length: ITEMS_PER_PAGE }).map((_, index) => (
                   <TableRow key={index}>
-                    <TableCell>
-                      <Skeleton className="w-40 h-5" />
-                    </TableCell>
-                    <TableCell className="hidden lg:table-cell">
-                      <div className="flex items-center gap-3">
-                        <Skeleton className="w-12 h-12 rounded-md" />
-                        <Skeleton className="w-48 h-5" />
-                      </div>
-                    </TableCell>
-                    <TableCell className="hidden md:table-cell">
-                      <div className="flex items-center gap-2">
-                        <Skeleton className="w-10 h-6 rounded-md" />
-                        <Skeleton className="w-24 h-5" />
-                      </div>
-                    </TableCell>
-                    <TableCell className="hidden md:table-cell">
-                      <Skeleton className="h-5 w-28" />
-                    </TableCell>
-                    <TableCell className="hidden lg:table-cell">
-                      <Skeleton className="w-24 h-5" />
-                    </TableCell>
-                    <TableCell>
-                      <Skeleton className="w-20 h-6" />
-                    </TableCell>
-                    <TableCell className="text-right">
-                      <Skeleton className="w-8 h-8 ml-auto" />
-                    </TableCell>
+                    <TableCell><Skeleton className="w-40 h-5" /></TableCell>
+                    <TableCell className="hidden lg:table-cell"><Skeleton className="w-48 h-5" /></TableCell>
+                    <TableCell className="hidden md:table-cell"><Skeleton className="w-24 h-5" /></TableCell>
+                    <TableCell className="hidden md:table-cell"><Skeleton className="h-5 w-28" /></TableCell>
+                    <TableCell className="hidden lg:table-cell"><Skeleton className="w-24 h-5" /></TableCell>
+                    <TableCell><Skeleton className="w-20 h-6" /></TableCell>
+                    <TableCell className="text-right"><Skeleton className="w-8 h-8 ml-auto" /></TableCell>
                   </TableRow>
                 ))
-              ) : processedTransactions.length > 0 ? (
-                processedTransactions.map((t) => {
+              ) : paginatedTransactions.length > 0 ? (
+                paginatedTransactions.map((t) => {
                   const upperCaseDisplayStatus = t.displayStatus;
-                  const currentStatus =
-                    statusConfig[upperCaseDisplayStatus] || {
-                      label: t.status,
-                      className: "bg-gray-100 text-gray-800",
-                    };
+                  const currentStatus = statusConfig[upperCaseDisplayStatus] || { label: t.status, className: "bg-gray-100 text-gray-800" };
                   const items = t.transaction_items || [];
-                  const itemCount = items.length;
-                  const firstItemTitle =
-                    itemCount > 0 ? items[0].title : "Activity Not Found";
-                  const otherItemsCount = itemCount - 1;
+                  const firstItemTitle = items.length > 0 ? items[0].title : "Activity Not Found";
 
                   return (
                     <TableRow key={t.id}>
-                      <TableCell className="px-6 py-3 font-mono text-xs text-gray-600">
-                        {t.invoiceId || "N/A"}
-                      </TableCell>
+                      <TableCell className="px-6 py-3 font-mono text-xs text-gray-600">{t.invoiceId || "N/A"}</TableCell>
                       <TableCell className="hidden px-6 py-3 font-medium lg:table-cell">
-                        <div className="flex items-center gap-3">
-                          {items[0]?.imageUrls?.[0] ? (
-                            <img
-                              src={items[0].imageUrls[0]}
-                              alt={firstItemTitle}
-                              className="object-cover w-12 h-12 rounded-md bg-gray-50"
-                              onError={(e) => {
-                                e.currentTarget.onerror = null;
-                                e.currentTarget.src =
-                                  "https://placehold.co/100x100/f87171/ffffff?text=Error";
-                              }}
-                            />
-                          ) : (
-                            <div className="flex items-center justify-center w-12 h-12 rounded-md bg-secondary">
-                              <ImageIcon className="w-6 h-6 text-muted-foreground" />
-                            </div>
-                          )}
-                          <div>
-                            {itemCount > 1 ? (
-                              <span>
-                                {firstItemTitle}
-                                <span className="block mt-1 text-xs font-normal text-muted-foreground">
-                                  and {otherItemsCount} other
-                                  {otherItemsCount > 1 ? "s" : ""}
-                                </span>
-                              </span>
-                            ) : (
+                          <div className="flex items-center gap-3">
+                              {items[0]?.imageUrls?.[0] ? (
+                                  <img src={items[0].imageUrls[0]} alt={firstItemTitle} className="object-cover w-12 h-12 rounded-md bg-gray-50" onError={(e) => { e.currentTarget.onerror = null; e.currentTarget.src = "/assets/error.png"; }} />
+                              ) : (
+                                  <div className="flex items-center justify-center w-12 h-12 rounded-md bg-secondary"><ImageIcon className="w-6 h-6 text-muted-foreground" /></div>
+                              )}
                               <span>{firstItemTitle}</span>
-                            )}
                           </div>
-                        </div>
                       </TableCell>
                       <TableCell className="hidden px-6 py-3 md:table-cell">
-                        <div className="flex items-center gap-2">
-                          {t.payment_method?.imageUrl ? (
-                            <img
-                              src={t.payment_method.imageUrl}
-                              alt={t.payment_method.name || ""}
-                              className="object-contain h-6 w-9"
-                              onError={(e) => {
-                                e.currentTarget.onerror = null;
-                                e.currentTarget.src =
-                                  "https://placehold.co/120x60/f87171/ffffff?text=Error";
-                              }}
-                            />
-                          ) : (
-                            <div className="flex items-center justify-center h-6 rounded-md w-9 bg-secondary">
-                              <ImageIcon className="w-4 h-4 text-muted-foreground" />
-                            </div>
-                          )}
-                          <span>{t.payment_method?.name || "N/A"}</span>
-                        </div>
+                          <div className="flex items-center gap-2">
+                              {t.payment_method?.imageUrl ? (
+                                  <img src={t.payment_method.imageUrl} alt={t.payment_method.name || ""} className="object-contain h-6 w-9" onError={(e) => { e.currentTarget.onerror = null; e.currentTarget.src = "/assets/error.png"; }} />
+                              ) : (
+                                  <div className="flex items-center justify-center h-6 rounded-md w-9 bg-secondary"><ImageIcon className="w-4 h-4 text-muted-foreground" /></div>
+                              )}
+                              <span>{t.payment_method?.name || "N/A"}</span>
+                          </div>
                       </TableCell>
-                      <TableCell className="hidden px-6 py-3 font-medium md:table-cell">
-                        {new Intl.NumberFormat("id-ID", {
-                          style: "currency",
-                          currency: "IDR",
-                          minimumFractionDigits: 0,
-                        }).format(t.calculatedTotalAmount)}
-                      </TableCell>
-                      <TableCell className="hidden px-6 py-3 text-sm text-gray-600 lg:table-cell">
-                        {new Date(t.orderDate).toLocaleDateString("en-GB")}
-                      </TableCell>
-                      <TableCell className="px-6 py-3">
-                        <Badge
-                          variant="outline"
-                          className={`font-semibold ${currentStatus.className}`}
-                        >
-                          {currentStatus.icon && (
-                            <currentStatus.icon className="w-3 h-3 mr-1.5" />
-                          )}
-                          {currentStatus.label}
-                        </Badge>
-                      </TableCell>
-                      <TableCell className="px-6 py-3 text-right">
-                        <Button asChild variant="outline" size="icon" className="text-white bg-blue-500 cursor-pointer hover:bg-blue-600 hover:text-slate-50">
-                          <Link href={`/transactions/${t.id}`}>
-                            <Edit className="w-4 h-4 " />
-                          </Link>
-                        </Button>
-                      </TableCell>
+                      <TableCell className="hidden px-6 py-3 font-medium md:table-cell">{new Intl.NumberFormat("id-ID", { style: "currency", currency: "IDR", minimumFractionDigits: 0 }).format(t.calculatedTotalAmount)}</TableCell>
+                      <TableCell className="hidden px-6 py-3 text-sm text-gray-600 lg:table-cell">{new Date(t.orderDate).toLocaleDateString("en-GB")}</TableCell>
+                      <TableCell className="px-6 py-3"><Badge variant="outline" className={`font-semibold ${currentStatus.className}`}>{currentStatus.icon && (<currentStatus.icon className="w-3 h-3 mr-1.5" />)}{currentStatus.label}</Badge></TableCell>
+                      <TableCell className="px-6 py-3 text-right"><Button asChild variant="outline" size="icon"><Link href={`/admin/transactions/${t.id}`}><Edit className="w-4 h-4" /></Link></Button></TableCell>
                     </TableRow>
                   );
                 })
               ) : (
-                <TableRow>
-                  <TableCell colSpan={7} className="h-24 text-center">
-                    No transactions found.
-                  </TableCell>
-                </TableRow>
+                <TableRow><TableCell colSpan={7} className="h-24 text-center">No transactions found.</TableCell></TableRow>
               )}
             </TableBody>
           </Table>
         </div>
+        
+        {totalPages > 1 && (
+            <Pagination className="mt-8">
+                <PaginationContent>
+                    <PaginationItem>
+                        <PaginationPrevious href="#" onClick={(e) => { e.preventDefault(); handlePageChange(currentPage - 1); }} />
+                    </PaginationItem>
+                    {getPageNumbers().map((page, index) => (
+                        <PaginationItem key={`${page}-${index}`}>
+                            {page === "..." ? (
+                                <PaginationEllipsis />
+                            ) : (
+                                <PaginationLink href="#" onClick={(e) => { e.preventDefault(); handlePageChange(page); }} isActive={currentPage === page}>
+                                    {page}
+                                </PaginationLink>
+                            )}
+                        </PaginationItem>
+                    ))}
+                    <PaginationItem>
+                        <PaginationNext href="#" onClick={(e) => { e.preventDefault(); handlePageChange(currentPage + 1); }} />
+                    </PaginationItem>
+                </PaginationContent>
+            </Pagination>
+        )}
+
       </motion.div>
     </>
   );

@@ -398,7 +398,7 @@ const TransactionDetailPage = () => {
                         onError={(e) => {
                           e.currentTarget.onerror = null;
                           e.currentTarget.src =
-                            "https://placehold.co/40x40/f87171/ffffff?text=Error";
+                            "/assets/error.png";
                         }}
                       />
                     )}

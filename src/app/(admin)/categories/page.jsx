@@ -236,4 +236,4 @@ const CategoryManagementPage = () => {
   );
 };
 
-export default CategoryManagementPage;s
+export default CategoryManagementPage;
