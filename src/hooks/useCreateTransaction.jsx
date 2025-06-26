@@ -14,7 +14,7 @@ export const useCreateTransaction = () => {
       const token = getCookie('token');
       const response = await axios.post(
         "https://travel-journal-api-bootcamp.do.dibimbing.id/api/v1/create-transaction",
-        payload, // Mengirim payload { cartIds, paymentMethodId }
+        payload,
         {
           headers: {
             "Content-Type": "application/json",
@@ -29,7 +29,6 @@ export const useCreateTransaction = () => {
     } catch (err) {
       setIsLoading(false);
       console.error("Error during create-transaction:", err);
-      // Lempar error agar bisa ditangkap oleh komponen dan menampilkan log detail
       throw err;
     }
   };

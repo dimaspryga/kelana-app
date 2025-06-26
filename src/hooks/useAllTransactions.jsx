@@ -2,7 +2,6 @@ import useSWR from "swr";
 import axios from "axios";
 import { getCookie } from "cookies-next";
 
-// Konfigurasi API terpusat untuk hook ini
 const api = axios.create({
   baseURL: "https://travel-journal-api-bootcamp.do.dibimbing.id/api/v1",
   headers: {
@@ -22,7 +21,6 @@ api.interceptors.request.use((config) => {
 
 const fetcher = (url) => api.get(url).then((res) => res.data);
 
-// Hook untuk mengambil semua data transaksi
 export const useAllTransactions = () => {
   const { data, error, isLoading, mutate } = useSWR("/all-transactions", fetcher, {
     revalidateOnFocus: false,

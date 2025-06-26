@@ -16,7 +16,7 @@ export const useBanner = () => {
       setBanner(response.data.data || []);
       setIsError(false);
     } catch (error) {
-      console.error("Gagal mengambil data banner:", error);
+      console.error("Failed to fetch banner:", error);
       setIsError(true);
       setError(error);
     } finally {

@@ -8,7 +8,6 @@ export const usePaymentMethod = () => {
     const getPaymentMethod = useCallback(async () => {
         setIsLoading(true);
         try {
-            // Panggil API route lokal
             const response = await axios.get("/api/payment-methods");
             setPaymentMethod(response.data.data || []);
         } catch (error) {

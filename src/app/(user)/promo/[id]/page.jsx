@@ -27,7 +27,6 @@ import {
 
 const DEFAULT_ACTIVITY_IMAGE = "/assets/banner-authpage.png";
 
-// Variants for Framer Motion animations
 const containerVariants = {
   hidden: { opacity: 0 },
   visible: {
@@ -57,7 +56,7 @@ const DetailPromo = ({ params }) => {
   
   const { detailPromo, isLoading: isPromoLoading, error } = useDetailPromo(id);
   const { activity, isLoading: isActivityLoading } = useActivity();
-  const { loading: isAuthLoading } = useAuth(); // Get loading state from AuthContext
+  const { loading: isAuthLoading } = useAuth();
 
   const [copyStatus, setCopyStatus] = useState("Copy");
 
@@ -134,7 +133,6 @@ const DetailPromo = ({ params }) => {
             </BreadcrumbList>
         </Breadcrumb>
         <div className="flex flex-col gap-8 lg:flex-row">
-          {/* Left Column (Main Content) */}
           <div className="w-full lg:w-2/3">
             <div className="overflow-hidden bg-white border border-gray-200 rounded-lg shadow-sm">
               <div className="relative w-full h-80 md:h-96">
@@ -170,7 +168,6 @@ const DetailPromo = ({ params }) => {
             </div>
           </div>
 
-          {/* Right Column (Sticky) */}
           <div className="w-full lg:w-1/3">
             <div className="sticky top-24">
               <div className="p-6 bg-white border border-gray-200 rounded-lg shadow-lg">
@@ -200,7 +197,6 @@ const DetailPromo = ({ params }) => {
         </div>
       </div>
 
-      {/* "You Might Also Like" Carousel */}
       {activity && activity.length > 0 && (
         <div className="container px-4 py-8 mx-auto max-w-7xl">
           <h2 className="mb-6 text-2xl font-bold text-gray-800">

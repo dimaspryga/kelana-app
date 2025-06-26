@@ -23,7 +23,7 @@ const PromoBannerSection = () => {
     promo?.find((p) => p.id === BANNER_PROMO_ID) || promo?.[0];
 
   return (
-    <div className="py-16 bg-white">
+    <div className="py-16 bg-gray-50">
       <div className="container px-4 mx-auto max-w-7xl sm:px-6 lg:px-8">
         <AnimatePresence mode="wait">
           {isLoading ? (

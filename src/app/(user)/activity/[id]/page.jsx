@@ -48,7 +48,6 @@ async function getActivityData(id) {
     }
 }
 
-// Komponen Halaman Utama (Server Component)
 export default async function DetailActivityPage({ params }) {
     const { id } = await params;
     const initialActivity = await getActivityData(id);

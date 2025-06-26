@@ -2,12 +2,11 @@
 
 import React from "react";
 import Link from "next/link";
-import Image from "next/image";
-import { usePaymentMethod } from "@/hooks/usePaymentMethod"; // 1. Import the payment method hook
-import { Skeleton } from "@/components/ui/skeleton"; // Import skeleton for loading
-import { Twitter, Instagram, Facebook, Youtube, MapPin, Phone, Mail } from 'lucide-react';
+import { usePaymentMethod } from "@/hooks/usePaymentMethod";
+import { Skeleton } from "@/components/ui/skeleton";
+import { Twitter, Instagram, Youtube, Facebook, MapPin, Phone, Mail } from 'lucide-react';
 
-// Data for footer links (remains static)
+// Data link untuk Footer
 const footerLinks = [
   {
     title: "Product",
@@ -47,11 +46,8 @@ const Footer = () => {
     <footer className="bg-slate-800 text-slate-300">
       <div className="px-4 py-12 mx-auto max-w-7xl sm:px-6 lg:px-8">
         <div className="grid grid-cols-2 gap-8 md:grid-cols-5">
-          {/* Column 1: Logo and Social Media */}
           <div className="col-span-2 pr-8 md:col-span-1">
-            {/* 3. Replace H2 with the logo image component */}
             <Link href="/" className="inline-block">
-              {/* Replace '/logo-white.png' with your logo path in the /public folder */}
               <img
                 src="/assets/kelana.webp"
                 alt="Travel Journal Logo"
@@ -81,7 +77,6 @@ const Footer = () => {
             </div>
           </div>
 
-          {/* Columns 2, 3, 4: Links from the array data */}
           {footerLinks.map((section) => (
             <div key={section.title}>
               <h3 className="text-sm font-semibold tracking-wider text-white uppercase">
@@ -135,21 +130,20 @@ const Footer = () => {
           </div>
         </div>
 
-        {/* Payment Partners Section */}
         <div className="pt-8 mt-12 border-t border-slate-700">
           <h3 className="text-sm font-semibold tracking-wider text-center text-white uppercase">
             Our Payment Partners
           </h3>
           <div className="flex flex-wrap items-center justify-center mt-6 gap-x-8 gap-y-4">
             {isLoading
-              ? // Skeleton view while loading
+              ? 
                 Array.from({ length: 7 }).map((_, index) => (
                   <Skeleton
                     key={index}
                     className="w-16 h-8 rounded bg-slate-700"
                   />
                 ))
-              : // 4. Use data from the hook to display partner logos
+              : 
                 (paymentMethod || []).map((partner) => (
                   <img
                     key={partner.id}
@@ -163,7 +157,6 @@ const Footer = () => {
         </div>
       </div>
 
-      {/* Sub-Footer: Copyright */}
       <div className="bg-slate-900">
         <div className="px-4 py-4 mx-auto max-w-7xl sm:px-6 lg:px-8">
           <p className="text-sm text-center text-slate-500">

@@ -13,7 +13,7 @@ import { Label } from "@/components/ui/label";
 export function LoginForm({ className, ...props }) {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
-  const { login, loading } = useAuth(); // Gunakan hook dari AuthContext
+  const { login, loading } = useAuth();
 
   const handleLogin = async (e) => {
     e.preventDefault();
@@ -26,7 +26,6 @@ export function LoginForm({ className, ...props }) {
 
     if (result.success) {
       toast.success("Login successful! Redirecting...");
-      // Pengalihan sudah diurus oleh context
     } else {
       toast.error(result.message || "Failed to log in.");
     }

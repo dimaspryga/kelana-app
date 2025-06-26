@@ -23,10 +23,9 @@ export const useUpdateProfile = () => {
     }
     
     try {
-      // Sekarang mengirim data sebagai JSON, bukan FormData
       const response = await axios.post(
         `${API_BASE_URL}/update-profile`,
-        profileData, // Mengirim objek profileData langsung
+        profileData,
         {
           headers: {
             apiKey: "24405e01-fbc1-45a5-9f5a-be13afcd757c",

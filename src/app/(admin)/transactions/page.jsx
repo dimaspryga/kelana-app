@@ -1,10 +1,10 @@
 "use client";
 
 import React, { useState, useMemo, useEffect } from "react";
-import Link from "next/link"; // Using Link from next/link
-import { useAllTransactions } from "@/hooks/useAllTransactions"; // Using your original hook
-import { useTransactionActions } from "@/hooks/useTransactionActions"; // Using your original hook
-import { useAuth } from "@/context/AuthContext"; // Using your original context
+import Link from "next/link";
+import { useAllTransactions } from "@/hooks/useAllTransactions";
+import { useTransactionActions } from "@/hooks/useTransactionActions";
+import { useAuth } from "@/context/AuthContext";
 import { motion } from "framer-motion";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -29,9 +29,9 @@ import {
   ArrowUp,
   ArrowDown,
   ImageIcon,
-  XCircle, // Icon for Failed status
-  Wallet, // Icon for Unpaid status
-  CheckCircle2, // Icon for Confirmation status (though Hourglass is used in config)
+  XCircle,
+  Wallet,
+  CheckCircle2,
 } from "lucide-react";
 import {
   AlertDialog,
@@ -44,9 +44,8 @@ import {
   AlertDialogTitle,
 } from "@/components/ui/alert-dialog";
 import { toast } from "sonner";
-import clsx from "clsx"; // For conditional class names
+import clsx from "clsx";
 
-// Helper for status visualization
 const statusConfig = {
   UNPAID: {
     label: "Waiting for Payment Proof",
@@ -55,7 +54,7 @@ const statusConfig = {
   },
   CONFIRMATION: {
     label: "Waiting for Confirmation",
-    icon: Hourglass, // Using hourglass icon for 'confirming' status
+    icon: Hourglass,
     className: "bg-blue-100 text-blue-800 border-blue-300",
   },
   SUCCESS: {
@@ -75,7 +74,6 @@ const statusConfig = {
   },
 };
 
-// Defines all possible filter statuses for the tabs
 const filterStatuses = [
   { key: "ALL", label: "All" },
   { key: "UNPAID", label: "Pending" },
@@ -86,92 +84,71 @@ const filterStatuses = [
 ];
 
 const TransactionManagementPage = () => {
-  // Get transaction data, loading status, and error from the hook
   const {
     transactions,
     isLoading: isTransactionsLoading,
     error,
     mutate,
   } = useAllTransactions();
-  // Get authentication loading status
   const { loading: isAuthLoading } = useAuth();
-  // Get function to cancel transactions and mutation status
   const { cancelTransaction, isMutating } = useTransactionActions();
 
-  // State for status filter (default 'ALL')
   const [statusFilter, setStatusFilter] = useState("ALL");
-  // State for search filter by title or invoice ID
   const [searchFilter, setSearchFilter] = useState("");
-  // State to store the transaction to be canceled (for confirmation dialog)
   const [transactionToCancel, setTransactionToCancel] = useState(null);
-  // State for table sorting configuration
   const [sortConfig, setSortConfig] = useState({
     key: "orderDate",
     direction: "desc",
   });
 
-  // Combined loading status from transactions and authentication
   const isLoading = isTransactionsLoading || isAuthLoading;
 
-  // Helper function to map API status to the new display status
   const mapApiStatusToDisplayStatus = (transaction) => {
     const apiStatus = transaction.status?.toUpperCase();
-    // Check if the `proofPaymentUrl` field exists AND contains data
-    // If `proofPaymentUrl` is an empty string, null, or undefined, `!!` will make `hasPaymentProof` `false`
-    // If it contains any string value (e.g., a URL), `!!` will make `hasPaymentProof` `true`
     const hasPaymentProof = !!transaction.proofPaymentUrl;
 
     if (apiStatus === "PENDING") {
-      // If the API status is PENDING, we differentiate based on `proofPaymentUrl`
       return hasPaymentProof ? "CONFIRMATION" : "UNPAID";
     }
-    // For other statuses like SUCCESS, CANCELLED, FAILED, etc., use their direct status
     return apiStatus;
   };
 
-  // Use useMemo to process transactions (filter and sort) only when dependencies change
   const processedTransactions = useMemo(() => {
     if (isLoading || !Array.isArray(transactions)) return [];
 
     let sortableTransactions = [...transactions];
 
-    // Add a derived `displayStatus` and `calculatedTotalAmount` to each transaction
     const transactionsWithCalculatedDetails = sortableTransactions.map((t) => {
         const calculatedTotal = t.transaction_items?.reduce(
-            (acc, item) => acc + (item.price || 0) * (item.quantity || 1), // Calculate subtotal for each item
+            (acc, item) => acc + (item.price || 0) * (item.quantity || 1),
             0
         );
         return {
             ...t,
-            displayStatus: mapApiStatusToDisplayStatus(t), // Using the helper function
-            calculatedTotalAmount: calculatedTotal || t.totalAmount // Use calculated total or existing totalAmount
+            displayStatus: mapApiStatusToDisplayStatus(t),
+            calculatedTotalAmount: calculatedTotal || t.totalAmount
         };
     });
 
-    // Filtering logic
     let filteredTransactions = transactionsWithCalculatedDetails.filter(
       (t) => statusFilter === "ALL" || t.displayStatus === statusFilter
     );
 
     filteredTransactions = filteredTransactions.filter((t) => {
       const searchTerm = searchFilter.toLowerCase();
-      // Safely access title and invoiceId, default to empty string if not present
       const title = t.transaction_items?.[0]?.title?.toLowerCase() || "";
       const invoiceId = t.invoiceId?.toLowerCase() || "";
       return title.includes(searchTerm) || invoiceId.includes(searchTerm);
     });
 
-    // Sorting logic
     if (sortConfig.key) {
       filteredTransactions.sort((a, b) => {
         let aValue = a[sortConfig.key];
         let bValue = b[sortConfig.key];
         if (sortConfig.key === "orderDate") {
-          // Convert date strings to numeric values (epoch time) for accurate comparison
           aValue = new Date(aValue).getTime();
           bValue = new Date(bValue).getTime();
         }
-        // If sorting by total amount, use the calculated total
         if (sortConfig.key === "totalAmount" || sortConfig.key === "calculatedTotalAmount") {
             aValue = a.calculatedTotalAmount;
             bValue = b.calculatedTotalAmount;
@@ -190,10 +167,8 @@ const TransactionManagementPage = () => {
     return filteredTransactions;
   }, [transactions, statusFilter, searchFilter, isLoading, sortConfig]);
 
-  // Use useMemo to calculate the count of transactions per status
   const statusCounts = useMemo(() => {
     const counts = { ALL: 0 };
-    // Initialize count for each filter status
     filterStatuses.forEach((s) => {
       if (s.key !== "ALL") {
         counts[s.key] = 0;
@@ -202,49 +177,44 @@ const TransactionManagementPage = () => {
 
     if (Array.isArray(transactions)) {
       transactions.forEach((t) => {
-        // Use the same status mapping logic to calculate counts
         const displayStatus = mapApiStatusToDisplayStatus(t);
 
         if (displayStatus in counts) {
           counts[displayStatus]++;
         }
-        counts.ALL++; // Always increment total count
+        counts.ALL++;
       });
     }
     return counts;
-  }, [transactions]); // Recalculate if transaction data changes
+  }, [transactions]);
 
-  // Handler for changing sort configuration
   const handleSort = (key) => {
     let direction = "asc";
     if (sortConfig.key === key && sortConfig.direction === "asc") {
-      direction = "desc"; // Reverse sort direction if the key is the same
+      direction = "desc";
     }
-    // If sorting by Total Amount, change the key to calculatedTotalAmount
     const sortKey = (key === "totalAmount") ? "calculatedTotalAmount" : key;
-    setSortConfig({ key: sortKey, direction }); // Update sort configuration state
+    setSortConfig({ key: sortKey, direction });
   };
 
-  // Handler for confirming transaction cancellation
   const handleConfirmCancel = async () => {
-    if (!transactionToCancel) return; // Exit if no transaction is selected
+    if (!transactionToCancel) return;
 
-    const loadingToastId = toast.loading(`Cancelling transaction...`); // Show loading toast
+    const loadingToastId = toast.loading(`Cancelling transaction...`);
     try {
-      await cancelTransaction(transactionToCancel.id); // Call transaction cancellation function
-      toast.success("Transaction has been cancelled.", { id: loadingToastId }); // Show success toast
-      mutate(); // Reload data to update the transaction list
+      await cancelTransaction(transactionToCancel.id);
+      toast.success("Transaction has been cancelled.", { id: loadingToastId });
+      mutate();
     } catch (err) {
       toast.error(
-        err.response?.data?.message || "Failed to cancel transaction.", // Show error message
+        err.response?.data?.message || "Failed to cancel transaction.",
         { id: loadingToastId }
       );
     } finally {
-      setTransactionToCancel(null); // Close confirmation dialog
+      setTransactionToCancel(null);
     }
   };
 
-  // Display if an error occurs while loading data
   if (error) {
     return (
       <div className="p-8 text-center">
@@ -260,10 +230,9 @@ const TransactionManagementPage = () => {
 
   return (
     <>
-      {/* Cancellation Confirmation Dialog */}
       <AlertDialog
-        open={!!transactionToCancel} // Open dialog if a transaction is selected for cancellation
-        onOpenChange={(open) => !open && setTransactionToCancel(null)} // Close dialog on change
+        open={!!transactionToCancel}
+        onOpenChange={(open) => !open && setTransactionToCancel(null)}
       >
         <AlertDialogContent>
           <AlertDialogHeader>
@@ -289,7 +258,6 @@ const TransactionManagementPage = () => {
         </AlertDialogContent>
       </AlertDialog>
 
-      {/* Main Transaction Management Page Section */}
       <motion.div
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
@@ -305,9 +273,7 @@ const TransactionManagementPage = () => {
           </div>
         </div>
 
-        {/* Filter and Search Section */}
         <div className="flex flex-col gap-4 md:flex-row">
-          {/* Custom status filter tabs */}
           <div className="flex items-center p-1 space-x-2 overflow-x-auto bg-gray-100 border border-gray-200 rounded-lg shadow-sm">
             {filterStatuses.map((status) => (
               <Button
@@ -315,11 +281,11 @@ const TransactionManagementPage = () => {
                 variant="ghost"
                 onClick={() => setStatusFilter(status.key)}
                 className={clsx(
-                  "px-4 py-2 text-sm font-medium rounded-md transition-colors duration-200 whitespace-nowrap", // `whitespace-nowrap` prevents text wrapping
+                  "px-4 py-2 text-sm font-medium rounded-md transition-colors duration-200 whitespace-nowrap",
                   "hover:bg-gray-200 data-[state=active]:bg-white data-[state=active]:shadow",
                   {
-                    "bg-white shadow": statusFilter === status.key, // Style for active tab
-                    "text-gray-700": statusFilter !== status.key, // Style for inactive tab
+                    "bg-white shadow": statusFilter === status.key,
+                    "text-gray-700": statusFilter !== status.key,
                   }
                 )}
                 data-state={statusFilter === status.key ? "active" : "inactive"}
@@ -367,10 +333,10 @@ const TransactionManagementPage = () => {
                   <Button
                     variant="ghost"
                     className="px-0 hover:bg-transparent"
-                    onClick={() => handleSort("totalAmount")} // Sort by calculated total
+                    onClick={() => handleSort("totalAmount")}
                   >
                     Total Amount
-                    {sortConfig.key === "calculatedTotalAmount" && // Check calculated key for sorting indicator
+                    {sortConfig.key === "calculatedTotalAmount" &&
                       (sortConfig.direction === "asc" ? (
                         <ArrowUp className="w-4 h-4 ml-2" />
                       ) : (
@@ -399,7 +365,6 @@ const TransactionManagementPage = () => {
             </TableHeader>
             <TableBody>
               {isLoading ? (
-                // Display skeleton loader while data is being loaded
                 Array.from({ length: 8 }).map((_, index) => (
                   <TableRow key={index}>
                     <TableCell>
@@ -432,9 +397,7 @@ const TransactionManagementPage = () => {
                   </TableRow>
                 ))
               ) : processedTransactions.length > 0 ? (
-                // Display transaction data if available
                 processedTransactions.map((t) => {
-                  // Use the derived `displayStatus` for rendering the status
                   const upperCaseDisplayStatus = t.displayStatus;
                   const currentStatus =
                     statusConfig[upperCaseDisplayStatus] || {
@@ -492,7 +455,6 @@ const TransactionManagementPage = () => {
                               src={t.payment_method.imageUrl}
                               alt={t.payment_method.name || ""}
                               className="object-contain h-6 w-9"
-                              // Image fallback in case of error
                               onError={(e) => {
                                 e.currentTarget.onerror = null;
                                 e.currentTarget.src =

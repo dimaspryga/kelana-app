@@ -85,7 +85,7 @@ const HeroSection = () => {
     <div
       className="relative w-full h-[60vh] md:h-[80vh] bg-cover bg-center"
       style={{
-        backgroundImage: `url(${heroBanner?.imageUrl || "/assets/header.jpg"})`,
+        backgroundImage: `url(${heroBanner?.imageUrl})`,
       }}
     >
         <AnimatePresence>

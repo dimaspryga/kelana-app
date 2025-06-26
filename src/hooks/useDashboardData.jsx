@@ -30,7 +30,6 @@ export const useDashboardData = () => {
     const isLoading = !usersData && !bannersData && !categoriesData && !activitiesData && !promosData && !transactionsData;
     const error = usersError || bannersError || categoriesError || activitiesError || promosError || transactionsError;
 
-    // Helper function to map API status to display status
     const mapApiStatusToDisplayStatus = (transaction) => {
         const apiStatus = transaction.status?.toUpperCase();
         const hasPaymentProof = !!transaction.proofPaymentUrl;
@@ -40,7 +39,6 @@ export const useDashboardData = () => {
         return apiStatus;
     };
 
-    // Process and enrich data once it's available
     const stats = useMemo(() => {
         const statusCounts = {
             UNPAID: 0,

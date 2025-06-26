@@ -28,7 +28,6 @@ import {
 
 const DEFAULT_ACTIVITY_IMAGE = "/assets/banner-authpage.png";
 
-// Variants for Framer Motion animations
 const containerVariants = {
   hidden: { opacity: 0 },
   visible: {

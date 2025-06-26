@@ -13,7 +13,6 @@ import ActivityDiscountSection from "@/components/ui/user/ActivityDiscountSectio
 import TestimonialSection from "@/components/ui/user/TestimonialSection";
 import SubscribeSection from "@/components/ui/user/SubscribeSection";
 
-// Skeleton Loader for the Home Page
 const HomeSkeleton = () => (
   <div className="space-y-16">
     <Skeleton className="w-full h-[80vh]" />

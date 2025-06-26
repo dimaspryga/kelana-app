@@ -30,8 +30,6 @@ export const useUploadImage = () => {
     formData.append("image", file);
 
     try {
-      // Gunakan instance 'api' yang sudah dikonfigurasi.
-      // Header otentikasi akan ditambahkan otomatis oleh interceptor.
       const response = await api.post("/upload-image", formData, {
         headers: {
           "Content-Type": "multipart/form-data",

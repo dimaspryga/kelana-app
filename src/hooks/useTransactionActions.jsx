@@ -2,7 +2,6 @@ import { useState } from "react";
 import axios from "axios";
 import { getCookie } from "cookies-next";
 
-// Konfigurasi API terpusat untuk hook ini
 const api = axios.create({
   baseURL: "https://travel-journal-api-bootcamp.do.dibimbing.id/api/v1",
   headers: {
@@ -25,9 +24,8 @@ export const useTransactionActions = () => {
     const [isMutating, setIsMutating] = useState(false);
 
     /**
-     * Updates the status of a specific transaction.
-     * @param {string} transactionId - The ID of the transaction to update.
-     * @param {string} status - The new status (e.g., 'SUCCESS', 'PENDING', 'CANCELLED').
+     * @param {string} transactionId
+     * @param {string} status
      */
     const updateTransactionStatus = async (transactionId, status) => {
         setIsMutating(true);
@@ -40,8 +38,7 @@ export const useTransactionActions = () => {
     };
 
     /**
-     * Cancels a specific transaction.
-     * @param {string} transactionId - The ID of the transaction to cancel.
+     * @param {string} transactionId 
      */
     const cancelTransaction = async (transactionId) => {
         setIsMutating(true);

@@ -11,7 +11,6 @@ const api = axios.create({
     baseURL: API_BASE_URL,
     headers: {
         'apiKey': API_KEY,
-        // Sekarang default Content-Type adalah JSON
         'Content-Type': 'application/json',
     }
 });
@@ -26,8 +25,7 @@ api.interceptors.request.use(config => {
 
 export const useBannerActions = () => {
     const [isMutating, setIsMutating] = useState(false);
-
-    // Menerima data JSON dengan nama dan imageUrl
+    
     const createBanner = async (payload) => {
         setIsMutating(true);
         try {
@@ -39,7 +37,6 @@ export const useBannerActions = () => {
         }
     };
 
-    // Menerima data JSON dengan nama dan imageUrl (opsional)
     const updateBanner = async (bannerId, payload) => {
         setIsMutating(true);
         try {

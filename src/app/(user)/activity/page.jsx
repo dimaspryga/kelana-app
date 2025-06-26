@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState, useMemo } from "react";
+import React, { useState, useMemo, useRef } from "react";
 import Link from "next/link";
 import { useRouter, usePathname } from "next/navigation";
 import { useActivity } from "@/hooks/useActivity";
@@ -15,19 +15,25 @@ import {
   PaginationNext,
   PaginationPrevious,
 } from "@/components/ui/pagination";
+import {
+  Carousel,
+  CarouselContent,
+  CarouselItem,
+  CarouselNext,
+  CarouselPrevious,
+} from "@/components/ui/carousel";
+import Autoplay from "embla-carousel-autoplay";
 import { Button } from "@/components/ui/button";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Input } from "@/components/ui/input";
 import { MapPin, Star, Loader2, ShoppingCart, Search, Frown } from "lucide-react";
 import { toast } from "sonner";
 import { motion, AnimatePresence } from "framer-motion";
-import BannerSection from "@/components/ui/user/BannerSection";
 import CategorySection from "@/components/ui/user/CategorySection";
 import ActivityDiscountSection from "@/components/ui/user/ActivityDiscountSection";
 
 const ITEMS_PER_PAGE = 8;
 
-// Framer Motion Variants
 const containerVariants = {
   hidden: { opacity: 0 },
   visible: {
@@ -41,7 +47,6 @@ const itemVariants = {
   visible: { y: 0, opacity: 1, transition: { type: "spring", stiffness: 100 } },
 };
 
-// Helper function
 const formatCurrency = (amount) =>
   new Intl.NumberFormat("id-ID", {
     style: "currency",
@@ -49,7 +54,6 @@ const formatCurrency = (amount) =>
     minimumFractionDigits: 0,
   }).format(amount);
 
-// --- Reusable Activity Card Component ---
 const ActivityCard = ({ item, onAddToCart, addingItemId }) => (
     <motion.div variants={itemVariants} className="h-full">
         <div className="flex flex-col h-full overflow-hidden transition-all duration-300 bg-white shadow-md rounded-xl hover:shadow-2xl hover:-translate-y-1 group">
@@ -102,10 +106,50 @@ const ActivityCard = ({ item, onAddToCart, addingItemId }) => (
     </motion.div>
 );
 
-// --- Skeleton Component for Loading State ---
+const ActivityBanner = ({ featuredActivities }) => {
+    const plugin = useRef(Autoplay({ delay: 4000, stopOnInteraction: false }));
+    if (!featuredActivities || featuredActivities.length === 0) return null;
+
+    return (
+        <div className="w-full mt-4 mb-28">
+            <Carousel
+                opts={{ align: "start", loop: true }}
+                plugins={[plugin.current]}
+                onMouseEnter={plugin.current.stop}
+                onMouseLeave={plugin.current.reset}
+                className="w-full"
+            >
+                <CarouselContent className="-ml-4">
+                    {featuredActivities.map((item) => (
+                        <CarouselItem key={item.id} className="pl-4 basis-full">
+                            <Link href={`/activity/${item.id}`}>
+                                <div className="relative h-[40vh] w-full rounded-xl overflow-hidden group">
+                                    <img
+                                        src={item.imageUrls?.[0]}
+                                        alt={item.title}
+                                        className="object-cover w-full h-full transition-transform duration-500 group-hover:scale-110"
+                                        onError={(e) => { e.currentTarget.onerror = null; e.currentTarget.src = 'https://placehold.co/1200x400/f87171/ffffff?text=Banner+Error'; }}
+                                    />
+                                    <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent"></div>
+                                    <div className="absolute bottom-0 left-0 p-8 text-white">
+                                        <h2 className="text-4xl font-bold drop-shadow-lg">{item.title}</h2>
+                                        <p className="max-w-xl mt-2 drop-shadow">{item.description.substring(0, 100)}...</p>
+                                    </div>
+                                </div>
+                            </Link>
+                        </CarouselItem>
+                    ))}
+                </CarouselContent>
+            </Carousel>
+        </div>
+    );
+};
+
 const ActivityPageSkeleton = () => (
     <div>
-        <Skeleton className="w-full h-[400px]" />
+        <div className="container px-4 py-8 mx-auto mt-4 mb-14 max-w-7xl">
+            <Skeleton className="w-full h-[40vh] rounded-xl" />
+        </div>
         <div className="flex flex-col px-4 py-12 mx-auto max-w-7xl sm:px-6 lg:px-8">
             <Skeleton className="w-1/2 h-10 mx-auto mb-4" />
             <Skeleton className="w-2/3 h-6 mx-auto mb-10" />
@@ -155,11 +199,16 @@ const ActivityPage = () => {
             await addToCart(item.id, 1);
             toast.success(`"${item.title}" has been added successfully!`);
         } catch (err) {
-            toast.error(err.message || "Failed to add item. It might already be in the cart.");
+            toast.error("Failed to add item. It might already be in the cart.");
         } finally {
             setAddingItemId(null);
         }
     };
+
+    const featuredActivities = useMemo(() => {
+        if (!activity) return [];
+        return activity.filter(a => a.rating > 4.5).slice(0, 5);
+    }, [activity]);
 
     const filteredActivities = useMemo(() => {
         if (!activity) return [];
@@ -211,9 +260,9 @@ const ActivityPage = () => {
                 </motion.div>
             ) : (
                 <motion.div key="content" initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ duration: 0.5 }}>
-                    <BannerSection />
                     <div className="min-h-screen bg-gray-50">
                         <div className="flex flex-col px-4 py-12 mx-auto max-w-7xl sm:px-6 lg:px-8">
+                            <ActivityBanner featuredActivities={featuredActivities} />
                             <h1 className="mb-4 text-4xl font-extrabold tracking-tight text-center text-gray-900">
                                 Explore Fun Activities
                             </h1>

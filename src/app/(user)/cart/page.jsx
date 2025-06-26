@@ -289,7 +289,7 @@ const CartPage = () => {
           </DialogFooter>
         </DialogContent>
       </Dialog>
-      <h1 className="mb-8 text-3xl font-bold">Shopping Cart</h1>
+      <h1 className="mb-8 text-3xl font-bold">Order Cart</h1>
       <div className="flex flex-col gap-8 lg:flex-row lg:items-start">
         <div className="w-full lg:w-2/3">
           <div className="flex items-center justify-between p-4 mb-4 bg-white border rounded-lg">

@@ -9,7 +9,6 @@ import { Button } from "@/components/ui/button";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Input } from "@/components/ui/input";
 import { Frown, ImagePlus, Edit, Trash2, Search, Loader2 } from "lucide-react";
-// Pastikan path import ini benar menuju file yang telah kita buat
 import { CategoryFormDialog } from "@/components/ui/admin/CategoryFormDialog";
 import {
   AlertDialog,
@@ -31,7 +30,6 @@ const CategoryManagementPage = () => {
     refetch: refetchCategories,
   } = useCategory();
   const { loading: isAuthLoading } = useAuth();
-  // Ambil `isMutating` dari hook untuk mengetahui status aksi C/U/D
   const { deleteCategory, isMutating } = useCategoryActions();
 
   const [isFormDialogOpen, setIsFormDialogOpen] = useState(false);
@@ -238,4 +236,4 @@ const CategoryManagementPage = () => {
   );
 };
 
-export default CategoryManagementPage;
+export default CategoryManagementPage;s

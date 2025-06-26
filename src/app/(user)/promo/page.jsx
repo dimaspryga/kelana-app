@@ -12,7 +12,6 @@ import { motion, AnimatePresence } from "framer-motion";
 import PromoBannerSection from "@/components/ui/user/PromoBannerSection";
 import ActivitySection from "@/components/ui/user/ActivitySection";
 
-// Helper function for currency formatting
 const formatCurrency = (amount) =>
   new Intl.NumberFormat("id-ID", {
     style: "currency",
@@ -20,7 +19,6 @@ const formatCurrency = (amount) =>
     minimumFractionDigits: 0,
   }).format(amount);
 
-// Variants for Framer Motion animations
 const containerVariants = {
   hidden: { opacity: 0 },
   visible: {
@@ -43,10 +41,13 @@ const cardVariants = {
   },
 };
 
-// --- Skeleton Component for Loading State ---
 const PromoPageSkeleton = () => (
     <div className="bg-gray-50">
-      <Skeleton className="w-full h-[40vh]" /> 
+      <div className="py-8">
+          <div className="px-4 mx-auto max-w-7xl sm:px-6 lg:px-8">
+              <Skeleton className="w-full h-[40vh] md:h-[50vh] rounded-xl" />
+          </div>
+      </div>
       <div className="px-4 py-12 mx-auto max-w-7xl sm:px-6 lg:px-8">
         <Skeleton className="w-1/2 h-10 mx-auto mb-4" />
         <Skeleton className="w-2/3 h-8 mx-auto mb-10" />

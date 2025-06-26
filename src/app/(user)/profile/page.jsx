@@ -15,10 +15,9 @@ import {
   Ticket,
   Settings,
   Receipt,
-  ShoppingCart, // Ikon baru untuk keranjang
+  ShoppingCart,
 } from "lucide-react";
 
-// Skeleton Loader yang diperbarui untuk mencerminkan desain baru
 const ProfileSkeleton = () => (
   <div className="w-full max-w-lg p-8 space-y-6 transition-all duration-300 transform border shadow-2xl bg-white/50 backdrop-blur-xl border-gray-200/50 rounded-3xl animate-pulse">
     <div className="flex flex-col items-center md:flex-row md:space-x-8">
@@ -47,16 +46,16 @@ const UserProfile = () => {
   const { user, loading, error, refetch } = useGetLoggedUser();
   const [isEditDialogOpen, setIsEditDialogOpen] = useState(false);
 
-  // Wrapper halaman dengan latar belakang gradien dan pola SVG
+
   const PageWrapper = ({ children }) => (
     <div className="relative flex items-center justify-center min-h-screen p-4 overflow-hidden font-sans text-gray-800 bg-white">
-       <div className="absolute inset-0 z-0 bg-gradient-to-br from-blue-50 to-white"></div>
-       <div 
-        className="absolute inset-0 z-0 opacity-20" 
-        style={{
-            backgroundImage: `url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32' width='32' height='32' fill='none' stroke='rgb(224 231 255 / 1)'%3e%3cpath d='M0 .5H31.5V32'/%3e%3c/svg%3e")`,
-        }}>
-       </div>
+      <div className="absolute inset-0 z-0 bg-gradient-to-br from-blue-50 to-white"></div>
+        <div 
+          className="absolute inset-0 z-0 opacity-20" 
+          style={{
+              backgroundImage: `url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32' width='32' height='32' fill='none' stroke='rgb(224 231 255 / 1)'%3e%3cpath d='M0 .5H31.5V32'/%3e%3c/svg%3e")`,
+          }}>
+        </div>
       <div className="relative z-10">
         {children}
       </div>
@@ -74,7 +73,7 @@ const UserProfile = () => {
     </div>
   );
 
-  // Komponen untuk menu aksi di dasbor, sekarang dapat menangani onClick
+  // Komponen untuk menu aksi di dasbor
   const ActionItem = ({ icon: Icon, label, href = "#", onClick }) => {
     const commonClasses = "flex flex-col items-center justify-center p-2 space-y-2 text-center transition-all duration-300 rounded-xl hover:bg-blue-100 hover:scale-105 group w-full";
     
@@ -114,7 +113,7 @@ const UserProfile = () => {
         </h2>
         <p className="mt-2 text-gray-600">{message}</p>
         {onRetry && (
-             <button
+            <button
                 onClick={onRetry}
                 className="flex items-center justify-center w-full gap-2 px-4 py-3 mt-8 font-semibold text-white transition-all duration-300 bg-blue-600 rounded-xl hover:bg-blue-700 focus:outline-none focus:ring-4 focus:ring-blue-300 hover:shadow-lg hover:scale-105"
             >
@@ -173,7 +172,7 @@ const UserProfile = () => {
                 e.target.src = "https://placehold.co/128x128/dbeafe/2563eb?text=User";
               }}
             />
-             <span className="absolute flex items-center justify-center w-10 h-10 text-white capitalize bg-blue-600 border-4 rounded-full shadow-md bottom-1 right-1 border-white/50">
+            <span className="absolute flex items-center justify-center w-10 h-10 text-white capitalize bg-blue-600 border-4 rounded-full shadow-md bottom-1 right-1 border-white/50">
                 <UserCheck size={20} />
             </span>
           </div>

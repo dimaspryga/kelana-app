@@ -9,8 +9,6 @@ import {
   Carousel,
   CarouselContent,
   CarouselItem,
-  CarouselNext,
-  CarouselPrevious,
 } from "@/components/ui/carousel";
 import Autoplay from "embla-carousel-autoplay"; 
 import { motion, AnimatePresence } from "framer-motion";
@@ -37,6 +35,14 @@ const itemVariants = {
   },
 };
 
+const BannerSectionSkeleton = () => (
+    <div className="py-8 bg-gray-50">
+        <div className="px-4 mx-auto max-w-7xl sm:px-6 lg:px-8">
+            <Skeleton className="w-full rounded-xl aspect-[21/7]" />
+        </div>
+    </div>
+);
+
 const BannerSection = () => {
   const { banner, isLoading: isBannerLoading } = useBanner();
   const { loading: isAuthLoading } = useAuth();
@@ -52,11 +58,10 @@ const BannerSection = () => {
           {isLoading ? (
             <motion.div
               key="skeleton"
-              initial={{ opacity: 1 }}
               exit={{ opacity: 0 }}
               transition={{ duration: 0.3 }}
             >
-              <Skeleton className="w-full rounded-xl aspect-[21/9]" />
+              <BannerSectionSkeleton />
             </motion.div>
           ) : (
             <motion.div
@@ -86,6 +91,7 @@ const BannerSection = () => {
                               src={bannerItem.imageUrl}
                               alt={bannerItem.name}
                               className="w-full aspect-[21/7] object-cover" 
+                              onError={(e) => { e.currentTarget.onerror = null; e.currentTarget.src = "/assets/error.png"; }}
                             />
                             <div className="absolute inset-0 flex flex-col items-start justify-end p-8 bg-gradient-to-t from-black/60 to-transparent">
                               <h3 className="text-4xl font-bold text-white shadow-lg">
@@ -98,8 +104,6 @@ const BannerSection = () => {
                     </CarouselItem>
                   ))}
                 </CarouselContent>
-                <CarouselPrevious className="absolute text-white -translate-y-1/2 border-none left-4 top-1/2 bg-black/30 hover:bg-black/50" />
-                <CarouselNext className="absolute text-white -translate-y-1/2 border-none right-4 top-1/2 bg-black/30 hover:bg-black/50" />
               </Carousel>
             </motion.div>
           )}

@@ -14,15 +14,14 @@ import {
   PaginationNext,
   PaginationPrevious,
 } from "@/components/ui/pagination";
-import { Input } from "@/components/ui/input"; // Impor komponen Input
+import { Input } from "@/components/ui/input";
 import { motion } from "framer-motion";
 import { Skeleton } from "@/components/ui/skeleton";
-import { Search, Mountain, Frown } from "lucide-react"; // Impor ikon Search
+import { Search, Mountain, Frown } from "lucide-react";
 
 const DEFAULT_CATEGORY_IMAGE = "/assets/banner-authpage.png";
 const ITEMS_PER_PAGE = 8;
 
-// Variants for Framer Motion animations
 const containerVariants = {
   hidden: { opacity: 0 },
   visible: {
@@ -51,28 +50,26 @@ const CategoryPage = () => {
   const router = useRouter();
 
   const [currentPage, setCurrentPage] = useState(1);
-  const [searchQuery, setSearchQuery] = useState(""); // State untuk input pencarian
+  const [searchQuery, setSearchQuery] = useState("");
 
-  // Logika untuk memfilter kategori berdasarkan pencarian
   const filteredCategories = useMemo(() => {
     if (!category) return [];
     if (!searchQuery) return category;
-    return category.filter(cat => 
+    return category.filter(cat =>
       cat.name.toLowerCase().includes(searchQuery.toLowerCase())
     );
   }, [category, searchQuery]);
-  
-  // Kalkulasi paginasi berdasarkan hasil filter
+
   const totalPages = Math.ceil(filteredCategories.length / ITEMS_PER_PAGE);
   const indexOfLastItem = currentPage * ITEMS_PER_PAGE;
   const indexOfFirstItem = indexOfLastItem - ITEMS_PER_PAGE;
   const currentCategories = filteredCategories.slice(indexOfFirstItem, indexOfLastItem);
-  
+
   const handlePageChange = (pageNumber) => {
     setCurrentPage(pageNumber);
     window.scrollTo({ top: 0, behavior: "smooth" });
   };
-  
+
   const getPageNumbers = () => {
     const pageNumbers = [];
     if (totalPages <= 7) {
@@ -134,17 +131,16 @@ const CategoryPage = () => {
           Find amazing experiences and activities that suit your interests.
         </p>
 
-        {/* --- Kotak Pencarian Modern --- */}
         <div className="relative w-full max-w-lg mx-auto mb-12">
             <Search className="absolute text-gray-400 -translate-y-1/2 left-4 top-1/2" />
-            <Input 
+            <Input
                 type="text"
                 placeholder="Search for a category..."
                 className="w-full py-6 pl-12 pr-4 text-base border-gray-200 rounded-full shadow-sm focus-visible:ring-blue-500"
                 value={searchQuery}
                 onChange={(e) => {
                     setSearchQuery(e.target.value);
-                    setCurrentPage(1); // Reset ke halaman pertama saat mencari
+                    setCurrentPage(1);
                 }}
             />
         </div>

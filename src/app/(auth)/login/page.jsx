@@ -10,7 +10,7 @@ import { LoginForm } from "@/components/forms/login-form";
 const LoginPage = () => {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
-  const { login, loading } = useAuth(); // Ambil fungsi login dan state loading dari context
+  const { login, loading } = useAuth();
 
   const handleLogin = async (e) => {
     e.preventDefault();
@@ -23,13 +23,12 @@ const LoginPage = () => {
 
     if (result.success) {
       toast.success("Login successful! Redirecting...");
-      // Pengalihan sudah diurus oleh context
     } else {
       toast.error(result.message || "Failed to log in.");
     }
   };
 
- return (
+return (
     <div className="relative grid min-h-svh lg:grid-cols-2">
       <div className="flex flex-col gap-4 p-6 md:p-10">
         <div className="flex justify-center gap-2 md:justify-start">

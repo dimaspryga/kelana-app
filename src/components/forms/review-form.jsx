@@ -20,9 +20,7 @@ export const ReviewForm = ({ activityId }) => {
       return;
     }
     setIsSubmitting(true);
-    // Placeholder untuk panggilan API
     console.log({ activityId, rating, comment });
-    // Simulasi panggilan API
     await new Promise(resolve => setTimeout(resolve, 1500));
     toast.success("Thank you for your review!");
     setRating(0);

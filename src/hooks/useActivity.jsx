@@ -10,7 +10,6 @@ export const useActivity = () => {
     setIsLoading(true);
     setError(null);
     try {
-      // Panggil API route lokal, bukan API eksternal
       const response = await axios.get("/api/activities");
       setActivity(response.data.data || []);
     } catch (err) {

@@ -2,9 +2,10 @@
 
 import React, { createContext, useState, useEffect, useCallback } from "react";
 import { toast } from "sonner";
-import axios from "axios"; // Gunakan axios untuk konsistensi
+import axios from "axios";
+import { useAuth } from '@/context/AuthContext';
 
-const API_BASE_URL = "/api"; // Gunakan path API lokal
+const API_BASE_URL = "/api"; 
 
 export const CartContext = createContext(null);
 
@@ -13,37 +14,62 @@ export const CartProvider = ({ children }) => {
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState(null);
 
+  const { user, loading: loadingAuth, logout } = useAuth();
+
   const fetchCart = useCallback(async () => {
+    if (loadingAuth) {
+      setIsLoading(true);
+      return; 
+    }
+
+    if (!user) {
+      setCartItems([]);
+      setIsLoading(false);
+      setError(null);
+      return;
+    }
+
     setIsLoading(true);
+    setError(null);
+
     try {
       const response = await axios.get(`${API_BASE_URL}/carts`);
       setCartItems(response.data.data || []);
     } catch (err) {
       const errorMessage = err.response?.data?.message || "Failed to fetch cart data.";
       setError(errorMessage);
-      // Hanya tampilkan toast jika bukan error 401 (not authenticated)
-      if (err.response?.status !== 401) {
+
+      if (err.response?.status === 401) {
+          toast.error("Session expired or unauthorized. Please log in again.");
+          logout();
+      } else {
           toast.error(errorMessage);
       }
+      setCartItems([]);
     } finally {
       setIsLoading(false);
     }
-  }, []);
+  }, [user, loadingAuth, logout]);
 
   useEffect(() => {
     fetchCart();
   }, [fetchCart]);
 
   const addToCart = async (activityId, quantity) => {
+    if (!user) {
+        toast.error("Please log in to add items to your cart.");
+        return;
+    }
+
     const promise = new Promise(async (resolve, reject) => {
       for (let i = 0; i < quantity; i++) {
         try {
             await axios.post(`${API_BASE_URL}/add-cart`, { activityId });
         } catch (err) {
-             const errorData = err.response?.data;
-             return reject(
-                new Error(errorData?.message || `Failed to add item #${i + 1}.`)
-             );
+            const errorData = err.response?.data;
+            return reject(
+              new Error(errorData?.message || `Failed to add item #${i + 1}.`)
+            );
         }
       }
       return resolve({ quantity });
@@ -63,6 +89,11 @@ export const CartProvider = ({ children }) => {
   };
 
   const updateItemQuantity = async (cartItemId, newQuantity) => {
+    if (!user) {
+        toast.error("Please log in to update your cart.");
+        return;
+    }
+
     if (newQuantity < 1) {
       removeFromCart(cartItemId);
       return;
@@ -80,14 +111,19 @@ export const CartProvider = ({ children }) => {
   };
 
   const removeFromCart = async (cartItemId) => {
+    if (!user) {
+        toast.error("Please log in to remove items from your cart.");
+        return;
+    }
+
     const toastId = toast.loading("Deleting item...");
     try {
       await axios.delete(`${API_BASE_URL}/delete-cart/${cartItemId}`);
       toast.success("Item deleted successfully.", { id: toastId });
       await fetchCart();
     } catch (err) {
-       const errorMessage = err.response?.data?.message || "Failed to delete item.";
-       toast.error(errorMessage, { id: toastId });
+        const errorMessage = err.response?.data?.message || "Failed to delete item.";
+        toast.error(errorMessage, { id: toastId });
     }
   };
 

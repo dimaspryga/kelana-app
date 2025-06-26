@@ -24,10 +24,10 @@ export const useUpdateUserRole = () => {
     try {
       const response = await axios.post(
         `${API_BASE_URL}/update-user-role/${userId}`,
-        { role }, // Body request adalah objek JSON
+        { role },
         {
           headers: {
-            apiKey: "24405e01-fbc1-45a5-9f5a-be13afcd757c", // API Key Anda
+            apiKey: "24405e01-fbc1-45a5-9f5a-be13afcd757c",
             Authorization: `Bearer ${token}`,
           },
         }

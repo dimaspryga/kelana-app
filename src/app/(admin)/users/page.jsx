@@ -1,12 +1,12 @@
 "use client";
 
 import React, { useState, useMemo, useEffect } from "react";
+import Link from "next/link";
 import { useAllUsers } from "@/hooks/useAllUsers";
 import { useAuth } from "@/context/AuthContext";
 import { motion } from "framer-motion";
 import { cn } from "@/lib/utils";
 
-// Import UI Components from Shadcn
 import {
   Table,
   TableBody,
@@ -52,7 +52,6 @@ const UserManagementPage = () => {
   const [roleFilter, setRoleFilter] = useState("all");
   const [currentPage, setCurrentPage] = useState(1);
 
-  // State untuk dialog edit
   const [selectedUser, setSelectedUser] = useState(null);
   const [isEditDialogOpen, setIsEditDialogOpen] = useState(false);
 
@@ -128,7 +127,6 @@ const UserManagementPage = () => {
               Manage all users in the system.
             </p>
           </div>
-          {/* Tombol Add User telah dihapus */}
         </div>
 
         <div className="flex flex-col gap-4 md:flex-row">
@@ -160,7 +158,6 @@ const UserManagementPage = () => {
           <Table>
             <TableHeader className="bg-slate-100">
               <TableRow>
-                {/* Kolom Avatar dan Nama digabung menjadi "User" */}
                 <TableHead className="px-6">User</TableHead>
                 <TableHead className="hidden px-6 sm:table-cell">
                   Email
@@ -199,7 +196,6 @@ const UserManagementPage = () => {
               ) : paginatedUsers.length > 0 ? (
                 paginatedUsers.map((user) => (
                   <TableRow key={user.id}>
-                    {/* Sel untuk Avatar dan Nama digabung */}
                     <TableCell className="px-6 py-3">
                       <div className="flex items-center gap-3">
                         <Avatar>
@@ -232,7 +228,6 @@ const UserManagementPage = () => {
                       </Badge>
                     </TableCell>
                     <TableCell className="px-6 py-3 text-right">
-                      {/* Tombol Delete telah dihapus */}
                       <Button
                         variant="outline"
                         size="icon"

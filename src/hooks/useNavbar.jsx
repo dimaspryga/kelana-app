@@ -63,7 +63,7 @@ const useSearch = () => {
 
 export const useNavbar = () => {
   const router = useRouter();
-  // Gunakan useAuth untuk mendapatkan semua data dan fungsi
+
   const { user, logout, loading } = useAuth();
   
   const { isMobileMenuOpen, toggleMobileMenu, setIsMobileMenuOpen } = useMobileMenu();
@@ -105,7 +105,6 @@ export const useNavbar = () => {
     { label: "Promo", path: "/promo" },
   ];
 
-  // Ambil data langsung dari state `user` di AuthContext
   const isLoggedIn = !!user;
   const userRole = user?.role || null;
   const userName = user?.name || null;

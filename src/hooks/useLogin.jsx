@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import { setCookie } from "cookies-next";
 import { toast } from "sonner";
@@ -34,11 +34,11 @@ export const useLogin = () => {
 
       setCookie("token", data.token, {
         expires: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000),
-        path: window.location.reload("/"),
+        path: "/",
       });
 
       setTimeout(() => {
-        router.push("/");
+        router.push(window.location.reload("/"));
       }, 2000);
     } catch (err) {
       toast.error(err.message);

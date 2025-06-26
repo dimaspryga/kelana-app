@@ -4,7 +4,6 @@ import React, { useEffect, useState, useMemo } from "react";
 import { useParams, useRouter } from "next/navigation";
 import Link from "next/link";
 
-// Using your original hooks (ensure these files exist and are correctly configured in your Next.js project)
 import { useDetailTransaction } from "@/hooks/useDetailTransaction";
 import { useTransactionActions } from "@/hooks/useTransactionActions";
 import { useAllUsers } from "@/hooks/useAllUsers";
@@ -38,7 +37,7 @@ import {
   Loader2,
   FileImage,
   ExternalLink,
-  ImageIcon, // Imported for payment method image fallback
+  ImageIcon,
 } from "lucide-react";
 import { toast } from "sonner";
 import {
@@ -52,7 +51,6 @@ import {
   AlertDialogTitle,
 } from "@/components/ui/alert-dialog";
 
-// Helper for status visualization (using uppercase keys)
 const statusConfig = {
   UNPAID: {
     label: "Waiting for Payment Proof",
@@ -74,7 +72,6 @@ const statusConfig = {
     label: "Failed",
     className: "bg-destructive/10 text-destructive border-destructive/30",
   },
-  // PENDING is an API status that will be mapped, not a direct display status here
 };
 
 const TransactionDetailPage = () => {
@@ -91,36 +88,27 @@ const TransactionDetailPage = () => {
   const { users, isLoading: isUsersLoading, error: usersError } = useAllUsers();
   const { updateTransactionStatus, cancelTransaction, isMutating } =
     useTransactionActions();
-  // useAuth.loading is needed to ensure auth is ready before fetching/displaying data related to user roles or authenticated actions
   const { loading: isAuthLoading } = useAuth();
-  // useUpdateUserRole.loading is not strictly needed for UI loading state here, but kept for consistency if it affects other parts
   const { loading: isUpdatingUserRole } = useUpdateUserRole();
 
-  // State to store the current display status of the transaction (e.g., UNPAID, CONFIRMATION)
   const [currentDisplayStatus, setCurrentDisplayStatus] = useState("");
-  // State to store the selected value from the dropdown (not yet applied to API)
   const [selectedUpdateApiStatus, setSelectedUpdateApiStatus] = useState("");
-  // State to manage the cancellation confirmation dialog
   const [showCancelConfirmDialog, setShowCancelConfirmDialog] = useState(false);
 
-  // Overall loading state considering all data fetches and mutations
   const isLoading =
     isTransactionLoading ||
     isUsersLoading ||
     isMutating ||
     isAuthLoading ||
     isUpdatingUserRole;
-  // Combined error state
   const error = transactionError || usersError;
 
-  // Effect to fetch transaction details when ID changes
   useEffect(() => {
     if (transactionId) {
       fetchTransactionDetail(transactionId);
     }
   }, [transactionId, fetchTransactionDetail]);
 
-  // Helper function to map API status and proofPaymentUrl to display status
   const mapApiStatusToDisplayStatus = (transaction) => {
     const apiStatus = transaction.status?.toUpperCase();
     const hasPaymentProof = !!transaction.proofPaymentUrl;
@@ -128,35 +116,29 @@ const TransactionDetailPage = () => {
     if (apiStatus === "PENDING") {
       return hasPaymentProof ? "CONFIRMATION" : "UNPAID";
     }
-    // If the API status is CONFIRMATION, it's already a display status
     if (apiStatus === "CONFIRMATION") {
       return "CONFIRMATION";
     }
     return apiStatus;
   };
 
-  // Effect to set the current display status and default dropdown value when transactionDetail changes
   useEffect(() => {
     if (transactionDetail) {
       const displayStatus = mapApiStatusToDisplayStatus(transactionDetail);
       setCurrentDisplayStatus(displayStatus);
-      // Set dropdown to the actual API status that matches the display or default to PENDING
-      // If the status is CONFIRMATION or UNPAID, the dropdown should show PENDING
       if (displayStatus === "CONFIRMATION" || displayStatus === "UNPAID") {
         setSelectedUpdateApiStatus("PENDING");
       } else {
         setSelectedUpdateApiStatus(transactionDetail.status?.toUpperCase());
       }
     }
-  }, [transactionDetail]); // Depend on transactionDetail to update status
+  }, [transactionDetail]);
 
-  // Memoize customer data to avoid re-calculation
   const customer = useMemo(() => {
     if (!transactionDetail?.userId || !Array.isArray(users)) return null;
     return users.find((u) => u.id === transactionDetail.userId);
   }, [transactionDetail, users]);
 
-  // Calculate the total amount for all items in the order
   const calculatedTotalOrderAmount = useMemo(() => {
     if (!transactionDetail?.transaction_items) return 0;
     return transactionDetail.transaction_items.reduce(
@@ -165,10 +147,7 @@ const TransactionDetailPage = () => {
     );
   }, [transactionDetail?.transaction_items]);
 
-  // Handler to update transaction status when the button is clicked
   const handleUpdateStatusClick = async () => {
-    // Only proceed if the selected status is different from the current API status and is not empty
-    // We need to get the actual API status from transactionDetail for comparison.
     const actualApiStatus = transactionDetail?.status?.toUpperCase();
     if (
       !selectedUpdateApiStatus ||
@@ -188,11 +167,9 @@ const TransactionDetailPage = () => {
         transactionId,
         selectedUpdateApiStatus.toLowerCase()
       );
-      // Re-fetch transaction details to get the latest data and trigger status re-mapping
       await fetchTransactionDetail(transactionId);
       toast.success("Status updated successfully!", { id: loadingToastId });
     } catch (err) {
-      // Using err.response?.data?.message or err.message as API error response structure might vary
       toast.error(
         err.response?.data?.message ||
           err.message ||
@@ -201,23 +178,19 @@ const TransactionDetailPage = () => {
           id: loadingToastId,
         }
       );
-      // No need to revert dropdown choice, as fetchTransactionDetail will update state
-      // which in turn will reset setSelectedUpdateApiStatus
     }
   };
 
-  // Handler to cancel transaction
   const handleCancelTransaction = async () => {
-    setShowCancelConfirmDialog(false); // Close confirmation dialog
+    setShowCancelConfirmDialog(false);
     const loadingToastId = toast.loading(`Cancelling transaction...`);
     try {
       await cancelTransaction(transactionId);
-      await fetchTransactionDetail(transactionId); // Re-fetch data after cancellation
+      await fetchTransactionDetail(transactionId);
       toast.success("Transaction successfully cancelled!", {
         id: loadingToastId,
       });
     } catch (err) {
-      // Using err.response?.data?.message or err.message as API error response structure might vary
       toast.error(
         err.response?.data?.message ||
           err.message ||
@@ -229,7 +202,6 @@ const TransactionDetailPage = () => {
     }
   };
 
-  // Display skeleton loader while data is loading
   if (isLoading) {
     return (
       <div className="p-4 space-y-4 md:p-6">
@@ -266,7 +238,6 @@ const TransactionDetailPage = () => {
     );
   }
 
-  // Display error message if data fetching fails
   if (error) {
     return (
       <div className="p-8 text-center">
@@ -282,22 +253,19 @@ const TransactionDetailPage = () => {
     );
   }
 
-  // Return null if transactionDetail is not yet available after loading
   if (!transactionDetail) {
     return null;
   }
 
-  // Get status info for the badge using the derived display status
   const statusInfo = statusConfig[currentDisplayStatus] || {
     label: currentDisplayStatus,
     className: "bg-gray-100 text-gray-800",
   };
 
-  const hasPaymentProof = !!transactionDetail.proofPaymentUrl; // Determine if proof exists
+  const hasPaymentProof = !!transactionDetail.proofPaymentUrl;
 
   return (
     <>
-      {/* Cancellation Confirmation Dialog */}
       <AlertDialog
         open={showCancelConfirmDialog}
         onOpenChange={setShowCancelConfirmDialog}
@@ -339,11 +307,7 @@ const TransactionDetailPage = () => {
           </div>
         </div>
 
-        {/* First row of cards: Customer Information and Payment Details */}
         <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-2">
-          {" "}
-          {/* Changed to lg:grid-cols-2 */}
-          {/* Customer Information Card */}
           <Card>
             <CardHeader>
               <CardTitle className="flex items-center gap-2">
@@ -363,7 +327,6 @@ const TransactionDetailPage = () => {
               </p>
             </CardContent>
           </Card>
-          {/* Payment Details Card */}
           <Card>
             <CardHeader>
               <CardTitle className="flex items-center gap-2">
@@ -373,9 +336,7 @@ const TransactionDetailPage = () => {
             </CardHeader>
             <CardContent className="space-y-1">
               <p className="flex items-center gap-2">
-                {" "}
-                {/* Added flex and gap for alignment */}
-                <strong>Method:</strong> {/* Display Payment Method Image */}
+                <strong>Method:</strong>
                 {transactionDetail.payment_method?.imageUrl ? (
                   <img
                     src={transactionDetail.payment_method.imageUrl}
@@ -383,7 +344,7 @@ const TransactionDetailPage = () => {
                       transactionDetail.payment_method.name ||
                       "Payment method logo"
                     }
-                    className="flex-shrink-0 object-contain w-20 h-10" // Added flex-shrink-0
+                    className="flex-shrink-0 object-contain w-20 h-10"
                     onError={(e) => {
                       e.currentTarget.onerror = null;
                       e.currentTarget.src =
@@ -391,7 +352,7 @@ const TransactionDetailPage = () => {
                     }}
                   />
                 ) : (
-                  <ImageIcon className="flex-shrink-0 w-5 h-5 text-muted-foreground" /> // Fallback icon
+                  <ImageIcon className="flex-shrink-0 w-5 h-5 text-muted-foreground" />
                 )}
                 <span>
                   {transactionDetail.payment_method?.name || "No data"}
@@ -416,10 +377,7 @@ const TransactionDetailPage = () => {
           </Card>
         </div>
 
-        {/* Second row of cards: Order Details (moved here) */}
         <div className="grid gap-6">
-          {" "}
-          {/* Full width card for order details */}
           <Card>
             <CardHeader>
               <CardTitle className="flex items-center gap-2">
@@ -428,15 +386,10 @@ const TransactionDetailPage = () => {
               </CardTitle>
             </CardHeader>
             <CardContent className="space-y-2">
-              {" "}
-              {/* Increased vertical spacing for multiple items */}
               {transactionDetail.transaction_items &&
               transactionDetail.transaction_items.length > 0 ? (
                 transactionDetail.transaction_items.map((item, index) => (
                   <div key={index} className="flex items-start gap-2 py-1">
-                    {" "}
-                    {/* Use items-start to align top if image is tall */}
-                    {/* Optional: Display item image if available */}
                     {item.imageUrls?.[0] && (
                       <img
                         src={item.imageUrls[0]}
@@ -460,7 +413,6 @@ const TransactionDetailPage = () => {
                           currency: "IDR",
                         }).format(item.price || 0)}
                       </p>
-                      {/* Calculate and display subtotal for each item */}
                       <p className="text-sm font-medium">
                         Subtotal:{" "}
                         {new Intl.NumberFormat("id-ID", {
@@ -474,7 +426,6 @@ const TransactionDetailPage = () => {
               ) : (
                 <p>No activity details found.</p>
               )}
-              {/* Separator if there are items and a total */}
               {transactionDetail.transaction_items?.length > 0 && (
                 <hr className="my-2 border-t border-gray-200" />
               )}
@@ -485,14 +436,12 @@ const TransactionDetailPage = () => {
                     style: "currency",
                     currency: "IDR",
                   }).format(calculatedTotalOrderAmount)}{" "}
-                  {/* Use calculated total here */}
                 </span>
               </p>
             </CardContent>
           </Card>
         </div>
 
-        {/* Proof of Payment Card */}
         <Card>
           <CardHeader>
             <CardTitle className="flex items-center gap-2">
@@ -506,7 +455,6 @@ const TransactionDetailPage = () => {
                 <p className="mb-4 text-sm text-muted-foreground">
                   Click the image to view in full size in a new tab.
                 </p>
-                {/* Directly linking to the image URL */}
                 <a
                   href={transactionDetail.proofPaymentUrl}
                   target="_blank"
@@ -524,10 +472,8 @@ const TransactionDetailPage = () => {
                   />
                 </a>
 
-                {/* URL and View button */}
                 <div className="p-3 mt-4 bg-gray-100 rounded-md">
                   <div className="flex items-center justify-between">
-                    {/* URL Text on the left */}
                     <div>
                       <p className="text-xs text-muted-foreground">
                         Original Image URL:
@@ -562,7 +508,6 @@ const TransactionDetailPage = () => {
           </CardContent>
         </Card>
 
-        {/* Update Transaction Status Card */}
         <Card>
           <CardHeader>
             <CardTitle>Update Transaction Status</CardTitle>
@@ -573,19 +518,16 @@ const TransactionDetailPage = () => {
           </CardHeader>
           <CardContent>
             <div className="flex flex-col gap-4">
-              {" "}
-              {/* Using flex-col for vertical layout */}
               <div className="flex items-center gap-2">
                 <Select
-                  value={selectedUpdateApiStatus} // Bind to state for dropdown selection
-                  onValueChange={setSelectedUpdateApiStatus} // Update state when selection changes
+                  value={selectedUpdateApiStatus}
+                  onValueChange={setSelectedUpdateApiStatus}
                   disabled={isMutating}
                 >
                   <SelectTrigger className="w-[280px]">
                     <SelectValue placeholder="Select new status" />
                   </SelectTrigger>
                   <SelectContent>
-                    {/* Options that admin can set, dynamically labeled for PENDING */}
                     <SelectItem value="PENDING">
                       {hasPaymentProof
                         ? "Waiting for Confirmation"
@@ -596,11 +538,8 @@ const TransactionDetailPage = () => {
                   </SelectContent>
                 </Select>
                 {isLoading && <Loader2 className="w-5 h-5 animate-spin" />}{" "}
-                {/* Use isLoading here */}
               </div>
               <div className="flex gap-2">
-                {" "}
-                {/* Button group */}
                 <Button
                   onClick={handleUpdateStatusClick}
                   disabled={
@@ -616,11 +555,11 @@ const TransactionDetailPage = () => {
                 </Button>
                 <Button
                   variant="destructive"
-                  onClick={() => setShowCancelConfirmDialog(true)} // Show confirmation dialog
+                  onClick={() => setShowCancelConfirmDialog(true)}
                   disabled={
                     isMutating ||
                     transactionDetail.status?.toUpperCase() === "CANCELLED"
-                  } // Disable if already cancelled
+                  }
                 >
                   {isMutating && (
                     <Loader2 className="w-4 h-4 mr-2 animate-spin" />
