@@ -431,7 +431,7 @@ const TransactionManagementPage = () => {
                       <TableCell className="hidden px-6 py-3 font-medium md:table-cell">{new Intl.NumberFormat("id-ID", { style: "currency", currency: "IDR", minimumFractionDigits: 0 }).format(t.calculatedTotalAmount)}</TableCell>
                       <TableCell className="hidden px-6 py-3 text-sm text-gray-600 lg:table-cell">{new Date(t.orderDate).toLocaleDateString("en-GB")}</TableCell>
                       <TableCell className="px-6 py-3"><Badge variant="outline" className={`font-semibold ${currentStatus.className}`}>{currentStatus.icon && (<currentStatus.icon className="w-3 h-3 mr-1.5" />)}{currentStatus.label}</Badge></TableCell>
-                      <TableCell className="px-6 py-3 text-right"><Button asChild variant="outline" size="icon"><Link href={`/admin/transactions/${t.id}`}><Edit className="w-4 h-4" /></Link></Button></TableCell>
+                      <TableCell className="px-6 py-3 text-right"><Button asChild variant="outline" size="icon"><Link href={`/transactions/${t.id}`}><Edit className="w-4 h-4" /></Link></Button></TableCell>
                     </TableRow>
                   );
                 })
