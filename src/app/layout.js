@@ -7,6 +7,7 @@ import { AuthProvider } from "@/context/AuthContext";
 import { CartProvider } from "@/context/CartContext";
 import { cn } from "@/lib/utils";
 import { TransactionProvider } from "@/context/TransactionContext";
+import { Analytics } from "@vercel/analytics/next"
 
 const fontSans = Inter({
   variable: "--font-inter",
@@ -33,6 +34,7 @@ export default function RootLayout({ children }) {
           <CartProvider>
             <TransactionProvider>
               {children}
+              <Analytics />
               <Toaster richColors position="top-center" duration={3000} />
             </TransactionProvider>
           </CartProvider>
