@@ -15,10 +15,31 @@ import {
 import Autoplay from "embla-carousel-autoplay"; 
 import { motion, AnimatePresence } from "framer-motion";
 
+const containerVariants = {
+  hidden: { opacity: 0 },
+  visible: {
+    opacity: 1,
+    transition: {
+      staggerChildren: 0.2,
+    },
+  },
+};
+
+const itemVariants = {
+  hidden: { y: 20, opacity: 0 },
+  visible: {
+    y: 0,
+    opacity: 1,
+    transition: {
+      duration: 0.6,
+      ease: "easeOut",
+    },
+  },
+};
 
 const BannerSection = () => {
   const { banner, isLoading: isBannerLoading } = useBanner();
-  const { loading: isAuthLoading } = useAuth(); //Dapatkan status loading dari AuthContext
+  const { loading: isAuthLoading } = useAuth();
 
   const plugin = useRef(Autoplay({ delay: 4000, stopOnInteraction: false }));
 
@@ -29,17 +50,21 @@ const BannerSection = () => {
       <div className="px-4 mx-auto max-w-7xl sm:px-6 lg:px-8">
         <AnimatePresence mode="wait">
           {isLoading ? (
-            // 4. Tampilkan skeleton jika sedang loading
-            <motion.div key="skeleton">
+            <motion.div
+              key="skeleton"
+              initial={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+              transition={{ duration: 0.3 }}
+            >
               <Skeleton className="w-full rounded-xl aspect-[21/9]" />
             </motion.div>
           ) : (
-            // 5. Tampilkan konten dengan animasi jika sudah selesai loading
             <motion.div
               key="content"
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
-              transition={{ duration: 0.75 }}
+              variants={containerVariants}
+              initial="hidden"
+              animate="visible"
+              exit="hidden"
             >
               <Carousel
                 opts={{
@@ -52,22 +77,24 @@ const BannerSection = () => {
                 className="w-full"
               >
                 <CarouselContent className="-ml-4">
-                  {(banner || []).map((banner) => (
-                    <CarouselItem key={banner.id} className="pl-4 basis-full">
-                      <Link href={`/banner/${banner.id}`}>
-                        <div className="relative overflow-hidden transition-shadow duration-300 rounded-xl group">
-                          <img
-                            src={banner.imageUrl}
-                            alt={banner.name}
-                            className="w-full aspect-[21/7] object-cover" 
-                          />
-                          <div className="absolute inset-0 flex flex-col items-start justify-end p-8 bg-gradient-to-t from-black/60 to-transparent">
-                            <h3 className="text-4xl font-bold text-white shadow-lg">
-                              {banner.name}
-                            </h3>
+                  {(banner || []).map((bannerItem) => (
+                    <CarouselItem key={bannerItem.id} className="pl-4 basis-full">
+                      <motion.div variants={itemVariants}>
+                        <Link href={`/banner/${bannerItem.id}`}>
+                          <div className="relative overflow-hidden transition-shadow duration-300 rounded-xl group">
+                            <img
+                              src={bannerItem.imageUrl}
+                              alt={bannerItem.name}
+                              className="w-full aspect-[21/7] object-cover" 
+                            />
+                            <div className="absolute inset-0 flex flex-col items-start justify-end p-8 bg-gradient-to-t from-black/60 to-transparent">
+                              <h3 className="text-4xl font-bold text-white shadow-lg">
+                                {bannerItem.name}
+                              </h3>
+                            </div>
                           </div>
-                        </div>
-                      </Link>
+                        </Link>
+                      </motion.div>
                     </CarouselItem>
                   ))}
                 </CarouselContent>

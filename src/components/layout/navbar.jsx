@@ -38,7 +38,7 @@ import {
   Loader2,
 } from "lucide-react";
 
-// Helper function for currency formatting
+
 const formatCurrency = (amount) =>
   new Intl.NumberFormat("id-ID", {
     style: "currency",
@@ -46,9 +46,9 @@ const formatCurrency = (amount) =>
     minimumFractionDigits: 0,
   }).format(amount);
 
-// --- Sub-components for better organization ---
 
-// 1. NavLink Component (Diperbarui dengan animasi "pill" yang lebih modern)
+
+// 1. NavLink Component
 const NavLink = ({ href, children }) => {
   const pathname = usePathname();
   const isActive =

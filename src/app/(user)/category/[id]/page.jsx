@@ -3,7 +3,6 @@ import axios from 'axios';
 import { DetailCategoryClient } from '@/components/ui/user/DetailCategoryClient';
 import { Skeleton } from '@/components/ui/skeleton';
 
-// --- Komponen Skeleton ---
 const DetailCategorySkeleton = () => (
     <div className="min-h-screen bg-gray-50">
       <div className="container px-4 py-8 mx-auto max-w-7xl">
@@ -25,7 +24,6 @@ const DetailCategorySkeleton = () => (
     </div>
 );
 
-// --- Fungsi Pengambilan Data di Sisi Server ---
 const API_BASE_URL = "https://travel-journal-api-bootcamp.do.dibimbing.id/api/v1";
 const API_KEY = "24405e01-fbc1-45a5-9f5a-be13afcd757c";
 
@@ -37,7 +35,7 @@ async function getCategoryData(id) {
         });
         return response.data.data;
     } catch (error) {
-        console.error("Gagal mengambil data detail kategori di server:", error.message);
+        console.error("Failed to fetch category detail data on server:", error.message);
         return null;
     }
 }
@@ -50,24 +48,21 @@ async function getActivitiesByCategory(id) {
         });
         return response.data.data;
     } catch (error) {
-        console.error("Gagal mengambil aktivitas berdasarkan kategori di server:", error.message);
+        console.error("Failed to fetch activities by category on server:", error.message);
         return [];
     }
 }
 
-
-// --- Komponen Halaman Utama (Server Component) ---
 export default async function DetailCategoryPage({ params }) {
     const { id } = params;
     
-    // Ambil data utama di server secara paralel
     const [initialCategory, initialActivities] = await Promise.all([
         getCategoryData(id),
         getActivitiesByCategory(id)
     ]);
 
     if (!initialCategory) {
-        return <div className="container py-8 mx-auto text-center">Detail Kategori tidak ditemukan.</div>;
+        return <div className="container py-8 mx-auto text-center">Category detail not found.</div>;
     }
 
     return (

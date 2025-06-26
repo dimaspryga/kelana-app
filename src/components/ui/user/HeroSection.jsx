@@ -6,7 +6,7 @@ import { useCategory } from "@/hooks/useCategory";
 import { useBanner } from "@/hooks/useBanner";
 import { useActivity } from "@/hooks/useActivity";
 import { usePromo } from "@/hooks/usePromo";
-import { motion } from "framer-motion";
+import { motion, AnimatePresence } from "framer-motion";
 
 // Import komponen UI dari Shadcn
 import { Button } from "@/components/ui/button";
@@ -25,7 +25,6 @@ import {
   CommandSeparator,
 } from "@/components/ui/command";
 import { Search, Tag, Plane, Mountain } from "lucide-react";
-import { cn } from "@/lib/utils";
 import { Skeleton } from "@/components/ui/skeleton";
 
 const HeroSection = () => {
@@ -35,17 +34,14 @@ const HeroSection = () => {
   const { activity: activities, isLoading: isActivityLoading } = useActivity();
   const { promo: promos, isLoading: isPromoLoading } = usePromo();
 
-  // State untuk input dan popover
   const [open, setOpen] = useState(false);
   const [searchQuery, setSearchQuery] = useState("");
 
-  // Fungsi untuk menangani pemilihan item dari command menu
   const handleSelect = (path) => {
     router.push(path);
     setOpen(false);
   };
 
-  // Fungsi untuk menangani pencarian umum saat tombol search ditekan
   const handleSearch = () => {
     if (!searchQuery.trim()) {
       return;
@@ -57,10 +53,10 @@ const HeroSection = () => {
   const isLoading =
     isCategoryLoading || isBannerLoading || isActivityLoading || isPromoLoading;
 
-  const heroBanner =
-    banners?.find((b) => b.id === "9b0f60df-4e08-421e-b2b5-10c2aa516a97") || "src/assets/header.png";
+  const heroBanner = useMemo(() => {
+    return banners?.find((b) => b.id === "9b0f60df-4e08-421e-b2b5-10c2aa516a97") || "src/assets/header.png";
+  }, [banners]);
 
-  // --- LOGIKA PENCARIAN DINAMIS ---
   const filteredResults = useMemo(() => {
     if (!searchQuery.trim()) {
       return {
@@ -85,20 +81,25 @@ const HeroSection = () => {
     };
   }, [searchQuery, categories, activities, promos]);
 
-  // Tampilkan skeleton saat loading
-  if (isLoading) {
-    return <Skeleton className="w-full h-[60vh] md:h-[80vh]" />;
-  }
-
   return (
     <div
-      className="relative flex items-center justify-center w-full h-[60vh] md:h-[80vh] bg-cover bg-center"
+      className="relative w-full h-[60vh] md:h-[80vh] bg-cover bg-center"
       style={{
         backgroundImage: `url(${heroBanner?.imageUrl || "/assets/header.jpg"})`,
       }}
     >
-      <div className="absolute inset-0 bg-black/50"></div>
-      <div className="relative z-10 flex flex-col items-center p-4 text-center text-white">
+        <AnimatePresence>
+            {!isLoading && (
+                <motion.div
+                    className="absolute inset-0 bg-black/50"
+                    initial={{ opacity: 0 }}
+                    animate={{ opacity: 1 }}
+                    transition={{ duration: 1 }}
+                />
+            )}
+        </AnimatePresence>
+
+      <div className="relative z-10 flex flex-col items-center justify-center w-full h-full p-4 text-center text-white">
         <motion.h1
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
@@ -178,9 +179,7 @@ const HeroSection = () => {
                       </CommandGroup>
                     )}
 
-                    {filteredResults.activities.length > 0 && (
-                      <CommandSeparator />
-                    )}
+                    {filteredResults.activities.length > 0 && <CommandSeparator />}
 
                     {filteredResults.activities.length > 0 && (
                       <CommandGroup

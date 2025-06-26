@@ -3,13 +3,6 @@
 import { useSWRDetailCategory } from "@/hooks/useSWRDetailCategory";
 import { useSWRActivityByCategory } from "@/hooks/useSWRActivityByCategory";
 import Link from "next/link";
-import {
-  Carousel,
-  CarouselContent,
-  CarouselItem,
-  CarouselNext,
-  CarouselPrevious,
-} from "@/components/ui/carousel";
 import { Button } from "@/components/ui/button";
 import { Frown, MapPin, Star, ChevronRight } from "lucide-react";
 import { motion } from "framer-motion";
@@ -36,9 +29,9 @@ const cardVariants = {
 };
 
 const formatCurrency = (amount) =>
-  new Intl.NumberFormat("id-ID", {
+  new Intl.NumberFormat("en-US", {
     style: "currency",
-    currency: "IDR",
+    currency: "USD",
     minimumFractionDigits: 0,
   }).format(amount);
 
@@ -57,17 +50,17 @@ const ActivityCard = ({ activity }) => (
                 </div>
                 <div className="flex flex-col flex-grow p-4">
                     <h3 className="text-base font-bold text-gray-800 truncate group-hover:text-blue-600">
-                        {activity.title || "Nama Tidak Tersedia"}
+                        {activity.title || "Name Not Available"}
                     </h3>
                     <p className="flex items-center gap-1 mt-1 text-sm text-gray-500">
-                        <MapPin className="w-4 h-4" /> {activity.city || "Lokasi Tidak Tersedia"}
+                        <MapPin className="w-4 h-4" /> {activity.city || "Location Not Available"}
                     </p>
                     <div className="flex items-center gap-2 mt-2 text-sm">
                         <div className="flex items-center gap-1 text-yellow-500">
                             <Star className="w-4 h-4 fill-current" />
                             <span className="font-bold text-gray-700">{activity.rating || "-"}</span>
                         </div>
-                         <span className="text-xs text-gray-400">({activity.total_reviews || "0"} Ulasan)</span>
+                        <span className="text-xs text-gray-400">({activity.total_reviews || "0"} Reviews)</span>
                     </div>
                     <p className="pt-2 mt-auto text-lg font-bold text-blue-600">
                         {formatCurrency(activity.price ?? 0)}
@@ -88,14 +81,14 @@ export function DetailCategoryClient({ initialCategory, initialActivities }) {
         return (
             <div className="flex flex-col items-center justify-center min-h-[60vh] text-center">
                 <Frown className="w-16 h-16 text-red-500" />
-                <h2 className="mt-4 text-2xl font-bold">Gagal Memuat Kategori</h2>
+                <h2 className="mt-4 text-2xl font-bold">Failed to Load Category</h2>
                 <p className="mt-2 text-muted-foreground">{error.message}</p>
             </div>
         );
     }
     
     if (!detailCategory) {
-        return null; // Tampilan skeleton sudah dihandle oleh Suspense
+        return null; 
     }
 
     return (
@@ -110,30 +103,30 @@ export function DetailCategoryClient({ initialCategory, initialActivities }) {
                     <BreadcrumbList>
                         <BreadcrumbItem><BreadcrumbLink asChild><Link href="/">Home</Link></BreadcrumbLink></BreadcrumbItem>
                         <BreadcrumbSeparator><ChevronRight /></BreadcrumbSeparator>
-                        <BreadcrumbItem><BreadcrumbLink asChild><Link href="/category">Kategori</Link></BreadcrumbLink></BreadcrumbItem>
+                        <BreadcrumbItem><BreadcrumbLink asChild><Link href="/category">Categories</Link></BreadcrumbLink></BreadcrumbItem>
                         <BreadcrumbSeparator><ChevronRight /></BreadcrumbSeparator>
                         <BreadcrumbItem><BreadcrumbPage>{detailCategory.name}</BreadcrumbPage></BreadcrumbItem>
                     </BreadcrumbList>
                 </Breadcrumb>
                 
-                <div className="relative w-full h-[350px] md:h-[450px] rounded-xl overflow-hidden shadow-lg mb-12 flex items-center justify-center">
+                <div className="relative flex items-center justify-center w-full h-[350px] md:h-[450px] rounded-xl overflow-hidden shadow-lg mb-12">
                     <img
                         src={detailCategory.imageUrl}
-                        alt={detailCategory.name || "Gambar kategori"}
+                        alt={detailCategory.name || "Category image"}
                         onError={(e) => { e.currentTarget.onerror = null; e.currentTarget.src = "/assets/error.png"; }}
                         className="absolute inset-0 object-cover w-full h-full"
                     />
                     <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-black/30 to-transparent"></div>
                     <div className="relative z-10 p-6 text-center text-white">
                         <h1 className="mb-2 text-4xl font-extrabold drop-shadow-lg lg:text-6xl">{detailCategory.name}</h1>
-                        <p className="max-w-2xl text-lg text-slate-200 drop-shadow-md">Temukan petualangan terbaik dalam kategori '{detailCategory.name}'.</p>
+                        <p className="max-w-2xl text-lg text-slate-200 drop-shadow-md">Find the best adventures in the '{detailCategory.name}' category.</p>
                     </div>
                 </div>
 
                 {activityByCategory && activityByCategory.length > 0 ? (
                     <div>
                         <h2 className="mb-6 text-3xl font-bold text-gray-900">
-                            Aktivitas dalam Kategori Ini
+                            Activities in this Category
                         </h2>
                         <motion.div 
                             variants={containerVariants} 
@@ -149,12 +142,12 @@ export function DetailCategoryClient({ initialCategory, initialActivities }) {
                 ) : (
                     <div className="flex flex-col items-center justify-center py-20 mt-12 text-center bg-white border-2 border-dashed rounded-lg">
                         <Frown className="w-16 h-16 mb-4 text-gray-400" />
-                        <h3 className="mb-2 text-xl font-semibold text-gray-700">Aktivitas Tidak Ditemukan</h3>
+                        <h3 className="mb-2 text-xl font-semibold text-gray-700">No Activities Found</h3>
                         <p className="mb-6 text-gray-500">
-                            Saat ini tidak ada aktivitas dalam kategori ini.
+                            There are currently no activities in this category.
                         </p>
                         <Button asChild>
-                            <Link href="/activities">Lihat Semua Aktivitas</Link>
+                            <Link href="/activities">View All Activities</Link>
                         </Button>
                     </div>
                 )}

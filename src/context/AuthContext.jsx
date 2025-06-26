@@ -110,7 +110,7 @@ export const AuthProvider = ({ children }) => {
       setUser(null);
 
       deleteCookie("token");
-      router.push('/login');
+      router.push('/');
     }
   };
 

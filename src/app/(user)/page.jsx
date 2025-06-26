@@ -2,7 +2,7 @@
 
 import React from "react";
 import { useAuth } from "@/context/AuthContext";
-import { motion } from "framer-motion";
+import { motion, AnimatePresence } from "framer-motion";
 import { Skeleton } from "@/components/ui/skeleton";
 import HeroSection from "@/components/ui/user/HeroSection";
 import PromoSection from "@/components/ui/user/PromoSection";
@@ -49,24 +49,29 @@ const HomeSkeleton = () => (
 export default function Home() {
   const { loading: isAuthLoading } = useAuth();
 
-  if (isAuthLoading) {
-    return <HomeSkeleton />;
-  }
-
   return (
-    <motion.main
-      initial={{ opacity: 0 }}
-      animate={{ opacity: 1 }}
-      transition={{ duration: 0.75 }}
-    >
-      <HeroSection />
-      <BannerSection />
-      <CategorySection />
-      <ActivitySection />
-      <PromoSection />
-      <ActivityDiscountSection />
-      <TestimonialSection />
-      <SubscribeSection />
-    </motion.main>
+    <AnimatePresence mode="wait">
+      {isAuthLoading ? (
+        <motion.div key="skeleton" exit={{ opacity: 0 }}>
+          <HomeSkeleton />
+        </motion.div>
+      ) : (
+        <motion.main
+          key="content"
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          transition={{ duration: 0.75 }}
+        >
+          <HeroSection />
+          <BannerSection />
+          <CategorySection />
+          <ActivitySection />
+          <PromoSection />
+          <ActivityDiscountSection />
+          <TestimonialSection />
+          <SubscribeSection />
+        </motion.main>
+      )}
+    </AnimatePresence>
   );
 }

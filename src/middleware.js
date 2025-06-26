@@ -5,7 +5,7 @@ export async function middleware(request) {
     const token = request.cookies.get('token')?.value;
 
     const adminPaths = ['/dashboard', '/admin', '/users', '/banners', '/categories', '/activities', '/promos', '/transactions'];
-    const userProtectedRoutes = ['/cart', '/profile'];
+    const userProtectedRoutes = ['/cart', '/profile', '/transaction'];
     const authRoutes = ['/login', '/register'];
 
     const isAdminPath = adminPaths.some(p => pathname.startsWith(p));
