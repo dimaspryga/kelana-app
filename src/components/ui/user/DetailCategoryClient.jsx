@@ -16,7 +16,7 @@ import {
 } from "@/components/ui/breadcrumb";
 
 
-const DEFAULT_ACTIVITY_IMAGE = "/assets/banner-authpage.png";
+const DEFAULT_ACTIVITY_IMAGE = "/assets/error.png";
 
 const containerVariants = {
   hidden: { opacity: 0 },
@@ -29,9 +29,9 @@ const cardVariants = {
 };
 
 const formatCurrency = (amount) =>
-  new Intl.NumberFormat("en-US", {
+  new Intl.NumberFormat("id-ID", {
     style: "currency",
-    currency: "USD",
+    currency: "IDR",
     minimumFractionDigits: 0,
   }).format(amount);
 
