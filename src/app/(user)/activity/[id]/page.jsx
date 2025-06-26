@@ -53,7 +53,7 @@ export default async function DetailActivityPage({ params }) {
     const initialActivity = await getActivityData(id);
 
     if (!initialActivity) {
-        return <div className="container py-8 mx-auto text-center">Detail Aktivitas tidak ditemukan.</div>;
+        return <div className="container py-8 mx-auto text-center">Detail activity not found.</div>;
     }
 
     return (

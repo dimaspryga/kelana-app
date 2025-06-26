@@ -147,7 +147,7 @@ export function DetailCategoryClient({ initialCategory, initialActivities }) {
                             There are currently no activities in this category.
                         </p>
                         <Button asChild>
-                            <Link href="/activities">View All Activities</Link>
+                            <Link href="/activity">View All Activities</Link>
                         </Button>
                     </div>
                 )}
