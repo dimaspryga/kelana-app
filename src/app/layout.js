@@ -18,6 +18,9 @@ const fontSans = Inter({
 export const metadata = {
   title: "Kelana",
   description: "Your next adventure starts here.",
+  icons: {
+    icon: "/assets/kelana-ico.png",
+  },
 };
 
 export default function RootLayout({ children }) {

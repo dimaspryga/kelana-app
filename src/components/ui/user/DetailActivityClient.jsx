@@ -103,7 +103,7 @@ export function DetailActivityClient({ initialActivity }) {
             <BreadcrumbList>
                 <BreadcrumbItem><BreadcrumbLink asChild><Link href="/">Home</Link></BreadcrumbLink></BreadcrumbItem>
                 <BreadcrumbSeparator><ChevronRight /></BreadcrumbSeparator>
-                <BreadcrumbItem><BreadcrumbLink asChild><Link href="/activities">Activities</Link></BreadcrumbLink></BreadcrumbItem>
+                <BreadcrumbItem><BreadcrumbLink asChild><Link href="/activitiy">Activities</Link></BreadcrumbLink></BreadcrumbItem>
                 <BreadcrumbSeparator><ChevronRight /></BreadcrumbSeparator>
                 <BreadcrumbItem><BreadcrumbPage>{detailActivity.title}</BreadcrumbPage></BreadcrumbItem>
             </BreadcrumbList>
