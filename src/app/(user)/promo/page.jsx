@@ -1,16 +1,27 @@
 'use client';
 
-import React, { useState, useMemo } from "react";
+import React, { useState, useMemo, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import { usePromo } from "@/hooks/usePromo";
 import { useAuth } from "@/context/AuthContext";
 import { Skeleton } from "@/components/ui/skeleton";
+import {
+  Pagination,
+  PaginationContent,
+  PaginationEllipsis,
+  PaginationItem,
+  PaginationLink,
+  PaginationNext,
+  PaginationPrevious,
+} from "@/components/ui/pagination";
 import { CheckCircle2, Ticket, Frown, Search } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { motion, AnimatePresence } from "framer-motion";
 import PromoBannerSection from "@/components/ui/user/PromoBannerSection";
 import ActivitySection from "@/components/ui/user/ActivitySection";
+
+const ITEMS_PER_PAGE = 9; // Set items per page for pagination
 
 const formatCurrency = (amount) =>
   new Intl.NumberFormat("id-ID", {
@@ -43,11 +54,7 @@ const cardVariants = {
 
 const PromoPageSkeleton = () => (
     <div className="bg-gray-50">
-      <div className="py-8">
-          <div className="px-4 mx-auto max-w-7xl sm:px-6 lg:px-8">
-              <Skeleton className="w-full h-[40vh] md:h-[50vh] rounded-xl" />
-          </div>
-      </div>
+      <Skeleton className="w-full h-[40vh]" /> 
       <div className="px-4 py-12 mx-auto max-w-7xl sm:px-6 lg:px-8">
         <Skeleton className="w-1/2 h-10 mx-auto mb-4" />
         <Skeleton className="w-2/3 h-8 mx-auto mb-10" />
@@ -80,6 +87,7 @@ const PromoPage = () => {
   const { loading: isAuthLoading } = useAuth();
 
   const [searchQuery, setSearchQuery] = useState("");
+  const [currentPage, setCurrentPage] = useState(1);
 
   const handleViewDetail = (id) => {
     router.push(`/promo/${id}`);
@@ -92,6 +100,40 @@ const PromoPage = () => {
       p.title.toLowerCase().includes(searchQuery.toLowerCase())
     );
   }, [promo, searchQuery]);
+
+  // Pagination logic
+  useEffect(() => {
+    setCurrentPage(1);
+  }, [searchQuery]);
+
+  const totalPages = Math.ceil(filteredPromos.length / ITEMS_PER_PAGE);
+  const paginatedPromos = useMemo(() => {
+    const startIndex = (currentPage - 1) * ITEMS_PER_PAGE;
+    return filteredPromos.slice(startIndex, startIndex + ITEMS_PER_PAGE);
+  }, [filteredPromos, currentPage]);
+
+  const handlePageChange = (page) => {
+    if (page >= 1 && page <= totalPages) {
+        setCurrentPage(page);
+        window.scrollTo({ top: 400, behavior: 'smooth' }); // Scrolls down slightly past the banner
+    }
+  };
+
+  const getPageNumbers = () => {
+    const pageNumbers = [];
+    if (totalPages <= 7) {
+        for (let i = 1; i <= totalPages; i++) pageNumbers.push(i);
+    } else {
+        pageNumbers.push(1);
+        if (currentPage > 4) pageNumbers.push("...");
+        const start = Math.max(2, currentPage - 2);
+        const end = Math.min(totalPages - 1, currentPage + 2);
+        for (let i = start; i <= end; i++) pageNumbers.push(i);
+        if (currentPage < totalPages - 3) pageNumbers.push("...");
+        pageNumbers.push(totalPages);
+    }
+    return pageNumbers;
+  };
 
   const isLoading = isPromoLoading || isAuthLoading;
 
@@ -141,7 +183,7 @@ const PromoPage = () => {
                     />
                   </div>
 
-                  {filteredPromos.length === 0 ? (
+                  {paginatedPromos.length === 0 ? (
                     <div className="py-16 text-center">
                         <p className="text-xl text-gray-600">
                             {searchQuery ? `No promos found for "${searchQuery}".` : "No promos available at the moment."}
@@ -154,7 +196,7 @@ const PromoPage = () => {
                         initial="hidden"
                         animate="visible"
                     >
-                        {filteredPromos.map((item) => {
+                        {paginatedPromos.map((item) => {
                         const discountValue = item.promo_discount_price
                             ? formatCurrency(item.promo_discount_price)
                             : "Special";
@@ -217,6 +259,25 @@ const PromoPage = () => {
                         );
                         })}
                     </motion.div>
+                  )}
+                  {totalPages > 1 && (
+                    <Pagination className="mt-12">
+                        <PaginationContent>
+                            <PaginationItem><PaginationPrevious href="#" onClick={(e) => { e.preventDefault(); handlePageChange(currentPage - 1); }} /></PaginationItem>
+                            {getPageNumbers().map((page, index) => (
+                                <PaginationItem key={`${page}-${index}`}>
+                                    {page === "..." ? (
+                                        <PaginationEllipsis />
+                                    ) : (
+                                        <PaginationLink href="#" onClick={(e) => { e.preventDefault(); handlePageChange(page); }} isActive={currentPage === page}>
+                                            {page}
+                                        </PaginationLink>
+                                    )}
+                                </PaginationItem>
+                            ))}
+                            <PaginationItem><PaginationNext href="#" onClick={(e) => { e.preventDefault(); handlePageChange(currentPage + 1); }} /></PaginationItem>
+                        </PaginationContent>
+                    </Pagination>
                   )}
                 </div>
               </div>
