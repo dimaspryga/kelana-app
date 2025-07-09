@@ -70,15 +70,17 @@ const StatusBadge = ({ transaction, className }) => {
 };
 
 const SkeletonLoader = () => (
-    <div className="max-w-6xl p-4 mx-auto md:p-8">
-        <Skeleton className="w-48 h-8 mb-6" />
-        <Skeleton className="w-full h-24 mb-8" />
-        <div className="grid gap-8 md:grid-cols-5">
-            <div className="space-y-6 md:col-span-3">
-                <Skeleton className="w-full h-96" />
-            </div>
-            <div className="space-y-6 md:col-span-2">
-                <Skeleton className="w-full h-80" />
+    <div className="min-h-screen bg-white">
+        <div className="max-w-6xl p-4 mx-auto md:p-8">
+            <Skeleton className="w-32 h-5 mb-4 rounded-lg" />
+            <Skeleton className="w-full h-16 mb-6 rounded-lg" />
+            <div className="grid gap-6 md:grid-cols-5">
+                <div className="space-y-4 md:col-span-3">
+                    <Skeleton className="w-full h-64 rounded-lg" />
+                </div>
+                <div className="space-y-4 md:col-span-2">
+                    <Skeleton className="w-full h-56 rounded-lg" />
+                </div>
             </div>
         </div>
     </div>
@@ -149,11 +151,13 @@ const DetailTransactionPage = () => {
 
   if (error) {
     return (
-      <div className="flex flex-col items-center justify-center min-h-screen p-4 text-center bg-gray-50">
-        <Frown className="w-16 h-16 text-red-500" />
-        <h2 className="mt-4 text-2xl font-bold">Failed to Load Transaction</h2>
-        <p className="mt-2 text-muted-foreground">{error.message}</p>
-        <Button asChild className="mt-6">
+      <div className="flex flex-col items-center justify-center min-h-screen p-4 text-center bg-gradient-to-br from-blue-50 via-white to-blue-50">
+        <div className="flex items-center justify-center w-24 h-24 mx-auto mb-6 bg-red-100 rounded-full">
+          <Frown className="w-12 h-12 text-red-500" />
+        </div>
+        <h2 className="mt-4 text-2xl font-bold text-gray-900 md:text-3xl tracking-tight">Failed to Load Transaction</h2>
+        <p className="mt-2 text-lg text-gray-600">{error.message}</p>
+        <Button asChild className="mt-6 text-white transition-all duration-200 bg-blue-600 shadow-lg hover:bg-blue-700 rounded-xl">
           <Link href="/transaction">Back to History</Link>
         </Button>
       </div>
@@ -163,10 +167,12 @@ const DetailTransactionPage = () => {
   const renderContent = () => {
     if (!transactionDetail) {
       return (
-        <div className="flex flex-col items-center justify-center min-h-screen p-4 text-center bg-gray-50">
-          <PackageSearch className="w-16 h-16 text-gray-400" />
-          <h2 className="mt-4 text-2xl font-bold">Transaction Not Found</h2>
-          <Button asChild className="mt-4">
+        <div className="flex flex-col items-center justify-center min-h-screen p-4 text-center bg-gradient-to-br from-blue-50 via-white to-blue-50">
+          <div className="flex items-center justify-center w-24 h-24 mx-auto mb-6 bg-blue-100 rounded-full">
+            <PackageSearch className="w-12 h-12 text-blue-600" />
+          </div>
+          <h2 className="mt-4 text-2xl font-bold text-gray-900 md:text-3xl tracking-tight">Transaction Not Found</h2>
+          <Button asChild className="mt-4 text-white transition-all duration-200 bg-blue-600 shadow-lg hover:bg-blue-700 rounded-xl">
               <Link href="/transaction">Back to History</Link>
           </Button>
         </div>
@@ -187,29 +193,94 @@ const DetailTransactionPage = () => {
       const headerIcon = isSuccess ? <CheckCircle2 className="w-16 h-16 mx-auto mb-4 text-green-600"/> : <XCircle className="w-16 h-16 mx-auto mb-4 text-red-600"/>;
 
       return (
-          <div className="max-w-4xl px-4 py-8 mx-auto sm:px-6 lg:px-8">
-              <div className="mb-6"><Button asChild variant="ghost" className="-ml-4"><Link href="/transaction"><ArrowLeft className="w-4 h-4 mr-2" /> Back to Transaction History</Link></Button></div>
-              <Card className={`${cardClass} text-center p-8 mb-8 rounded-xl shadow-lg`}>
-                  {headerIcon}
-                  <h1 className={`text-3xl font-bold ${isSuccess ? 'text-green-900' : 'text-red-900'}`}>{getDisplayStatus(transactionDetail).label}</h1>
-                  {isTerminated && <p className="mt-2 opacity-80">{status === 'cancelled' ? 'This transaction has been cancelled or has expired.' : 'A problem occurred while processing the order.'}</p>}
-                  {isSuccess && <p className="mt-2 opacity-80">Thank you! Your order has been confirmed.</p>}
-                  <div className="mt-6"><p className="text-sm opacity-80">Total Payment</p><p className="text-4xl font-bold">{formatCurrency(correctGrandTotal)}</p></div>
-              </Card>
-              <div className="p-8 space-y-6 bg-white shadow-md rounded-xl">
-                  <div className="grid grid-cols-1 gap-6 pb-6 border-b sm:grid-cols-2"><div><p className="text-sm text-muted-foreground">Invoice Number</p><p className="font-semibold">{invoiceId}</p></div><div className="sm:text-right"><p className="text-sm text-muted-foreground">Transaction Date</p><p className="font-semibold">{formatDate(orderDate)}</p></div></div>
-                  <div>
-                      <h2 className="mb-4 text-lg font-semibold">Order Details</h2>
-                      <ul className="divide-y">{transaction_items.map(item => ( <li key={item.id} className={`flex items-center gap-4 py-4 ${isTerminated ? 'opacity-50' : ''}`}> <img src={item.imageUrls?.[0]} alt={item.title} className="object-cover w-16 h-16 rounded-md" onError={(e) => {e.currentTarget.onerror = null; e.currentTarget.src = "/assets/error.png"}}/> <div className="flex-grow"> <p className={`font-semibold ${isTerminated ? 'line-through' : ''}`}>{item.title}</p> <p className="text-sm text-muted-foreground">{item.quantity} tickets x {formatCurrency(item.price)}</p> </div> <p className={`font-semibold ${isTerminated ? 'line-through' : ''}`}>{formatCurrency(item.quantity * item.price)}</p> </li> ))}</ul>
+          <div className="min-h-screen bg-gradient-to-br from-blue-50 via-white to-blue-50">
+              <div className="max-w-4xl px-4 py-8 mx-auto sm:px-6 lg:px-8">
+                  <div className="mb-6">
+                      <Button asChild variant="ghost" className="-ml-4 transition-all duration-200 hover:bg-blue-50 hover:text-blue-600 rounded-xl">
+                          <Link href="/transaction">
+                              <ArrowLeft className="w-4 h-4 mr-2" /> Back to Transaction History
+                          </Link>
+                      </Button>
                   </div>
-                  <div className="pt-6 space-y-2 border-t">
-                      <h2 className="mb-4 text-lg font-semibold">Payment Details</h2>
-                      <div className="flex items-center justify-between text-muted-foreground"><span>Payment Method</span><div className="flex items-center gap-3 font-medium"><img src={payment_method?.imageUrl} alt={payment_method?.name} className="w-auto h-6" onError={(e) => {e.currentTarget.style.display='none'}}/><span>{payment_method?.name}</span></div></div>
-                      <div className="flex items-center justify-between text-muted-foreground"><span>Subtotal</span><span>{formatCurrency(correctSubtotal)}</span></div>
-                      {appliedPromo && <div className="flex items-center justify-between text-green-600"><span>Discount ({appliedPromo.promo_code})</span><span>- {formatCurrency(correctDiscount)}</span></div>}
-                      <div className="flex items-center justify-between pt-2 font-bold border-t"><span className="text-base">Grand Total</span><span className="text-base">{formatCurrency(correctGrandTotal)}</span></div>
+                  <Card className={`${cardClass} text-center p-8 mb-8 rounded-3xl shadow-2xl border-0`}>
+                      {headerIcon}
+                      <h1 className={`text-3xl font-bold ${isSuccess ? 'text-green-900' : 'text-red-900'}`}>{getDisplayStatus(transactionDetail).label}</h1>
+                      {isTerminated && <p className="mt-2 opacity-80">{status === 'cancelled' ? 'This transaction has been cancelled or has expired.' : 'A problem occurred while processing the order.'}</p>}
+                      {isSuccess && <p className="mt-2 opacity-80">Thank you! Your order has been confirmed.</p>}
+                      <div className="mt-6">
+                          <p className="text-sm opacity-80">Total Payment</p>
+                          <p className="text-4xl font-bold">{formatCurrency(correctGrandTotal)}</p>
+                      </div>
+                  </Card>
+                  <div className="p-8 space-y-6 bg-white/90 backdrop-blur-sm shadow-2xl rounded-3xl border border-blue-100">
+                      <div className="grid grid-cols-1 gap-6 pb-6 border-b border-blue-100 sm:grid-cols-2">
+                          <div>
+                              <p className="text-sm text-gray-500">Invoice Number</p>
+                              <p className="font-semibold text-gray-900">{invoiceId}</p>
+                          </div>
+                          <div className="sm:text-right">
+                              <p className="text-sm text-gray-500">Transaction Date</p>
+                              <p className="font-semibold text-gray-900">{formatDate(orderDate)}</p>
+                          </div>
+                      </div>
+                      <div>
+                          <h2 className="mb-4 text-lg font-semibold text-gray-900">Order Details</h2>
+                          <ul className="divide-y divide-blue-100">
+                              {transaction_items.map(item => (
+                                  <li key={item.id} className={`flex items-center gap-4 py-4 ${isTerminated ? 'opacity-50' : ''}`}>
+                                      <img 
+                                          src={item.imageUrls?.[0]} 
+                                          alt={item.title} 
+                                          className="object-cover w-16 h-16 rounded-xl shadow-sm"
+                                          onError={(e) => {
+                                              e.currentTarget.onerror = null; 
+                                              e.currentTarget.src = "/assets/error.png"
+                                          }}
+                                      />
+                                      <div className="flex-grow">
+                                          <p className={`font-semibold text-gray-900 ${isTerminated ? 'line-through' : ''}`}>{item.title}</p>
+                                          <p className="text-sm text-gray-500">{item.quantity} tickets x {formatCurrency(item.price)}</p>
+                                      </div>
+                                      <p className={`font-semibold text-gray-900 ${isTerminated ? 'line-through' : ''}`}>{formatCurrency(item.quantity * item.price)}</p>
+                                  </li>
+                              ))}
+                          </ul>
+                      </div>
+                      <div className="pt-6 space-y-2 border-t border-blue-100">
+                          <h2 className="mb-4 text-lg font-semibold text-gray-900">Payment Details</h2>
+                          <div className="flex items-center justify-between text-gray-500">
+                              <span>Payment Method</span>
+                              <div className="flex items-center gap-3 font-medium text-gray-900">
+                                  <img 
+                                      src={payment_method?.imageUrl} 
+                                      alt={payment_method?.name} 
+                                      className="w-auto h-6"
+                                      onError={(e) => {e.currentTarget.style.display='none'}}
+                                  />
+                                  <span>{payment_method?.name}</span>
+                              </div>
+                          </div>
+                          <div className="flex items-center justify-between text-gray-500">
+                              <span>Subtotal</span>
+                              <span className="text-gray-900">{formatCurrency(correctSubtotal)}</span>
+                          </div>
+                          {appliedPromo && (
+                              <div className="flex items-center justify-between text-green-600">
+                                  <span>Discount ({appliedPromo.promo_code})</span>
+                                  <span>- {formatCurrency(correctDiscount)}</span>
+                              </div>
+                          )}
+                          <div className="flex items-center justify-between pt-2 font-bold border-t border-blue-100">
+                              <span className="text-base text-gray-900">Grand Total</span>
+                              <span className="text-base text-blue-600">{formatCurrency(correctGrandTotal)}</span>
+                          </div>
+                      </div>
+                      <div className="flex flex-col gap-3 pt-6 border-t border-blue-100 sm:flex-row">
+                          <Button asChild className="w-full text-white transition-all duration-200 bg-blue-600 shadow-lg hover:bg-blue-700 rounded-xl sm:w-auto">
+                              <Link href="/">Book Another Activity</Link>
+                          </Button>
+                      </div>
                   </div>
-                  <div className="flex flex-col gap-3 pt-6 border-t sm:flex-row"><Button asChild className="w-full sm:w-auto"><Link href="/">Book Another Activity</Link></Button></div>
               </div>
           </div>
       );
@@ -217,12 +288,200 @@ const DetailTransactionPage = () => {
   
     // DEFAULT view for PENDING status
     return (
-        <div className="px-4 py-8 mx-auto max-w-7xl sm:px-6 lg:px-8">
-            <div className="mb-6"><Button asChild variant="ghost" className="-ml-4"><Link href="/transaction"><ArrowLeft className="w-4 h-4 mr-2" /> Back to Transaction History</Link></Button></div>
-            <Card className="mb-8"><CardHeader className="p-4 sm:p-6"><div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between"><div className="flex items-center gap-4"><StatusBadge transaction={transactionDetail} className="px-3 py-1.5 text-base"/><div><p className="text-sm text-muted-foreground">Invoice Number</p><p className="font-semibold">{invoiceId}</p></div></div>{isWaitingForPayment && (<div className="p-3 text-center border border-orange-200 rounded-md sm:text-right bg-orange-50"><p className="text-sm text-orange-700">Payment time left</p><p className="text-lg font-bold text-orange-800">{timeLeft}</p></div>)}</div></CardHeader></Card>
-            <div className="grid items-start grid-cols-1 gap-8 lg:grid-cols-5">
-                <div className="space-y-6 lg:col-span-3">{isWaitingForPayment && (<Card><CardHeader><CardTitle>How to Pay</CardTitle></CardHeader><CardContent><div className="p-4 space-y-4 bg-white border rounded-lg"><div className="flex items-center justify-between"><p className="text-muted-foreground">Payment Method</p><div className="flex items-center gap-2 font-semibold"><img src={payment_method?.imageUrl} alt={payment_method?.name} className="w-auto h-5" onError={(e) => {e.currentTarget.style.display='none'}}/><span>{payment_method?.name}</span></div></div><div className="flex items-center justify-between"><p className="text-muted-foreground">Virtual Account Number</p><div className="flex items-center gap-2"><span className="text-lg font-bold">{payment_method?.virtual_account_number}</span><Button variant="ghost" size="icon" className="w-8 h-8" onClick={() => handleCopy(payment_method?.virtual_account_number)}><Copy className="w-4 h-4"/></Button></div></div></div><div className="p-4 mt-6 space-y-4 bg-white border rounded-lg"><p className="font-semibold">Total Payment</p><div className="flex items-center justify-between"><span className="text-2xl font-bold text-blue-600">{formatCurrency(correctGrandTotal)}</span><Button variant="ghost" size="sm" onClick={() => handleCopy(String(correctGrandTotal))}><Copy className="w-4 h-4 mr-2"/> Copy Amount</Button></div><p className="text-xs text-muted-foreground">Make sure you transfer the exact same amount.</p></div><Tabs defaultValue="m-banking" className="w-full mt-6"><TabsList className="grid w-full grid-cols-2"><TabsTrigger value="m-banking">m-Banking</TabsTrigger><TabsTrigger value="atm">ATM</TabsTrigger></TabsList><TabsContent value="m-banking" className="p-4 text-sm bg-white border border-t-0 text-muted-foreground rounded-b-md"><ol className="space-y-2 list-decimal list-inside"><li>Open your mobile banking application.</li><li>Select the **Transfer** menu, then choose **Virtual Account**.</li><li>Enter the Virtual Account number above.</li><li>Check the transaction details and make sure the name and bill amount are correct.</li><li>Enter your PIN to complete the transaction.</li></ol></TabsContent><TabsContent value="atm" className="p-4 text-sm bg-white border border-t-0 text-muted-foreground rounded-b-md"><ol className="space-y-2 list-decimal list-inside"><li>Insert your ATM card and PIN.</li><li>Select **Other Menu**, then select **Transfer**.</li><li>Select **Virtual Account** and enter the Virtual Account number above.</li><li>Ensure the details and bill amount are correct on the confirmation screen.</li><li>Complete the transaction and keep the receipt as proof.</li></ol></TabsContent></Tabs></CardContent></Card>)}{proofUrl && status?.toLowerCase() === 'pending' && (<Card><CardHeader><CardTitle>Waiting for Confirmation</CardTitle></CardHeader><CardContent><img src={proofUrl} alt="Proof of Payment" className="w-full border rounded-md" onError={(e) => { e.currentTarget.onerror = null; e.currentTarget.src = "/assets/error.png"; }}/><p className="mt-4 text-sm text-center text-blue-600">Thank you! Your proof of payment is being verified by our team within 1x24 hours.</p></CardContent></Card>)}</div>
-                <div className="space-y-6 lg:col-span-2"><Card><CardHeader><CardTitle>Order Summary</CardTitle></CardHeader><CardContent><ul className="divide-y">{transaction_items.map(item => ( <li key={item.id} className="flex items-start gap-4 py-4"> <img src={item.imageUrls?.[0]} alt={item.title} className="object-cover w-24 h-24 rounded-lg" onError={(e) => { e.currentTarget.onerror = null; e.currentTarget.src = "/assets/error.png"; }}/> <div className="flex-grow"> <p className="font-semibold">{item.title}</p> <p className="text-sm text-muted-foreground">{item.quantity} tickets x {formatCurrency(item.price)}</p> </div> <p className="font-semibold text-right">{formatCurrency(item.quantity * item.price)}</p> </li> ))}</ul></CardContent><CardFooter className="flex justify-end text-lg font-bold bg-slate-100"><div className="flex items-center gap-4"><span>Total</span><span>{formatCurrency(correctSubtotal)}</span></div></CardFooter></Card>{isWaitingForPayment && (<Card><CardHeader><CardTitle>Actions</CardTitle></CardHeader><CardContent className="flex flex-col gap-3"><Button onClick={() => setIsUploadDialogOpen(true)} className="w-full"><Upload className="w-4 h-4 mr-2"/>Upload Proof of Payment</Button><Button onClick={() => setIsCancelDialogOpen(true)} variant="ghost" className="w-full text-red-600 hover:text-red-700"><XCircle className="w-4 h-4 mr-2"/>Cancel Transaction</Button></CardContent></Card>)}</div>
+        <div className="min-h-screen bg-gradient-to-br from-blue-50 via-white to-blue-50">
+            <div className="px-4 py-8 mx-auto max-w-7xl sm:px-6 lg:px-8">
+                <div className="mb-6">
+                    <Button asChild variant="ghost" className="-ml-4 transition-all duration-200 hover:bg-blue-50 hover:text-blue-600 rounded-xl">
+                        <Link href="/transaction">
+                            <ArrowLeft className="w-4 h-4 mr-2" /> Back to Transaction History
+                        </Link>
+                    </Button>
+                </div>
+                <Card className="mb-8 border border-blue-100 shadow-xl bg-white/90 backdrop-blur-sm rounded-3xl">
+                    <CardHeader className="p-4 sm:p-6">
+                        <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
+                            <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:gap-4">
+                                {/* Status Badge for Mobile - Above Invoice */}
+                                <div className="sm:hidden">
+                                    <StatusBadge transaction={transactionDetail} className="px-3 py-1.5 text-base"/>
+                                </div>
+                                
+                                <div className="flex items-center gap-4">
+                                    {/* Status Badge for Desktop */}
+                                    <div className="hidden sm:block">
+                                        <StatusBadge transaction={transactionDetail} className="px-3 py-1.5 text-base"/>
+                                    </div>
+                                    <div>
+                                        <p className="text-sm text-gray-500">Invoice Number</p>
+                                        <p className="font-semibold text-gray-900">{invoiceId}</p>
+                                    </div>
+                                </div>
+                            </div>
+                            {isWaitingForPayment && (
+                                <div className="p-3 text-center border border-orange-200 rounded-xl sm:text-right bg-orange-50">
+                                    <p className="text-sm text-orange-700">Payment time left</p>
+                                    <p className="text-lg font-bold text-orange-800">{timeLeft}</p>
+                                </div>
+                            )}
+                        </div>
+                    </CardHeader>
+                </Card>
+                <div className="grid items-start grid-cols-1 gap-8 lg:grid-cols-5">
+                    <div className="space-y-6 lg:col-span-3">
+                        {isWaitingForPayment && (
+                            <Card className="border border-blue-100 shadow-xl bg-white/90 backdrop-blur-sm rounded-3xl">
+                                <CardHeader>
+                                    <CardTitle className="text-gray-900">How to Pay</CardTitle>
+                                </CardHeader>
+                                <CardContent>
+                                    <div className="p-4 space-y-4 bg-white border border-blue-100 rounded-xl">
+                                        <div className="flex items-center justify-between">
+                                            <p className="text-gray-500">Payment Method</p>
+                                            <div className="flex items-center gap-2 font-semibold text-gray-900">
+                                                <img 
+                                                    src={payment_method?.imageUrl} 
+                                                    alt={payment_method?.name} 
+                                                    className="w-auto h-5"
+                                                    onError={(e) => {e.currentTarget.style.display='none'}}
+                                                />
+                                                <span>{payment_method?.name}</span>
+                                            </div>
+                                        </div>
+                                        <div className="flex items-center justify-between">
+                                            <p className="text-gray-500">Virtual Account Number</p>
+                                            <div className="flex items-center gap-2">
+                                                <span className="text-lg font-bold text-gray-900">{payment_method?.virtual_account_number}</span>
+                                                <Button 
+                                                    variant="ghost" 
+                                                    size="icon" 
+                                                    className="w-8 h-8 transition-all duration-200 hover:bg-blue-50 hover:text-blue-600 rounded-xl" 
+                                                    onClick={() => handleCopy(payment_method?.virtual_account_number)}
+                                                >
+                                                    <Copy className="w-4 h-4"/>
+                                                </Button>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div className="p-4 mt-6 space-y-4 bg-white border border-blue-100 rounded-xl">
+                                        <p className="font-semibold text-gray-900">Total Payment</p>
+                                        <div className="flex items-center justify-between">
+                                            <span className="text-2xl font-bold text-blue-600">{formatCurrency(correctGrandTotal)}</span>
+                                            <Button 
+                                                variant="ghost" 
+                                                size="sm" 
+                                                className="transition-all duration-200 hover:bg-blue-50 hover:text-blue-600 rounded-xl"
+                                                onClick={() => handleCopy(String(correctGrandTotal))}
+                                            >
+                                                <Copy className="w-4 h-4 mr-2"/> Copy Amount
+                                            </Button>
+                                        </div>
+                                        <p className="text-xs text-gray-500">Make sure you transfer the exact same amount.</p>
+                                    </div>
+                                    <Tabs defaultValue="m-banking" className="w-full mt-6">
+                                        <TabsList className="grid w-full grid-cols-2 bg-blue-50 border border-blue-100 rounded-xl">
+                                            <TabsTrigger value="m-banking" className="data-[state=active]:bg-blue-600 data-[state=active]:text-white rounded-lg">m-Banking</TabsTrigger>
+                                            <TabsTrigger value="atm" className="data-[state=active]:bg-blue-600 data-[state=active]:text-white rounded-lg">ATM</TabsTrigger>
+                                        </TabsList>
+                                        <TabsContent value="m-banking" className="p-4 text-sm bg-white border border-blue-100 border-t-0 text-gray-600 rounded-b-xl">
+                                            <ol className="space-y-2 list-decimal list-inside">
+                                                <li>Open your mobile banking application.</li>
+                                                <li>Select the **Transfer** menu, then choose **Virtual Account**.</li>
+                                                <li>Enter the Virtual Account number above.</li>
+                                                <li>Check the transaction details and make sure the name and bill amount are correct.</li>
+                                                <li>Enter your PIN to complete the transaction.</li>
+                                            </ol>
+                                        </TabsContent>
+                                        <TabsContent value="atm" className="p-4 text-sm bg-white border border-blue-100 border-t-0 text-gray-600 rounded-b-xl">
+                                            <ol className="space-y-2 list-decimal list-inside">
+                                                <li>Insert your ATM card and PIN.</li>
+                                                <li>Select **Other Menu**, then select **Transfer**.</li>
+                                                <li>Select **Virtual Account** and enter the Virtual Account number above.</li>
+                                                <li>Ensure the details and bill amount are correct on the confirmation screen.</li>
+                                                <li>Complete the transaction and keep the receipt as proof.</li>
+                                            </ol>
+                                        </TabsContent>
+                                    </Tabs>
+                                </CardContent>
+                            </Card>
+                        )}
+                        {proofUrl && status?.toLowerCase() === 'pending' && (
+                            <Card className="border border-blue-100 shadow-xl bg-white/90 backdrop-blur-sm rounded-3xl">
+                                <CardHeader>
+                                    <CardTitle className="text-gray-900">Waiting for Confirmation</CardTitle>
+                                </CardHeader>
+                                <CardContent>
+                                    <img 
+                                        src={proofUrl} 
+                                        alt="Proof of Payment" 
+                                        className="w-full border border-blue-100 rounded-xl shadow-sm"
+                                        onError={(e) => { 
+                                            e.currentTarget.onerror = null; 
+                                            e.currentTarget.src = "/assets/error.png"; 
+                                        }}
+                                    />
+                                    <p className="mt-4 text-sm text-center text-blue-600">Thank you! Your proof of payment is being verified by our team within 1x24 hours.</p>
+                                </CardContent>
+                            </Card>
+                        )}
+                    </div>
+                    <div className="space-y-6 lg:col-span-2">
+                        <Card className="border border-blue-100 shadow-xl bg-white/90 backdrop-blur-sm rounded-3xl">
+                            <CardHeader>
+                                <CardTitle className="text-gray-900">Order Summary</CardTitle>
+                            </CardHeader>
+                            <CardContent>
+                                <ul className="divide-y divide-blue-100">
+                                    {transaction_items.map(item => (
+                                        <li key={item.id} className="flex items-start gap-4 py-4">
+                                            <img 
+                                                src={item.imageUrls?.[0]} 
+                                                alt={item.title} 
+                                                className="object-cover w-24 h-24 rounded-xl shadow-sm"
+                                                onError={(e) => { 
+                                                    e.currentTarget.onerror = null; 
+                                                    e.currentTarget.src = "/assets/error.png"; 
+                                                }}
+                                            />
+                                            <div className="flex-grow">
+                                                <p className="font-semibold text-gray-900">{item.title}</p>
+                                                <p className="text-sm text-gray-500">{item.quantity} tickets x {formatCurrency(item.price)}</p>
+                                            </div>
+                                            <p className="font-semibold text-right text-gray-900">{formatCurrency(item.quantity * item.price)}</p>
+                                        </li>
+                                    ))}
+                                </ul>
+                            </CardContent>
+                            <CardFooter className="flex justify-end text-lg font-bold bg-blue-50 border-t border-blue-100 rounded-b-3xl">
+                                <div className="flex items-center gap-4">
+                                    <span className="text-gray-700">Total</span>
+                                    <span className="text-blue-600">{formatCurrency(correctSubtotal)}</span>
+                                </div>
+                            </CardFooter>
+                        </Card>
+                        {isWaitingForPayment && (
+                            <Card className="border border-blue-100 shadow-xl bg-white/90 backdrop-blur-sm rounded-3xl">
+                                <CardHeader>
+                                    <CardTitle className="text-gray-900">Actions</CardTitle>
+                                </CardHeader>
+                                <CardContent className="flex flex-col gap-3">
+                                    <Button 
+                                        onClick={() => setIsUploadDialogOpen(true)} 
+                                        className="w-full text-white transition-all duration-200 bg-blue-600 shadow-lg hover:bg-blue-700 rounded-xl"
+                                    >
+                                        <Upload className="w-4 h-4 mr-2"/>Upload Proof of Payment
+                                    </Button>
+                                    <Button 
+                                        onClick={() => setIsCancelDialogOpen(true)} 
+                                        variant="ghost" 
+                                        className="w-full text-red-600 transition-all duration-200 hover:text-red-700 hover:bg-red-50 rounded-xl"
+                                    >
+                                        <XCircle className="w-4 h-4 mr-2"/>Cancel Transaction
+                                    </Button>
+                                </CardContent>
+                            </Card>
+                        )}
+                    </div>
+                </div>
             </div>
         </div>
     );
@@ -230,12 +489,59 @@ const DetailTransactionPage = () => {
 
 
   return (
-    <div className="min-h-screen bg-slate-50">
+    <div className="min-h-screen bg-gradient-to-br from-blue-50 via-white to-blue-50">
         <Dialog open={isUploadDialogOpen} onOpenChange={(isOpen) => { if (!isOpen) { setSelectedFile(null); setPreviewUrl(null); } setIsUploadDialogOpen(isOpen); }}>
-            <DialogContent><DialogHeader><DialogTitle>Upload Proof of Payment</DialogTitle><DialogDescription>For Invoice: {transactionDetail?.invoiceId}</DialogDescription></DialogHeader><div className="py-4 space-y-4"><Input type="file" accept="image/png, image/jpeg, image/jpg" onChange={handleFileChange} />{previewUrl && <img src={previewUrl} alt="Preview" className="object-contain w-full mt-4 rounded-md max-h-60" />}</div><DialogFooter><DialogClose asChild><Button variant="outline">Cancel</Button></DialogClose><Button onClick={handleUploadSubmit} disabled={!selectedFile || isUploadingProcess}>{isUploadingProcess ? <Loader2 className="w-4 h-4 mr-2 animate-spin"/> : <Upload className="w-4 h-4 mr-2"/>} {isUploadingImage ? 'Uploading...' : 'Submitting...'}</Button></DialogFooter></DialogContent>
+            <DialogContent className="border border-blue-100 shadow-2xl bg-white/95 backdrop-blur-sm rounded-3xl">
+                <DialogHeader>
+                    <DialogTitle className="text-gray-900">Upload Proof of Payment</DialogTitle>
+                    <DialogDescription className="text-gray-600">For Invoice: {transactionDetail?.invoiceId}</DialogDescription>
+                </DialogHeader>
+                <div className="py-4 space-y-4">
+                    <Input 
+                        type="file" 
+                        accept="image/png, image/jpeg, image/jpg" 
+                        onChange={handleFileChange}
+                        className="border-2 border-blue-200 rounded-xl focus:border-blue-500 focus:ring-4 focus:ring-blue-100"
+                    />
+                    {previewUrl && (
+                        <img src={previewUrl} alt="Preview" className="object-contain w-full mt-4 rounded-xl max-h-60 shadow-lg" />
+                    )}
+                </div>
+                <DialogFooter>
+                    <DialogClose asChild>
+                        <Button variant="outline" className="border-blue-200 hover:bg-blue-50 hover:text-blue-600 rounded-xl">Cancel</Button>
+                    </DialogClose>
+                    <Button 
+                        onClick={handleUploadSubmit} 
+                        disabled={!selectedFile || isUploadingProcess}
+                        className="text-white transition-all duration-200 bg-blue-600 shadow-lg hover:bg-blue-700 rounded-xl"
+                    >
+                        {isUploadingProcess ? <Loader2 className="w-4 h-4 mr-2 animate-spin"/> : <Upload className="w-4 h-4 mr-2"/>} 
+                        {isUploadingImage ? 'Uploading...' : 'Submitting...'}
+                    </Button>
+                </DialogFooter>
+            </DialogContent>
         </Dialog>
         <Dialog open={isCancelDialogOpen} onOpenChange={setIsCancelDialogOpen}>
-            <DialogContent><DialogHeader><DialogTitle>Confirm Cancellation</DialogTitle><DialogDescription>Are you sure you want to cancel the transaction with invoice {transactionDetail?.invoiceId}? This action cannot be undone.</DialogDescription></DialogHeader><DialogFooter><DialogClose asChild><Button variant="outline">No</Button></DialogClose><Button variant="destructive" onClick={handleCancelSubmit} disabled={isCancelling}>{isCancelling ? <Loader2 className="w-4 h-4 mr-2 animate-spin"/> : null} Yes, Cancel</Button></DialogFooter></DialogContent>
+            <DialogContent className="border border-blue-100 shadow-2xl bg-white/95 backdrop-blur-sm rounded-3xl">
+                <DialogHeader>
+                    <DialogTitle className="text-gray-900">Confirm Cancellation</DialogTitle>
+                    <DialogDescription className="text-gray-600">Are you sure you want to cancel the transaction with invoice {transactionDetail?.invoiceId}? This action cannot be undone.</DialogDescription>
+                </DialogHeader>
+                <DialogFooter>
+                    <DialogClose asChild>
+                        <Button variant="outline" className="border-blue-200 hover:bg-blue-50 hover:text-blue-600 rounded-xl">No</Button>
+                    </DialogClose>
+                    <Button 
+                        variant="destructive" 
+                        onClick={handleCancelSubmit} 
+                        disabled={isCancelling}
+                        className="transition-all duration-200 rounded-xl"
+                    >
+                        {isCancelling ? <Loader2 className="w-4 h-4 mr-2 animate-spin"/> : null} Yes, Cancel
+                    </Button>
+                </DialogFooter>
+            </DialogContent>
         </Dialog>
       <AnimatePresence mode="wait">
         {isLoading ? (

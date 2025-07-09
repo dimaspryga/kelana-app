@@ -11,8 +11,7 @@ const api = axios.create({
 });
 
 export async function DELETE(request, { params }) {
-    const { id } = params;
-    const cookieStore = cookies();
+    const cookieStore = await cookies();
     const token = cookieStore.get('token')?.value;
 
     if (!token) {
@@ -20,11 +19,18 @@ export async function DELETE(request, { params }) {
     }
 
     try {
-        const response = await api.delete(`/delete-cart/${id}`, {
-            headers: { Authorization: `Bearer ${token}` }
+        console.log('Delete cart API - Request:', { cartId: params.id });
+        
+        const response = await api.delete(`/carts/${params.id}`, {
+            headers: {
+                Authorization: `Bearer ${token}`,
+            }
         });
+        
+        console.log('Delete cart API - External response:', response.data);
         return NextResponse.json(response.data);
     } catch (error) {
+        console.error('Delete cart API - Error:', error.response?.data || error.message);
         const status = error.response?.status || 500;
         const message = error.response?.data?.message || "Failed to delete cart item";
         return NextResponse.json({ message }, { status });

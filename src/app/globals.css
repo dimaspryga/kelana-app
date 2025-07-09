@@ -45,72 +45,278 @@
 }
 
 :root {
-  --radius: 0.625rem;
-  --background: oklch(1 0 0);
-  --foreground: oklch(0.145 0 0);
-  --card: oklch(1 0 0);
-  --card-foreground: oklch(0.145 0 0);
-  --popover: oklch(1 0 0);
-  --popover-foreground: oklch(0.145 0 0);
-  --primary: oklch(0.205 0 0);
-  --primary-foreground: oklch(0.985 0 0);
-  --secondary: oklch(0.97 0 0);
-  --secondary-foreground: oklch(0.205 0 0);
-  --muted: oklch(0.97 0 0);
-  --muted-foreground: oklch(0.556 0 0);
-  --accent: oklch(0.97 0 0);
-  --accent-foreground: oklch(0.205 0 0);
-  --destructive: oklch(0.577 0.245 27.325);
-  --border: oklch(0.922 0 0);
-  --input: oklch(0.922 0 0);
-  --ring: oklch(0.708 0 0);
-  --chart-1: oklch(0.646 0.222 41.116);
-  --chart-2: oklch(0.6 0.118 184.704);
-  --chart-3: oklch(0.398 0.07 227.392);
-  --chart-4: oklch(0.828 0.189 84.429);
-  --chart-5: oklch(0.769 0.188 70.08);
-  --sidebar: oklch(0.985 0 0);
-  --sidebar-foreground: oklch(0.145 0 0);
-  --sidebar-primary: oklch(0.205 0 0);
-  --sidebar-primary-foreground: oklch(0.985 0 0);
-  --sidebar-accent: oklch(0.97 0 0);
-  --sidebar-accent-foreground: oklch(0.205 0 0);
-  --sidebar-border: oklch(0.922 0 0);
-  --sidebar-ring: oklch(0.708 0 0);
+  --radius: 0.5rem;
+  --background: 255 255 255;
+  --foreground: 15 23 42;
+  --card: 255 255 255;
+  --card-foreground: 15 23 42;
+  --popover: 255 255 255;
+  --popover-foreground: 15 23 42;
+  --primary: 59 130 246;
+  --primary-foreground: 255 255 255;
+  --secondary: 241 245 249;
+  --secondary-foreground: 15 23 42;
+  --muted: 248 250 252;
+  --muted-foreground: 100 116 139;
+  --accent: 241 245 249;
+  --accent-foreground: 15 23 42;
+  --destructive: 239 68 68;
+  --destructive-foreground: 255 255 255;
+  --border: 226 232 240;
+  --input: 226 232 240;
+  --ring: 59 130 246;
+  --chart-1: 34 197 94;
+  --chart-2: 59 130 246;
+  --chart-3: 168 85 247;
+  --chart-4: 251 191 36;
+  --chart-5: 239 68 68;
+  --sidebar: 255 255 255;
+  --sidebar-foreground: 15 23 42;
+  --sidebar-primary: 59 130 246;
+  --sidebar-primary-foreground: 255 255 255;
+  --sidebar-accent: 241 245 249;
+  --sidebar-accent-foreground: 15 23 42;
+  --sidebar-border: 226 232 240;
+  --sidebar-ring: 59 130 246;
 }
 
 .dark {
-  --background: oklch(0.145 0 0);
-  --foreground: oklch(0.985 0 0);
-  --card: oklch(0.205 0 0);
-  --card-foreground: oklch(0.985 0 0);
-  --popover: oklch(0.205 0 0);
-  --popover-foreground: oklch(0.985 0 0);
-  --primary: oklch(0.922 0 0);
-  --primary-foreground: oklch(0.205 0 0);
-  --secondary: oklch(0.269 0 0);
-  --secondary-foreground: oklch(0.985 0 0);
-  --muted: oklch(0.269 0 0);
-  --muted-foreground: oklch(0.708 0 0);
-  --accent: oklch(0.269 0 0);
-  --accent-foreground: oklch(0.985 0 0);
-  --destructive: oklch(0.704 0.191 22.216);
-  --border: oklch(1 0 0 / 10%);
-  --input: oklch(1 0 0 / 15%);
-  --ring: oklch(0.556 0 0);
-  --chart-1: oklch(0.488 0.243 264.376);
-  --chart-2: oklch(0.696 0.17 162.48);
-  --chart-3: oklch(0.769 0.188 70.08);
-  --chart-4: oklch(0.627 0.265 303.9);
-  --chart-5: oklch(0.645 0.246 16.439);
-  --sidebar: oklch(0.205 0 0);
-  --sidebar-foreground: oklch(0.985 0 0);
-  --sidebar-primary: oklch(0.488 0.243 264.376);
-  --sidebar-primary-foreground: oklch(0.985 0 0);
-  --sidebar-accent: oklch(0.269 0 0);
-  --sidebar-accent-foreground: oklch(0.985 0 0);
-  --sidebar-border: oklch(1 0 0 / 10%);
-  --sidebar-ring: oklch(0.556 0 0);
+  --background: 15 23 42;
+  --foreground: 248 250 252;
+  --card: 30 41 59;
+  --card-foreground: 248 250 252;
+  --popover: 30 41 59;
+  --popover-foreground: 248 250 252;
+  --primary: 147 197 253;
+  --primary-foreground: 15 23 42;
+  --secondary: 51 65 85;
+  --secondary-foreground: 248 250 252;
+  --muted: 51 65 85;
+  --muted-foreground: 148 163 184;
+  --accent: 51 65 85;
+  --accent-foreground: 248 250 252;
+  --destructive: 248 113 113;
+  --destructive-foreground: 15 23 42;
+  --border: 51 65 85;
+  --input: 51 65 85;
+  --ring: 147 197 253;
+  --chart-1: 34 197 94;
+  --chart-2: 59 130 246;
+  --chart-3: 168 85 247;
+  --chart-4: 251 191 36;
+  --chart-5: 239 68 68;
+  --sidebar: 30 41 59;
+  --sidebar-foreground: 248 250 252;
+  --sidebar-primary: 147 197 253;
+  --sidebar-primary-foreground: 15 23 42;
+  --sidebar-accent: 51 65 85;
+  --sidebar-accent-foreground: 248 250 252;
+  --sidebar-border: 51 65 85;
+  --sidebar-ring: 147 197 253;
+}
+
+@layer base {
+  * {
+    @apply border-border;
+  }
+
+  body {
+    @apply bg-background text-foreground;
+    font-feature-settings: "rlig" 1, "calt" 1;
+    text-rendering: optimizeLegibility;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+  }
+
+  /* Performance optimizations */
+  html {
+    font-display: swap;
+    scroll-behavior: smooth;
+    scroll-padding-top: 2rem;
+  }
+
+  /* Focus improvements untuk accessibility - hanya untuk elemen yang membutuhkan */
+  button:focus-visible,
+  input:focus-visible,
+  textarea:focus-visible,
+  select:focus-visible,
+  a:focus-visible,
+  [tabindex]:focus-visible {
+    outline: 2px solid rgb(59 130 246);
+    outline-offset: 2px;
+  }
+
+  /* Skip link untuk screen readers */
+  .sr-only {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    padding: 0;
+    margin: -1px;
+    overflow: hidden;
+    clip: rect(0, 0, 0, 0);
+    white-space: nowrap;
+    border: 0;
+  }
+
+  .sr-only:focus {
+    position: static;
+    width: auto;
+    height: auto;
+    padding: 0.5rem 1rem;
+    margin: 0;
+    overflow: visible;
+    clip: auto;
+    white-space: normal;
+    background: rgb(59 130 246);
+    color: white;
+    border-radius: 0.375rem;
+    z-index: 50;
+  }
+}
+
+@layer components {
+  /* Badge variants - hanya untuk komponen badge */
+  .badge {
+    @apply inline-flex items-center rounded-full border px-2.5 py-0.5 text-xs font-semibold transition-colors;
+  }
+
+  .badge-success {
+    @apply text-green-700 border-green-200 bg-green-50;
+  }
+
+  .badge-warning {
+    @apply text-yellow-700 border-yellow-200 bg-yellow-50;
+  }
+
+  .badge-error {
+    @apply text-red-700 border-red-200 bg-red-50;
+  }
+
+  .badge-info {
+    @apply text-blue-700 border-blue-200 bg-blue-50;
+  }
+
+  /* Dark mode badge variants */
+  .dark .badge-success {
+    @apply text-green-400 border-green-800 bg-green-950;
+  }
+
+  .dark .badge-warning {
+    @apply text-yellow-400 border-yellow-800 bg-yellow-950;
+  }
+
+  .dark .badge-error {
+    @apply text-red-400 border-red-800 bg-red-950;
+  }
+
+  .dark .badge-info {
+    @apply text-blue-400 border-blue-800 bg-blue-950;
+  }
+
+  /* Fix for dropdown scrollbar issues */
+  .dropdown-fix {
+    position: fixed !important;
+    top: 0 !important;
+    left: 0 !important;
+    width: 100vw !important;
+    height: 100vh !important;
+    pointer-events: none !important;
+    z-index: -1 !important;
+  }
+
+  /* Ensure dropdown content doesn't affect page layout */
+  [data-radix-popper-content-wrapper] {
+    position: fixed !important;
+    pointer-events: auto !important;
+  }
+
+  /* Toast optimizations - hanya untuk toast components */
+  .toast {
+    @apply border shadow-lg backdrop-blur-sm;
+  }
+
+  .toast-description {
+    @apply text-sm text-muted-foreground;
+  }
+
+  /* Utility classes untuk performance */
+  .animate-fade-in {
+    animation: fadeIn 0.3s ease-out;
+  }
+
+  .animate-slide-up {
+    animation: slideUp 0.3s ease-out;
+  }
+
+  .animate-scale-in {
+    animation: scaleIn 0.2s ease-out;
+  }
+}
+
+@layer utilities {
+  /* Custom animations */
+  @keyframes fadeIn {
+    from {
+      opacity: 0;
+    }
+    to {
+      opacity: 1;
+    }
+  }
+
+  @keyframes slideUp {
+    from {
+      opacity: 0;
+      transform: translateY(10px);
+    }
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+
+  @keyframes scaleIn {
+    from {
+      opacity: 0;
+      transform: scale(0.95);
+    }
+    to {
+      opacity: 1;
+      transform: scale(1);
+    }
+  }
+
+  /* Print styles */
+  @media print {
+    .no-print {
+      display: none !important;
+    }
+
+    body {
+      -webkit-print-color-adjust: exact;
+      color-adjust: exact;
+    }
+  }
+
+  /* Reduced motion untuk accessibility */
+  @media (prefers-reduced-motion: reduce) {
+    *,
+    *::before,
+    *::after {
+      animation-duration: 0.01ms !important;
+      animation-iteration-count: 1 !important;
+      transition-duration: 0.01ms !important;
+      scroll-behavior: auto !important;
+    }
+  }
+
+  /* High contrast mode support */
+  @media (prefers-contrast: high) {
+    .badge {
+      @apply border-2;
+    }
+  }
 }
 
 @layer base {
@@ -119,18 +325,5 @@
   }
   body {
     @apply bg-background text-foreground;
-  }
-}
-
-/* --- TAMBAHKAN BLOK INI (ATAU TAMBAHKAN ISINYA JIKA @layer components SUDAH ADA) --- */
-@layer components {
-  /* Varian untuk status LUNAS/SUCCESS (Hijau) */
-  .badge.variant-success {
-
-  }
-
-  /* Varian untuk status PENDING (Oranye) */
-  .badge.variant-warning {
-
   }
 }

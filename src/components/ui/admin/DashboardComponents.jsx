@@ -1,7 +1,7 @@
 "use client";
 
 import React, { useMemo } from 'react';
-import { Area, AreaChart, CartesianGrid, XAxis } from "recharts";
+import { Area, AreaChart, CartesianGrid, XAxis, YAxis, ResponsiveContainer } from "recharts";
 import {
   Card,
   CardContent,
@@ -21,31 +21,50 @@ import { Badge } from "@/components/ui/badge";
 import { ChartContainer, ChartTooltip, ChartTooltipContent } from "@/components/ui/chart";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Button } from '@/components/ui/button';
-import { ArrowUpRight } from 'lucide-react';
+import { ArrowUpRight, TrendingUp, TrendingDown } from 'lucide-react';
+import Link from "next/link";
 
 // --- Komponen Kartu Statistik ---
-export const StatCard = ({ title, value, icon: Icon, isLoading }) => {
+export const StatCard = ({ title, value, icon: Icon, isLoading, trend, trendValue }) => {
     if (isLoading) {
         return (
-            <Card>
-                <CardHeader className="flex flex-row items-center justify-between pb-2 space-y-0">
-                    <Skeleton className="w-24 h-5" />
-                    <Skeleton className="w-6 h-6 rounded-full" />
+            <Card className="border border-slate-200 bg-white rounded-xl shadow-sm p-6">
+                <CardHeader className="flex flex-row items-center justify-between pb-2">
+                    <CardTitle className="text-base font-semibold text-blue-900">
+                        <Skeleton className="h-4 w-24" />
+                    </CardTitle>
+                    <Skeleton className="h-5 w-5 rounded" />
                 </CardHeader>
                 <CardContent>
-                    <Skeleton className="w-16 h-8 mt-1" />
+                    <Skeleton className="h-8 w-16" />
+                    <Skeleton className="h-4 w-20 mt-1" />
                 </CardContent>
             </Card>
         );
     }
+
     return (
-        <Card>
-            <CardHeader className="flex flex-row items-center justify-between pb-2 space-y-0">
-                <CardTitle className="text-sm font-medium">{title}</CardTitle>
-                <Icon className="w-4 h-4 text-muted-foreground" />
+        <Card className="border border-slate-200 bg-white rounded-xl shadow-sm p-6 hover:shadow-md transition-shadow">
+            <CardHeader className="flex flex-row items-center justify-between pb-2">
+                <CardTitle className="text-base font-semibold text-blue-900">
+                    {title}
+                </CardTitle>
+                <Icon className="h-5 w-5 text-blue-600" />
             </CardHeader>
             <CardContent>
-                <div className="text-2xl font-bold">{value}</div>
+                <div className="text-2xl font-bold text-blue-900">{value}</div>
+                {trend && (
+                    <div className="flex items-center text-sm mt-1">
+                        {trend === "up" ? (
+                            <TrendingUp className="h-4 w-4 text-green-600 mr-1" />
+                        ) : (
+                            <TrendingDown className="h-4 w-4 text-red-600 mr-1" />
+                        )}
+                        <span className={trend === "up" ? "text-green-600" : "text-red-600"}>
+                            {trendValue}
+                        </span>
+                    </div>
+                )}
             </CardContent>
         </Card>
     );
@@ -68,83 +87,132 @@ export const OrderChart = ({ transactions, isLoading }) => {
         return monthlyOrders;
     }, [transactions]);
 
-    const chartConfig = { orders: { label: "Orders", color: "hsl(var(--primary))" } };
+    if (isLoading) {
+        return (
+            <div className="space-y-4">
+                <Skeleton className="h-4 w-32" />
+                <Skeleton className="h-4 w-48" />
+                <Skeleton className="h-[300px] w-full" />
+            </div>
+        );
+    }
 
-    if (isLoading) return <Skeleton className="w-full h-[350px]" />;
     return (
-        <Card>
-            <CardHeader>
-                <CardTitle>Yearly Order Trend</CardTitle>
-                <CardDescription>Total orders received each month this year.</CardDescription>
-            </CardHeader>
-            <CardContent>
-                <ChartContainer config={chartConfig} className="aspect-auto h-[330px] w-full">
-                    <AreaChart data={chartData} margin={{ left: 12, right: 12 }}>
-                        <CartesianGrid vertical={false} />
-                        <XAxis dataKey="month" tickLine={false} axisLine={false} tickMargin={8} />
-                        <ChartTooltip cursor={false} content={<ChartTooltipContent indicator="dot" />} />
-                        <defs>
-                            <linearGradient id="fillOrders" x1="0" y1="0" x2="0" y2="1">
-                                <stop offset="5%" stopColor="var(--color-primary)" stopOpacity={0.8} />
-                                <stop offset="95%" stopColor="var(--color-primary)" stopOpacity={0.1} />
-                            </linearGradient>
-                        </defs>
-                        <Area dataKey="orders" type="natural" fill="url(#fillOrders)" stroke="var(--color-primary)" stackId="a" />
-                    </AreaChart>
-                </ChartContainer>
-            </CardContent>
-        </Card>
+        <ResponsiveContainer width="100%" height={350}>
+            <AreaChart data={chartData}>
+                <defs>
+                    <linearGradient id="colorOrders" x1="0" y1="0" x2="0" y2="1">
+                        <stop offset="5%" stopColor="hsl(var(--primary))" stopOpacity={0.8}/>
+                        <stop offset="95%" stopColor="hsl(var(--primary))" stopOpacity={0.1}/>
+                    </linearGradient>
+                </defs>
+                <CartesianGrid strokeDasharray="3 3" className="stroke-muted" />
+                <XAxis 
+                    dataKey="month" 
+                    stroke="#888888"
+                    fontSize={12}
+                    tickLine={false}
+                    axisLine={false}
+                />
+                <YAxis
+                    stroke="#888888"
+                    fontSize={12}
+                    tickLine={false}
+                    axisLine={false}
+                    tickFormatter={(value) => `${value}`}
+                />
+                <Area 
+                    type="monotone"
+                    dataKey="orders"
+                    stroke="hsl(var(--primary))"
+                    fill="url(#colorOrders)"
+                    strokeWidth={2}
+                />
+            </AreaChart>
+        </ResponsiveContainer>
     );
 };
 
 export const RecentOrdersTable = ({ transactions, isLoading }) => {
-    const statusConfig = {
-        UNPAID: { label: "Waiting Payment", className: "bg-gray-100 text-gray-800" },
-        CONFIRMATION: { label: "Confirming", className: "bg-blue-100 text-blue-800" },
-        SUCCESS: { label: "Success", className: "bg-green-100 text-green-800" },
-        CANCELLED: { label: "Cancelled", className: "bg-red-100 text-red-800" },
-        FAILED: { label: "Failed", className: "bg-destructive/10 text-destructive" },
+    if (isLoading) {
+        return (
+            <Card className="border border-slate-200 bg-white rounded-xl shadow-sm">
+                <CardHeader className="bg-white border-b border-slate-100">
+                    <Skeleton className="h-5 w-32" />
+                    <Skeleton className="h-4 w-48" />
+                </CardHeader>
+                <CardContent className="p-0">
+                    <div className="p-6">
+                        <Skeleton className="h-[300px] w-full" />
+                    </div>
+                </CardContent>
+            </Card>
+        );
+    }
+
+    const getStatusBadge = (status) => {
+        const statusConfig = {
+            pending: { label: "Pending", variant: "secondary", className: "bg-yellow-100 text-yellow-900 border-yellow-200" },
+            confirmed: { label: "Confirmed", variant: "secondary", className: "bg-blue-100 text-blue-900 border-blue-200" },
+            completed: { label: "Completed", variant: "secondary", className: "bg-green-100 text-green-900 border-green-200" },
+            cancelled: { label: "Cancelled", variant: "secondary", className: "bg-red-100 text-red-900 border-red-200" },
+        };
+
+        const config = statusConfig[status] || statusConfig.pending;
+
+        return (
+            <Badge variant={config.variant} className={config.className}>
+                {config.label}
+            </Badge>
+        );
     };
 
-    const recentTransactions = useMemo(() => {
-        if (!transactions || transactions.length === 0) return [];
-        return transactions.slice(0, 5);
-    }, [transactions]);
-
     return (
-        <Card>
-            <CardHeader className="flex flex-row items-center">
-                <div className="grid gap-2"><CardTitle>Recent Orders</CardTitle><CardDescription>The last 5 transactions in the system.</CardDescription></div>
-                <Button asChild size="sm" className="gap-1 ml-auto"><a href="/transactions">View All<ArrowUpRight className="w-4 h-4" /></a></Button>
+        <Card className="border border-slate-200 bg-white rounded-xl shadow-sm">
+            <CardHeader className="bg-white border-b border-slate-100">
+                <CardTitle className="text-xl font-semibold text-blue-900">Recent Transactions</CardTitle>
+                <CardDescription className="text-slate-600">
+                    Latest transactions from your customers
+                </CardDescription>
             </CardHeader>
-            <CardContent>
+            <CardContent className="p-0">
                 <Table>
-                    <TableHeader><TableRow><TableHead>Customer</TableHead><TableHead className="hidden sm:table-cell">Status</TableHead><TableHead className="text-right">Amount</TableHead></TableRow></TableHeader>
+                    <TableHeader>
+                        <TableRow>
+                            <TableHead className="font-semibold text-blue-900">Customer</TableHead>
+                            <TableHead className="font-semibold text-blue-900">Activity</TableHead>
+                            <TableHead className="font-semibold text-blue-900">Amount</TableHead>
+                            <TableHead className="font-semibold text-blue-900">Status</TableHead>
+                        </TableRow>
+                    </TableHeader>
                     <TableBody>
-                        {isLoading ? (
-                            Array.from({ length: 5 }).map((_, index) => (
-                                <TableRow key={index}><TableCell><Skeleton className="w-24 h-5" /></TableCell><TableCell className="hidden sm:table-cell"><Skeleton className="w-20 h-6" /></TableCell><TableCell className="text-right"><Skeleton className="w-24 h-5 ml-auto" /></TableCell></TableRow>
-                            ))
-                        ) : recentTransactions.length > 0 ? (
-                            recentTransactions.map((t) => {
-                                const currentStatus = statusConfig[t.displayStatus] || { label: t.status, className: "bg-gray-100" };
-                                return (
-                                    <TableRow key={t.id}>
-                                        <TableCell>
-                                            <div className="font-medium">{t.user?.name || 'Deleted User'}</div>
-                                            <div className="hidden text-sm text-muted-foreground md:inline">{t.user?.email || 'N/A'}</div>
-                                        </TableCell>
-                                        <TableCell className="hidden sm:table-cell"><Badge className={currentStatus.className} variant="outline">{currentStatus.label}</Badge></TableCell>
-                                        <TableCell className="font-medium text-right">{new Intl.NumberFormat("id-ID", { style: "currency", currency: "IDR" }).format(t.totalAmount)}</TableCell>
-                                    </TableRow>
-                                );
-                            })
-                        ) : (
-                            <TableRow><TableCell colSpan={3} className="h-24 text-center">No recent orders.</TableCell></TableRow>
-                        )}
+                        {transactions?.slice(0, 5).map((transaction) => (
+                            <TableRow key={transaction.id}>
+                                <TableCell>
+                                    <div className="flex items-center space-x-3">
+                                        <Skeleton className="h-12 w-12 rounded-full" />
+                                        <div>
+                                            <Skeleton className="h-4 w-[150px]" />
+                                            <Skeleton className="h-4 w-[100px]" />
+                                        </div>
+                                    </div>
+                                </TableCell>
+                                <TableCell className="font-medium">{transaction.activity?.title || "N/A"}</TableCell>
+                                <TableCell>Rp {transaction.totalAmount?.toLocaleString() || "0"}</TableCell>
+                                <TableCell>{getStatusBadge(transaction.status)}</TableCell>
+                            </TableRow>
+                        ))}
                     </TableBody>
                 </Table>
+                <div className="p-4 border-t border-slate-100">
+                    <Button asChild size="sm" variant="outline">
+                        <Link href="/transactions">
+                            View all transactions
+                            <ArrowUpRight className="ml-2 h-4 w-4" />
+                        </Link>
+                    </Button>
+                </div>
             </CardContent>
         </Card>
     );
-}
+};

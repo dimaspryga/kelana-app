@@ -11,7 +11,7 @@ const api = axios.create({
 });
 
 export async function GET(request) {
-    const cookieStore = cookies();
+    const cookieStore = await cookies();
     const token = cookieStore.get('token')?.value;
 
     if (!token) {

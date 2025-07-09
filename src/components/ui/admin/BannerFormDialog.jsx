@@ -130,7 +130,7 @@ export const BannerFormDialog = ({ banner, isOpen, setIsOpen, onSuccess }) => {
                     </DialogHeader>
                     <div className="grid gap-4 py-4">
                         <div 
-                            className="relative flex items-center justify-center w-full h-40 border-2 border-dashed rounded-lg cursor-pointer bg-gray-50 hover:bg-gray-100"
+                            className="relative flex items-center justify-center w-full h-40 border border-border border-dashed rounded-lg cursor-pointer bg-white hover:bg-blue-50"
                             onClick={() => fileInputRef.current?.click()}
                         >
                             {previewUrl ? (
@@ -158,9 +158,9 @@ export const BannerFormDialog = ({ banner, isOpen, setIsOpen, onSuccess }) => {
                         <Button type="button" variant="outline" onClick={() => setIsOpen(false)} disabled={isProcessing}>
                             Cancel
                         </Button>
-                        <Button type="submit" disabled={isProcessing} className="bg-blue-600 hover:bg-blue-700">
-                            {isProcessing && <Loader2 className="w-4 h-4 mr-2 animate-spin" />}
-                            {isEditMode ? 'Save Changes' : 'Create Banner'}
+                        <Button type="submit" disabled={isProcessing}>
+                            {isProcessing && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
+                            {banner ? "Update Banner" : "Create Banner"}
                         </Button>
                     </DialogFooter>
                 </form>

@@ -122,8 +122,8 @@ export const EditUserDialog = ({ user, isOpen, setIsOpen, onUpdate }) => {
                 </div>
                 <DialogFooter>
                     <Button variant="outline" onClick={() => setIsOpen(false)}>Cancel</Button>
-                    <Button onClick={handleSubmit} disabled={isLoading} className="bg-blue-600 hover:bg-blue-700">
-                        {isLoading && <Loader2 className="w-4 h-4 mr-2 animate-spin" />}
+                    <Button onClick={handleSubmit} disabled={isLoading}>
+                        {isLoading && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
                         Save Changes
                     </Button>
                 </DialogFooter>

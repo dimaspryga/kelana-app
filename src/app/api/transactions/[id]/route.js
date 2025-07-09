@@ -11,8 +11,7 @@ const api = axios.create({
 });
 
 export async function GET(request, { params }) {
-    const { id } = params;
-    const cookieStore = cookies();
+    const cookieStore = await cookies();
     const token = cookieStore.get('token')?.value;
 
     if (!token) {
@@ -20,7 +19,7 @@ export async function GET(request, { params }) {
     }
 
     try {
-        const response = await api.get(`/transaction/${id}`, {
+        const response = await api.get(`/transactions/${params.id}`, {
             headers: {
                 Authorization: `Bearer ${token}`,
             }
@@ -28,7 +27,7 @@ export async function GET(request, { params }) {
         return NextResponse.json(response.data);
     } catch (error) {
         const status = error.response?.status || 500;
-        const message = error.response?.data?.message || `Failed to fetch transaction: ${id}`;
+        const message = error.response?.data?.message || "Failed to fetch transaction";
         return NextResponse.json({ message }, { status });
     }
 }

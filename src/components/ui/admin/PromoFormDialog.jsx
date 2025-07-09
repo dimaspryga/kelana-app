@@ -120,7 +120,10 @@ export const PromoFormDialog = ({ promo, isOpen, setIsOpen, onSuccess }) => {
                     <DialogDescription>{isEditMode ? 'Update the details for this promo.' : 'Fill in the details for the new promo.'}</DialogDescription>
                 </DialogHeader>
                 <div className="grid gap-4 py-4">
-                    <div className="relative flex items-center justify-center w-full h-40 border-2 border-dashed rounded-lg cursor-pointer bg-gray-50 hover:bg-gray-100" onClick={() => fileInputRef.current?.click()}>
+                    <div 
+                        className="relative flex items-center justify-center w-full h-40 border border-border border-dashed rounded-lg cursor-pointer bg-white hover:bg-blue-50"
+                        onClick={() => fileInputRef.current?.click()}
+                    >
                         {previewUrl ? <img src={previewUrl} alt="Preview" className="object-cover w-full h-full rounded-md" /> : <div className="text-center text-gray-500"><ImagePlus className="w-8 h-8 mx-auto" /><p className="mt-2 text-sm">Upload Image</p></div>}
                         <Input ref={fileInputRef} type="file" className="hidden" accept="image/*" onChange={handleFileChange} />
                     </div>
@@ -135,9 +138,9 @@ export const PromoFormDialog = ({ promo, isOpen, setIsOpen, onSuccess }) => {
                 </div>
                 <DialogFooter>
                     <Button variant="outline" onClick={() => setIsOpen(false)}>Cancel</Button>
-                    <Button onClick={handleSubmit} disabled={isLoading} className="bg-blue-600 hover:bg-blue-700">
-                        {isLoading ? <Loader2 className="w-4 h-4 mr-2 animate-spin"/> : null}
-                        {isEditMode ? 'Save Changes' : 'Create Promo'}
+                    <Button onClick={handleSubmit} disabled={isLoading}>
+                        {isLoading && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
+                        {promo ? "Update Promo" : "Create Promo"}
                     </Button>
                 </DialogFooter>
             </DialogContent>

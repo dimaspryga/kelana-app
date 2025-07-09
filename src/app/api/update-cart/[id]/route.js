@@ -11,8 +11,7 @@ const api = axios.create({
 });
 
 export async function POST(request, { params }) {
-    const { id } = params;
-    const cookieStore = cookies();
+    const cookieStore = await cookies();
     const token = cookieStore.get('token')?.value;
 
     if (!token) {
@@ -20,14 +19,24 @@ export async function POST(request, { params }) {
     }
 
     try {
-        const body = await request.json();
-        const response = await api.post(`/update-cart/${id}`, body, {
-            headers: { Authorization: `Bearer ${token}` }
-        });
+        const { quantity } = await request.json();
+        console.log('Update cart API - Request:', { cartId: params.id, quantity });
+        
+        const response = await api.put(`/carts/${params.id}`, 
+            { quantity },
+            {
+                headers: {
+                    Authorization: `Bearer ${token}`,
+                }
+            }
+        );
+        
+        console.log('Update cart API - External response:', response.data);
         return NextResponse.json(response.data);
     } catch (error) {
+        console.error('Update cart API - Error:', error.response?.data || error.message);
         const status = error.response?.status || 500;
-        const message = error.response?.data?.message || "Failed to update cart item";
+        const message = error.response?.data?.message || "Failed to update cart";
         return NextResponse.json({ message }, { status });
     }
 }

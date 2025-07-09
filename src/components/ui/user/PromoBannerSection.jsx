@@ -48,7 +48,7 @@ const PromoBannerSection = () => {
                     <Tag className="w-4 h-4" />
                     <span>Special Offer</span>
                   </div>
-                  <h2 className="text-4xl font-bold tracking-tight text-white md:text-5xl drop-shadow-lg">
+                  <h2 className="text-3xl font-bold tracking-tight text-white md:text-4xl lg:text-5xl drop-shadow-lg">
                     {bannerPromo.title}
                   </h2>
                   <p className="max-w-2xl mt-4 text-lg drop-shadow-md">

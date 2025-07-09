@@ -43,51 +43,63 @@ const Footer = () => {
   const { paymentMethod, isLoading } = usePaymentMethod();
 
   return (
-    <footer className="bg-slate-800 text-slate-300">
-      <div className="px-4 py-12 mx-auto max-w-7xl sm:px-6 lg:px-8">
-        <div className="grid grid-cols-2 gap-8 md:grid-cols-5">
-          <div className="col-span-2 pr-8 md:col-span-1">
-            <Link href="/" className="inline-block">
+    <footer className="bg-gradient-to-br from-blue-900 via-blue-800 to-blue-900 text-white">
+      <div className="px-4 py-16 mx-auto max-w-7xl sm:px-6 lg:px-8">
+        <div className="grid grid-cols-1 gap-8 md:grid-cols-2 lg:grid-cols-5">
+          <div className="col-span-1 pr-8 lg:col-span-1">
+            <Link href="/" className="inline-block transition-all duration-200 hover:opacity-80">
               <img
                 src="/assets/kelana.webp"
-                alt="Travel Journal Logo"
-                className="w-auto h-12"
+                alt="Kelana Logo"
+                className="w-auto h-12 filter brightness-0 invert"
               />
             </Link>
-            <p className="mt-2 text-sm text-slate-400">
-              The best platform to plan your unforgettable adventures.
+            <p className="mt-4 text-sm text-blue-100 leading-relaxed">
+              The best platform to plan your unforgettable adventures. Discover amazing activities, unique places, and unforgettable experiences.
             </p>
             <div className="flex mt-6 space-x-4">
-              <Link href="#" className="text-slate-400 hover:text-white">
-                <span className="sr-only">Twitter</span>
-                <Twitter />
+              <Link 
+                href="#" 
+                className="p-2 text-blue-200 transition-all duration-200 rounded-full hover:text-white hover:bg-blue-700 hover:scale-110"
+                aria-label="Follow us on Twitter"
+              >
+                <Twitter className="w-5 h-5" />
               </Link>
-              <Link href="#" className="text-slate-400 hover:text-white">
-                <span className="sr-only">Instagram</span>
-                <Instagram />
+              <Link 
+                href="#" 
+                className="p-2 text-blue-200 transition-all duration-200 rounded-full hover:text-white hover:bg-blue-700 hover:scale-110"
+                aria-label="Follow us on Instagram"
+              >
+                <Instagram className="w-5 h-5" />
               </Link>
-              <Link href="#" className="text-slate-400 hover:text-white">
-                <span className="sr-only">Facebook</span>
-                <Facebook />
+              <Link 
+                href="#" 
+                className="p-2 text-blue-200 transition-all duration-200 rounded-full hover:text-white hover:bg-blue-700 hover:scale-110"
+                aria-label="Follow us on Facebook"
+              >
+                <Facebook className="w-5 h-5" />
               </Link>
-              <Link href="#" className="text-slate-400 hover:text-white">
-                <span className="sr-only">YouTube</span>
-                <Youtube />
+              <Link 
+                href="#" 
+                className="p-2 text-blue-200 transition-all duration-200 rounded-full hover:text-white hover:bg-blue-700 hover:scale-110"
+                aria-label="Follow us on YouTube"
+              >
+                <Youtube className="w-5 h-5" />
               </Link>
             </div>
           </div>
 
           {footerLinks.map((section) => (
-            <div key={section.title}>
+            <div key={section.title} className="space-y-4">
               <h3 className="text-sm font-semibold tracking-wider text-white uppercase">
                 {section.title}
               </h3>
-              <ul className="mt-4 space-y-3">
+              <ul className="space-y-3">
                 {section.links.map((link) => (
                   <li key={link.name}>
                     <Link
                       href={link.href}
-                      className="text-base text-slate-400 hover:text-white hover:underline"
+                      className="text-base text-blue-200 transition-all duration-200 hover:text-white hover:underline hover:translate-x-1 inline-block"
                     >
                       {link.name}
                     </Link>
@@ -97,31 +109,37 @@ const Footer = () => {
             </div>
           ))}
 
-          <div>
+          <div className="space-y-4">
             <h3 className="text-sm font-semibold tracking-wider text-white uppercase">
               Contact Us
             </h3>
-            <ul className="mt-4 space-y-4">
-              <li className="flex items-start gap-3">
-                <MapPin className="w-5 h-5 mt-1 shrink-0 text-slate-400" />
-                <p className="text-base text-slate-400">
+            <ul className="space-y-4">
+              <li className="flex items-start gap-3 group">
+                <div className="p-1 mt-1 text-blue-200 transition-all duration-200 rounded-full group-hover:text-white group-hover:bg-blue-700">
+                  <MapPin className="w-4 h-4" />
+                </div>
+                <p className="text-base text-blue-200 group-hover:text-white transition-colors duration-200">
                   Bogor, West Java, 16161
                 </p>
               </li>
-              <li className="flex items-start gap-3">
-                <Phone className="w-5 h-5 shrink-0 text-slate-400" />
+              <li className="flex items-start gap-3 group">
+                <div className="p-1 text-blue-200 transition-all duration-200 rounded-full group-hover:text-white group-hover:bg-blue-700">
+                  <Phone className="w-4 h-4" />
+                </div>
                 <a
                   href="tel:+622112345678"
-                  className="text-base text-slate-400 hover:text-white hover:underline"
+                  className="text-base text-blue-200 transition-all duration-200 hover:text-white hover:underline"
                 >
                   (021) 1234-5678
                 </a>
               </li>
-              <li className="flex items-start gap-3">
-                <Mail className="w-5 h-5 shrink-0 text-slate-400" />
+              <li className="flex items-start gap-3 group">
+                <div className="p-1 text-blue-200 transition-all duration-200 rounded-full group-hover:text-white group-hover:bg-blue-700">
+                  <Mail className="w-4 h-4" />
+                </div>
                 <a
-                  href="mailto:support@traveljournal.com"
-                  className="text-base text-slate-400 hover:text-white hover:underline"
+                  href="mailto:support@kelana.com"
+                  className="text-base text-blue-200 transition-all duration-200 hover:text-white hover:underline"
                 >
                   support@kelana.com
                 </a>
@@ -130,38 +148,55 @@ const Footer = () => {
           </div>
         </div>
 
-        <div className="pt-8 mt-12 border-t border-slate-700">
-          <h3 className="text-sm font-semibold tracking-wider text-center text-white uppercase">
+        <div className="pt-12 mt-12 border-t border-blue-700">
+          <h3 className="text-sm font-semibold tracking-wider text-center text-white uppercase mb-8">
             Our Payment Partners
           </h3>
-          <div className="flex flex-wrap items-center justify-center mt-6 gap-x-8 gap-y-4">
+          <div className="flex flex-wrap items-center justify-center gap-8">
             {isLoading
               ? 
                 Array.from({ length: 7 }).map((_, index) => (
                   <Skeleton
                     key={index}
-                    className="w-16 h-8 rounded bg-slate-700"
+                    className="w-16 h-8 rounded-lg bg-blue-700"
                   />
                 ))
               : 
                 (paymentMethod || []).map((partner) => (
-                  <img
-                    key={partner.id}
-                    src={partner.imageUrl}
-                    alt={partner.name}
-                    className="object-contain h-6 sm:h-8"
-                    title={partner.name}
-                  />
+                  <div 
+                    key={partner.id} 
+                    className="p-2 transition-all duration-200 rounded-lg hover:bg-blue-700 hover:scale-110"
+                  >
+                    <img
+                      src={partner.imageUrl}
+                      alt={partner.name}
+                      className="object-contain h-6 sm:h-8 filter brightness-0 invert opacity-80 hover:opacity-100 transition-opacity duration-200"
+                      title={partner.name}
+                    />
+                  </div>
                 ))}
           </div>
         </div>
       </div>
 
-      <div className="bg-slate-900">
-        <div className="px-4 py-4 mx-auto max-w-7xl sm:px-6 lg:px-8">
-          <p className="text-sm text-center text-slate-500">
-            &copy; {new Date().getFullYear()} PT. KELANA. All rights reserved.
-          </p>
+      <div className="bg-blue-950 border-t border-blue-800">
+        <div className="px-4 py-6 mx-auto max-w-7xl sm:px-6 lg:px-8">
+          <div className="flex flex-col items-center justify-between gap-4 text-center sm:flex-row">
+            <p className="text-sm text-blue-300">
+              &copy; {new Date().getFullYear()} PT. KELANA. All rights reserved.
+            </p>
+            <div className="flex items-center gap-6 text-sm text-blue-300">
+              <Link href="/" className="transition-colors duration-200 hover:text-white">
+                Privacy Policy
+              </Link>
+              <Link href="/" className="transition-colors duration-200 hover:text-white">
+                Terms of Service
+              </Link>
+              <Link href="/" className="transition-colors duration-200 hover:text-white">
+                Cookie Policy
+              </Link>
+            </div>
+          </div>
         </div>
       </div>
     </footer>

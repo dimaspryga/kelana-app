@@ -11,7 +11,7 @@ const api = axios.create({
 });
 
 export async function POST(request) {
-    const cookieStore = cookies();
+    const cookieStore = await cookies();
     const token = cookieStore.get('token')?.value;
 
     if (!token) {
@@ -20,13 +20,18 @@ export async function POST(request) {
 
     try {
         const body = await request.json();
-        const response = await api.post('/add-cart', body, {
+        console.log('Add cart API - Request body:', body);
+        
+        const response = await api.post('/carts', body, {
             headers: {
                 Authorization: `Bearer ${token}`,
             }
         });
+        
+        console.log('Add cart API - External response:', response.data);
         return NextResponse.json(response.data);
     } catch (error) {
+        console.error('Add cart API - Error:', error.response?.data || error.message);
         const status = error.response?.status || 500;
         const message = error.response?.data?.message || "Failed to add item to cart";
         return NextResponse.json({ message }, { status });

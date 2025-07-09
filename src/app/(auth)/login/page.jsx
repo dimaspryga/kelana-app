@@ -1,38 +1,14 @@
 "use client";
 
-import { useState } from 'react';
-import { useAuth } from '@/context/AuthContext';
-import { toast } from "sonner";
-import { Loader2 } from 'lucide-react';
 import Image from "next/image";
 import { LoginForm } from "@/components/forms/login-form";
 
 const LoginPage = () => {
-  const [email, setEmail] = useState('');
-  const [password, setPassword] = useState('');
-  const { login, loading } = useAuth();
-
-  const handleLogin = async (e) => {
-    e.preventDefault();
-    if (!email || !password) {
-        toast.error("Please enter both email and password.");
-        return;
-    }
-
-    const result = await login(email, password);
-
-    if (result.success) {
-      toast.success("Login successful! Redirecting...");
-    } else {
-      toast.error(result.message || "Failed to log in.");
-    }
-  };
-
-return (
-    <div className="relative grid min-h-svh lg:grid-cols-2">
+  return (
+    <div className="relative grid min-h-svh lg:grid-cols-2 bg-gradient-to-br from-blue-50 via-white to-blue-50">
       <div className="flex flex-col gap-4 p-6 md:p-10">
         <div className="flex justify-center gap-2 md:justify-start">
-          <a href="/" className="flex items-center gap-2 font-medium">
+          <a href="/" className="flex items-center gap-2 font-medium transition-all duration-200 hover:opacity-80">
             <Image
               className="dark:invert"
               src="/assets/kelana.webp"
@@ -44,17 +20,22 @@ return (
           </a>
         </div>
         <div className="flex items-center justify-center flex-1">
-          <div className="w-full max-w-xs">
-            <LoginForm />
+          <div className="w-full max-w-sm">
+            <div className="p-8 shadow-2xl bg-white/95 backdrop-blur-md rounded-3xl border border-white/20">
+              <LoginForm />
+            </div>
           </div>
         </div>
       </div>
       <div className="relative hidden bg-muted lg:block">
         <img
           src="/assets/banner-authpage.png"
-          alt="Image"
-          className="absolute inset-0 h-full w-full object-cover dark:brightness-[0.2] dark:grayscale opacity-80"
+          alt="Login Banner"
+          className="absolute inset-0 h-full w-full object-cover dark:brightness-[0.2] dark:grayscale opacity-90"
         />
+        <div className="absolute inset-0 bg-gradient-to-r from-blue-600/40 to-transparent"></div>
+        <div className="absolute inset-0 bg-gradient-to-b from-transparent via-transparent to-blue-600/30"></div>
+        <div className="absolute inset-0 bg-gradient-to-t from-blue-600/10 via-transparent to-transparent"></div>
       </div>
 
       <img

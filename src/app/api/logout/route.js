@@ -12,7 +12,7 @@ const api = axios.create({
 });
 
 export async function GET(request) {
-    const cookieStore = cookies();
+    const cookieStore = await cookies();
     const token = cookieStore.get('token')?.value;
 
     if (!token) {
@@ -38,5 +38,25 @@ export async function GET(request) {
         const res = NextResponse.json({ message }, { status });
         res.cookies.delete('token');
         return res;
+    }
+}
+
+export async function POST(request) {
+    const cookieStore = await cookies();
+    const token = cookieStore.get('token')?.value;
+
+    if (!token) {
+        return NextResponse.json({ message: "No token found" }, { status: 400 });
+    }
+
+    try {
+        const response = NextResponse.json({ message: "Logged out successfully" });
+        
+        // Clear the token cookie
+        response.cookies.delete('token');
+        
+        return response;
+    } catch (error) {
+        return NextResponse.json({ message: "Logout failed" }, { status: 500 });
     }
 }

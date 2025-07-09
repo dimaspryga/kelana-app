@@ -1,76 +1,95 @@
-"use client";
+"use client"
 
-import React from "react";
-import { useAuth } from "@/context/AuthContext";
-import { motion, AnimatePresence } from "framer-motion";
-import { Skeleton } from "@/components/ui/skeleton";
-import HeroSection from "@/components/ui/user/HeroSection";
-import PromoSection from "@/components/ui/user/PromoSection";
-import CategorySection from "@/components/ui/user/CategorySection";
-import ActivitySection from "@/components/ui/user/ActivitySection";
-import BannerSection from "@/components/ui/user/BannerSection";
-import ActivityDiscountSection from "@/components/ui/user/ActivityDiscountSection";
-import TestimonialSection from "@/components/ui/user/TestimonialSection";
-import SubscribeSection from "@/components/ui/user/SubscribeSection";
+import { Suspense } from "react"
+import { useAuth } from "@/context/AuthContext"
+import { motion } from "framer-motion"
+import { Skeleton } from "@/components/ui/skeleton"
+import dynamic from "next/dynamic"
 
-const HomeSkeleton = () => (
-  <div className="space-y-16">
+// Lazy load components for better performance
+const HeroSection = dynamic(() => import("@/components/ui/user/HeroSection"), {
+  loading: () => <Skeleton className="w-full h-[80vh]" />,
+})
+
+const BannerSection = dynamic(() => import("@/components/ui/user/BannerSection"), {
+  loading: () => <Skeleton className="w-full h-64" />,
+})
+
+const CategorySection = dynamic(() => import("@/components/ui/user/CategorySection"), {
+  loading: () => <Skeleton className="w-full h-96" />,
+})
+
+const ActivitySection = dynamic(() => import("@/components/ui/user/ActivitySection"), {
+  loading: () => <Skeleton className="w-full h-96" />,
+})
+
+const PromoSection = dynamic(() => import("@/components/ui/user/PromoSection"), {
+  loading: () => <Skeleton className="w-full h-96" />,
+})
+
+const ActivityDiscountSection = dynamic(() => import("@/components/ui/user/ActivityDiscountSection"), {
+  loading: () => <Skeleton className="w-full h-96" />,
+})
+
+const TestimonialSection = dynamic(() => import("@/components/ui/user/TestimonialSection"), {
+  loading: () => <Skeleton className="w-full h-96" />,
+})
+
+const SubscribeSection = dynamic(() => import("@/components/ui/user/SubscribeSection"), {
+  loading: () => <Skeleton className="w-full h-64" />,
+})
+
+const LoadingSkeleton = () => (
+  <div className="space-y-8">
     <Skeleton className="w-full h-[80vh]" />
-    <div className="container px-4 mx-auto max-w-7xl sm:px-6 lg:px-8">
-      <Skeleton className="w-full h-64 rounded-xl" />
-    </div>
-    <div className="container px-4 mx-auto max-w-7xl sm:px-6 lg:px-8">
-      <Skeleton className="w-1/3 h-10 mb-8" />
-      <div className="grid grid-cols-2 gap-4 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6">
-        {Array.from({ length: 6 }).map((_, i) => (
-          <div key={i} className="flex flex-col items-center space-y-3">
-            <Skeleton className="w-20 h-20 rounded-full" />
-            <Skeleton className="w-24 h-5" />
-          </div>
-        ))}
-      </div>
-    </div>
-    <div className="container px-4 mx-auto max-w-7xl sm:px-6 lg:px-8">
-      <Skeleton className="w-1/3 h-10 mb-8" />
-      <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-4">
-        {Array.from({ length: 4 }).map((_, i) => (
-          <div key={i} className="space-y-3">
-            <Skeleton className="w-full h-48 rounded-xl" />
-            <Skeleton className="w-5/6 h-6" />
-            <Skeleton className="w-3/4 h-5" />
-          </div>
-        ))}
-      </div>
+    <div className="container px-4 mx-auto space-y-8 max-w-7xl sm:px-6 lg:px-8">
+      <Skeleton className="w-full h-64" />
+      <Skeleton className="w-full h-96" />
+      <Skeleton className="w-full h-96" />
     </div>
   </div>
-);
+)
 
 export default function Home() {
-  const { loading: isAuthLoading } = useAuth();
+  const { loading: isAuthLoading } = useAuth()
+
+  if (isAuthLoading) {
+    return <LoadingSkeleton />
+  }
 
   return (
-    <AnimatePresence mode="wait">
-      {isAuthLoading ? (
-        <motion.div key="skeleton" exit={{ opacity: 0 }}>
-          <HomeSkeleton />
-        </motion.div>
-      ) : (
-        <motion.main
-          key="content"
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
-          transition={{ duration: 0.75 }}
-        >
-          <HeroSection />
-          <BannerSection />
-          <CategorySection />
-          <ActivitySection />
-          <PromoSection />
-          <ActivityDiscountSection />
-          <TestimonialSection />
-          <SubscribeSection />
-        </motion.main>
-      )}
-    </AnimatePresence>
-  );
+    <motion.main initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ duration: 0.3 }}>
+      <Suspense fallback={<Skeleton className="w-full h-[80vh]" />}>
+        <HeroSection />
+      </Suspense>
+      
+      <Suspense fallback={<Skeleton className="w-full h-16" />}>
+        <CategorySection />
+      </Suspense>
+
+      <Suspense fallback={<Skeleton className="w-full h-64" />}>
+        <BannerSection />
+      </Suspense>
+
+      <Suspense fallback={<Skeleton className="w-full h-96" />}>
+        <ActivitySection />
+      </Suspense>
+
+      <Suspense fallback={<Skeleton className="w-full h-96" />}>
+        <ActivityDiscountSection />
+      </Suspense>
+
+      <Suspense fallback={<Skeleton className="w-full h-96" />}>
+        <PromoSection />
+      </Suspense>
+
+      <Suspense fallback={<Skeleton className="w-full h-96" />}>
+        <TestimonialSection />
+      </Suspense>
+
+      <Suspense fallback={<Skeleton className="w-full h-64" />}>
+        <SubscribeSection />
+      </Suspense>
+    </motion.main>
+  )
 }

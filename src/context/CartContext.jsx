@@ -55,37 +55,26 @@ export const CartProvider = ({ children }) => {
     fetchCart();
   }, [fetchCart]);
 
-  const addToCart = async (activityId, quantity) => {
+  const addToCart = async (activityId, quantity = 1) => {
     if (!user) {
         toast.error("Please log in to add items to your cart.");
         return;
     }
 
-    const promise = new Promise(async (resolve, reject) => {
-      for (let i = 0; i < quantity; i++) {
-        try {
-            await axios.post(`${API_BASE_URL}/add-cart`, { activityId });
-        } catch (err) {
-            const errorData = err.response?.data;
-            return reject(
-              new Error(errorData?.message || `Failed to add item #${i + 1}.`)
-            );
-        }
-      }
-      return resolve({ quantity });
-    });
-
-    toast.promise(promise, {
-      loading: `Adding ${quantity} item to cart...`,
-      success: (data) => {
-        fetchCart();
-        return `${data.quantity} Item successfully added!`;
-      },
-      error: (err) => {
-        fetchCart();
-        return err.message || "Failed to add item.";
-      },
-    });
+    console.log('Adding to cart:', { activityId, quantity });
+    
+    const toastId = toast.loading("Adding to cart...");
+    try {
+      const response = await axios.post(`${API_BASE_URL}/cart-add`, { activityId, quantity });
+      console.log('Add to cart response:', response.data);
+      toast.success("Added to cart successfully.", { id: toastId });
+      await fetchCart();
+    } catch (err) {
+      console.error('Add to cart error:', err.response?.data || err.message);
+      const errorMessage = err.response?.data?.message || "Failed to add to cart.";
+      toast.error(errorMessage, { id: toastId });
+      throw err; // Re-throw to let the UI handle the error
+    }
   };
 
   const updateItemQuantity = async (cartItemId, newQuantity) => {
@@ -94,6 +83,8 @@ export const CartProvider = ({ children }) => {
         return;
     }
 
+    console.log('Updating quantity:', { cartItemId, newQuantity });
+
     if (newQuantity < 1) {
       removeFromCart(cartItemId);
       return;
@@ -101,12 +92,15 @@ export const CartProvider = ({ children }) => {
     
     const toastId = toast.loading("Updating quantity...");
     try {
-      await axios.post(`${API_BASE_URL}/update-cart/${cartItemId}`, { quantity: newQuantity });
+      const response = await axios.post(`${API_BASE_URL}/cart-update/${cartItemId}`, { quantity: newQuantity });
+      console.log('Update quantity response:', response.data);
       toast.success("Quantity updated successfully.", { id: toastId });
       await fetchCart();
     } catch (err) {
+      console.error('Update quantity error:', err.response?.data || err.message);
       const errorMessage = err.response?.data?.message || "Failed to update quantity.";
       toast.error(errorMessage, { id: toastId });
+      throw err; // Re-throw to let the UI handle the error
     }
   };
 
@@ -116,14 +110,19 @@ export const CartProvider = ({ children }) => {
         return;
     }
 
-    const toastId = toast.loading("Deleting item...");
+    console.log('Removing from cart:', cartItemId);
+    
+    const toastId = toast.loading("Removing from cart...");
     try {
-      await axios.delete(`${API_BASE_URL}/delete-cart/${cartItemId}`);
-      toast.success("Item deleted successfully.", { id: toastId });
+      const response = await axios.delete(`${API_BASE_URL}/cart-delete/${cartItemId}`);
+      console.log('Remove from cart response:', response.data);
+      toast.success("Removed from cart successfully.", { id: toastId });
       await fetchCart();
     } catch (err) {
-        const errorMessage = err.response?.data?.message || "Failed to delete item.";
-        toast.error(errorMessage, { id: toastId });
+      console.error('Remove from cart error:', err.response?.data || err.message);
+      const errorMessage = err.response?.data?.message || "Failed to remove from cart.";
+      toast.error(errorMessage, { id: toastId });
+      throw err; // Re-throw to let the UI handle the error
     }
   };
 

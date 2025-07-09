@@ -345,9 +345,8 @@ export const ActivityFormDialog = ({
           <Button
             onClick={handleSubmit}
             disabled={isProcessing}
-            className="bg-blue-600 hover:bg-blue-700"
           >
-            {isProcessing && <Loader2 className="w-4 h-4 mr-2 animate-spin" />}
+            {isProcessing && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
             {isEditMode ? "Simpan Perubahan" : "Buat Aktivitas"}
           </Button>
         </DialogFooter>

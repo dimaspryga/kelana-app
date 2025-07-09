@@ -95,61 +95,91 @@ export const EditProfileDialog = ({ user, isOpen, setIsOpen, onUpdateSuccess }) 
     <Dialog open={isOpen} onOpenChange={setIsOpen}>
       <DialogContent className="sm:max-w-[480px] bg-white rounded-lg">
         <DialogHeader>
-          <DialogTitle className="text-2xl font-bold text-gray-800">Edit Profile</DialogTitle>
-          <DialogDescription>
+          <DialogTitle className="text-base font-bold tracking-tight text-gray-800 sm:text-lg">Edit Profile</DialogTitle>
+          <DialogDescription className="text-xs">
             Make changes to your profile here. Click save when you're done.
           </DialogDescription>
         </DialogHeader>
         <form onSubmit={handleSubmit} noValidate>
-          <div className="grid gap-6 py-4">
-            <div className="flex flex-col items-center justify-center gap-3">
+          <div className="grid gap-3 py-4">
+            <div className="flex flex-col items-center justify-center gap-2">
                 <div className="relative">
-                    <Avatar className="w-24 h-24 border-4 shadow-sm border-blue-50">
+                    <Avatar className="w-16 h-16 sm:w-20 sm:h-20 border-4 shadow-sm border-blue-50">
                         <AvatarImage src={imagePreview} alt={user?.name} />
                         <AvatarFallback>{user?.name?.charAt(0)}</AvatarFallback>
                     </Avatar>
                     <input type="file" ref={fileInputRef} onChange={handleImageChange} className="hidden" accept="image/*" />
                     <Button type="button" variant="outline" size="icon" className="absolute bottom-0 right-0 bg-white rounded-full hover:bg-gray-100" onClick={() => fileInputRef.current.click()}>
-                       <Camera className="w-4 h-4 text-gray-600" />
+                       <Camera className="w-3 h-3 text-gray-600" />
                     </Button>
                 </div>
             </div>
             
-            <div className="grid items-center grid-cols-4 gap-4">
-              <Label htmlFor="name" className="text-right">Name</Label>
-              <Input id="name" value={name} onChange={(e) => setName(e.target.value)} className="col-span-3" />
-            </div>
-            <div className="grid items-start grid-cols-4 gap-4">
-              <Label htmlFor="email" className="pt-2 text-right">Email</Label>
-              <div className="col-span-3">
-                <Input id="email" type="email" value={email} className="bg-gray-100 cursor-not-allowed" disabled />
-                <p className="mt-1 text-xs text-gray-500">Email address cannot be changed.</p>
+            <div className="space-y-2">
+              <div className="space-y-1">
+                <Label htmlFor="name" className="text-xs font-medium text-gray-700">
+                  Full Name
+                </Label>
+                <input
+                  id="name"
+                  type="text"
+                  placeholder="Enter your full name"
+                  className="w-full px-3 py-2 text-sm transition-all duration-300 border border-gray-200 rounded bg-white focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 hover:border-gray-300"
+                  value={name}
+                  onChange={(e) => setName(e.target.value)}
+                />
               </div>
-            </div>
-            <div className="grid items-center grid-cols-4 gap-4">
-              <Label htmlFor="phoneNumber" className="text-right">Phone</Label>
-              <Input id="phoneNumber" value={phoneNumber} onChange={(e) => setPhoneNumber(e.target.value)} className="col-span-3" />
-            </div>
 
-            {user?.role === 'admin' && (
-                <div className="grid items-center grid-cols-4 gap-4 pt-6 mt-4 border-t">
-                    <Label htmlFor="role" className="text-right">Role</Label>
-                    <Select value={role} onValueChange={setRole}>
-                        <SelectTrigger className="col-span-3">
-                            <SelectValue placeholder="Select a role" />
-                        </SelectTrigger>
-                        <SelectContent>
-                            <SelectItem value="admin">Admin</SelectItem>
-                            <SelectItem value="user">User</SelectItem>
-                        </SelectContent>
-                    </Select>
+              <div className="space-y-1">
+                <Label htmlFor="email" className="text-xs font-medium text-gray-700">
+                  Email Address
+                </Label>
+                <input
+                  id="email"
+                  type="email"
+                  placeholder="Enter your email address"
+                  className="w-full px-3 py-2 text-sm transition-all duration-300 border border-gray-200 rounded bg-white focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 hover:border-gray-300"
+                  value={email}
+                  onChange={(e) => setEmail(e.target.value)}
+                />
+              </div>
+
+              <div className="space-y-1">
+                <Label htmlFor="phoneNumber" className="text-xs font-medium text-gray-700">
+                  Phone Number
+                </Label>
+                <input
+                  id="phoneNumber"
+                  type="tel"
+                  placeholder="Enter your phone number"
+                  className="w-full px-3 py-2 text-sm transition-all duration-300 border border-gray-200 rounded bg-white focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 hover:border-gray-300"
+                  value={phoneNumber}
+                  onChange={(e) => setPhoneNumber(e.target.value)}
+                />
+              </div>
+
+              {user?.role === 'admin' && (
+                <div className="space-y-1">
+                  <Label htmlFor="role" className="text-xs font-medium text-gray-700">
+                    Role
+                  </Label>
+                  <Select value={role} onValueChange={setRole}>
+                    <SelectTrigger className="w-full">
+                      <SelectValue placeholder="Select a role" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="admin">Admin</SelectItem>
+                      <SelectItem value="user">User</SelectItem>
+                    </SelectContent>
+                  </Select>
                 </div>
-            )}
+              )}
+            </div>
           </div>
           <DialogFooter>
-            <Button type="button" variant="outline" onClick={() => setIsOpen(false)}>Cancel</Button>
-            <Button type="submit" disabled={isLoading} className="bg-blue-600 hover:bg-blue-700">
-              {isLoading && <Loader2 className="w-4 h-4 mr-2 animate-spin" />}
+            <Button type="button" variant="outline" size="sm" onClick={() => setIsOpen(false)}>Cancel</Button>
+            <Button type="submit" size="sm" disabled={isLoading} className="bg-blue-600 hover:bg-blue-700">
+              {isLoading && <Loader2 className="w-3 h-3 mr-2 animate-spin" />}
               Save changes
             </Button>
           </DialogFooter>
